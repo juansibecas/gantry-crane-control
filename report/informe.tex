@@ -1,0 +1,189 @@
+\documentclass{article}
+
+% Paquetes plantilla
+\usepackage[square, numbers, sort]{natbib}
+% \usepackage{cite}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{textcomp}
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{mathtools}
+\usepackage[spanish]{babel}
+\usepackage[paper=a4paper,margin=2.75cm]{geometry}
+\usepackage{booktabs} % for tables
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = orange,
+            anchorcolor = blue]{hyperref} % for hyperlinks
+\usepackage{xcolor} % text colors
+% Paquetes extra
+\usepackage{subcaption, booktabs, siunitx, tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt 
+
+\sisetup{
+    round-mode          = places, % Rounds numbers
+    round-precision     = 2, % to 2 places
+}
+
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+% Directorio con imagenes
+\graphicspath{{./figs/}}
+
+% Cabecera del documento
+% ======================================================================
+
+% Titulo
+\title{PROYECTO AUTOMATAS}
+
+% Autores
+\author{Juan Pablo Sibecas \\ juan.sibecas@gmail.com \\ Autómatas y Control Discreto, Facultad de Ingeniería, \\ Universidad Nacional de Cuyo, \\ Mendoza, Argentina}
+
+% Fecha
+\date{Febrero de 2024}
+
+% Cuerpo del documento
+% ======================================================================
+\begin{document}
+
+% Comandos definidos por el autor
+\renewcommand{\tablename}{Tabla}
+% \renewcommand{\color{blue}{#1}}{\azul}
+
+% Crear cabecera
+\maketitle
+
+% Resumen
+% ======================================================================
+\begin{abstract}\label{sec:abstract}
+
+\end{abstract}
+
+\newpage
+
+\section{Introducción} \label{sec:intro}
+
+\section{Desarrollo} \label{sec:desarrollo}
+    \subsection{Modelo del Sistema Físico} \label{sec:plantModel}
+
+        \subsubsection{Modelo de Traslación Horizontal}
+
+            \begin{equation} \label{eq:motor}
+                J_m \dot{\omega_m(t)} = T_m(t) - T_l(t) - b_m \omega_m(t)
+            \end{equation}
+
+            comportamiento rueda:
+            \begin{equation} \label{eq:wheel}
+                J_w \dot{\omega_w(t)} = T_q(t) - T_w(t) - b_w \omega_w(t)
+            \end{equation}
+
+            relacion de transmision
+            \begin{equation} \label{eq:transmission}
+                r = \frac{\omega_m(t)}{\omega_w(t)} = \frac{T_q(t)}{T_l(t)}
+            \end{equation}
+
+            si reemplazo \ref{eq:transmission} en \ref{eq:motor} y despejo $T_q(t)$
+
+            \begin{equation} \label{eq:Tq}
+                T_q(t) = J_m \dot{\omega_w} r^2 + b_m \omega_w(t) r^2 + T_m(t) r
+            \end{equation}
+
+            reemplazando en \ref{eq:wheel} se obtiene
+
+            \begin{equation} \label{eq:SSeq1}
+                (J_w + J_m r^2) \dot{\omega_w}(t) = T_m(t) r - (b_w + b_m r^2) \omega_w (t) - T_w(t)
+            \end{equation}
+
+            como no hay resbalamiento, 
+
+            \begin{align} \label{eq:trans2rot} %%REEMPLAZAR & POR FLECHA
+                x_t(t) = R_w \theta_w(t) &\Rightarrow \theta_w(t) = \frac{x_t(t)}{R_w}\\
+                \dot{x_t}(t) = R_w \omega_w(t) &\Rightarrow \omega_w(t) = \frac{\dot{x_t}(t)}{R_w}\\
+                \ddot{x_t}(t) = R_w \dot{\omega_w}(t) &\Rightarrow \dot{\omega_w}(t) = \frac{\ddot{x_t}(t)}{R_w}\\
+            \end{align}
+
+            la fuerza que impulsa al carro es:
+    
+            \begin{equation} \label{eq:trolleyForce1}
+                F_t(t) = \frac{T_w(t)}{R_w}
+            \end{equation}
+
+            reemplazando \ref{eq:trolleyForce1} y \ref{eq:trans2rot} en \ref{eq:SSeq1} se obtiene
+
+
+            \begin{equation} \label{eq:trolleyForce2}
+                F_t(t) = \frac{J_w + J_m r^2}{{R_w}^2} \ddot{x_t}(t) + \frac{r_t}{R_w} T_m(t) - \frac{b_w + b_m r^2}{{R_w}^2} \dot{x_t}(t)
+            \end{equation}
+
+            la traslación del carro, por segunda ley de Newton es:
+
+            \begin{equation} \label{eq:trolleyMovement}
+                m_t \ddot{x_t}(t) = F_t(t) + F_l(t) - b_t \dot{x_t}(t)
+            \end{equation}
+            
+            $F_l(t)$ es la fuerza de la carga por balanceo:
+
+            \begin{equation} \label{eq:cableForce}
+                F_l(t) = F_w \sin{\theta(t)}
+            \end{equation}
+
+            Donde $F_w$ es la fuerza elástica del cable sobre el carro.
+
+            reemplazando \ref{eq:cableForce}  y \ref{eq:trolleyForce2} en \ref{eq:trolleyMovement}
+
+
+            \begin{equation} \label{eq:mechSSlong}
+                (m_t + \frac{J_w + J_m r^2}{{R_w}^2}) \ddot{x_t}(t) = F_w \sin{\theta(t)} +  \frac{r_t}{R_w} T_m(t) - (b_t + \frac{b_w + b_m r^2}{{R_w}^2}) \dot{x_t}(t)
+            \end{equation}
+
+            que se puede expresar como:
+
+            \begin{equation} \label{eq:mechSSshort}
+                m_{eq} \ddot{x_t}(t) = F_w \sin{\theta(t)} +  \frac{r_t}{R_w} T_m(t) - b_{eq} \dot{x_t}(t)
+            \end{equation}
+
+            Donde
+
+            \begin{equation} \label{eq:eqMass}
+                m_{eq} = m_t + \frac{J_w + J_m r^2}{{R_w}^2}
+            \end{equation}
+
+            y
+
+            \begin{equation} \label{eq:eqDamp}
+                b_{eq} = b_t + \frac{b_w + b_m r^2}{{R_w}^2}
+            \end{equation}
+
+
+        \subsubsection{Modelo de Izaje}
+
+
+
+
+\section{Resultados} \label{sec:results}
+
+\section{Conclusión} \label{sec:conclusion}
+
+
+% Estilo de citas
+%\bibliographystyle{unsrt}
+
+% Nombre del archivo .bib
+%\bibliography{references}
+
+\end{document}
