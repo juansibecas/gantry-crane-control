@@ -17,7 +17,9 @@ Ysb = 15;               % sill beam height[m]
 % Parameters
 Hc = 2.5;               % container height[m]
 Ms = 15000;             % Spreader + Headblock mass[kg]
-Mc = [2000 50000];      % container mass range[kg]
+Mc_range = [2000 50000];      % container mass range[kg]
+% Random container mass
+Mc = Ms + Mc_range(1) + rand() * (Mc_range(2) - Mc_range(1));
 g = 9.80665;            % gravity[m/s2]
 
 % Supported load parameters
@@ -25,7 +27,7 @@ Kcy = 1.8e9;            % Compression stiffness (vertical contact[]
 bcy = 1e8;              % Internal friction[]
 bcx = 1e7;              % Horizontal drag friction (vertical contact)[]
 
-% Hoisting Equivalent wirerope parameters per meter
+% Hoisting Equivalent wirerope parameters PER METER
 kwu = 2.36e8;           % Unit Traction stiffness []
 bwu = 150;              % Unit Internal Friction []
 
@@ -40,10 +42,11 @@ Jhm_hb = 30.0;          % Equivalent inertia moment of the fast axle (motor + br
 bhm = 18.0;             % Equivalent mechanical viscous friction (fast axle)
 bhb = 1.0e8;            % Equivalent mechanical viscous friction (brake)
 Thb_max = 5.0e4;        % Max brake torque
+Fhb_max = Thb_max/rhd;  % Max brake force (at drum diameter)
 Thm = 1e-3;             % Torque modulator time constant
 Thm_max = 2.0e4;        % Max motor/regenerative-braking torque
 
-% Trolley equivalent wirerope parameters
+% Trolley equivalent wirerope parameters TOTAL
 Ktw =4.8e5;             % Wirerope total equivalent traction stiffness
 btw =3e3;               % Internal friction
 
