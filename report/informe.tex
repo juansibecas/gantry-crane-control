@@ -81,98 +81,107 @@
 \section{Desarrollo} \label{sec:desarrollo}
     \subsection{Modelo del Sistema Físico} \label{sec:plantModel}
 
-        \subsubsection{Modelo de Traslación Horizontal}
-
-            \begin{equation} \label{eq:motor}
-                J_m \dot{\omega_m(t)} = T_m(t) - T_l(t) - b_m \omega_m(t)
+        \subsubsection{Subsistema de Izaje}
+            Segunda ley de Newton del lado tambor:
+            \begin{equation} \label{eq:tamborIzaje}
+                J_{hd+hEb} \frac{d \omega_{hd}}{dt} = T_{hd}(t) + T_{hEb}(t) - b_{hd} \omega_{hd}(t) - T_{hdl}(t)
             \end{equation}
 
-            comportamiento rueda:
-            \begin{equation} \label{eq:wheel}
-                J_w \dot{\omega_w(t)} = T_q(t) - T_w(t) - b_w \omega_w(t)
+            Segunda ley de Newton del lado motor:
+            \begin{equation} \label{eq:motorIzaje}
+                J_{hm+hb} \frac{d \omega_{hm}}{dt} = T_{hm}(t) + T_{hb}(t) - b_{hm} \omega_{hm}(t) - T_{hml}(t)
             \end{equation}
 
             relacion de transmision
-            \begin{equation} \label{eq:transmission}
-                r = \frac{\omega_m(t)}{\omega_w(t)} = \frac{T_q(t)}{T_l(t)}
+            \begin{equation} \label{eq:transmisionIzaje}
+                i_h = \frac{\omega_{hm}(t)}{\omega_{hd}(t)} = \frac{T_{hd}(t)}{T_{hml}(t)}
             \end{equation}
 
-            si reemplazo \ref{eq:transmission} en \ref{eq:motor} y despejo $T_q(t)$
+            si reemplazo \ref{eq:transmisionIzaje} en \ref{eq:motorIzaje} y despejo $T_{hd}(t)$
 
-            \begin{equation} \label{eq:Tq}
-                T_q(t) = J_m \dot{\omega_w} r^2 + b_m \omega_w(t) r^2 + T_m(t) r
+            \begin{equation} \label{eq:Thd}
+                T_{hd}(t) = J_{hm+hb} \frac{d \omega_{hd}}{dt} {i_h}^2 - b_{hm} \omega_{hd}(t) {i_h}^2 + i_h (T_{hm}(t) + T_{hb}(t))
             \end{equation}
 
-            reemplazando en \ref{eq:wheel} se obtiene
+            reemplazando en \ref{eq:tamborIzaje} y operando se obtiene
 
-            \begin{equation} \label{eq:SSeq1}
-                (J_w + J_m r^2) \dot{\omega_w}(t) = T_m(t) r - (b_w + b_m r^2) \omega_w (t) - T_w(t)
+            \begin{equation} \label{eq:izajeThdl}
+                (J_{hd+hEb} + J_{hm+hb} i_h^2) \frac{d \omega_{hd}}{dt} = - (b_{hd} + b_{hm}i_h^2) \omega_{hd}(t) + i_h (T_{hm}(t) + T_{hb}(t)) + T_{hEb}(t) - T_{hdl}(t)
             \end{equation}
 
-            como no hay resbalamiento, 
+            como $T_{hdl}(t) = F_{hw}(t)*r_{hd}$, $2V_h = r_{hd}*\omega_{hd}(t)$ y $V_h = -\frac{dl_h(t)}{dt}$ y dividiendo por $r_{hd}$:
 
-            \begin{align} \label{eq:trans2rot} %%REEMPLAZAR & POR FLECHA
-                x_t(t) = R_w \theta_w(t) &\Rightarrow \theta_w(t) = \frac{x_t(t)}{R_w}\\
-                \dot{x_t}(t) = R_w \omega_w(t) &\Rightarrow \omega_w(t) = \frac{\dot{x_t}(t)}{R_w}\\
-                \ddot{x_t}(t) = R_w \dot{\omega_w}(t) &\Rightarrow \dot{\omega_w}(t) = \frac{\ddot{x_t}(t)}{R_w}\\
-            \end{align}
-
-            la fuerza que impulsa al carro es:
-    
-            \begin{equation} \label{eq:trolleyForce1}
-                F_t(t) = \frac{T_w(t)}{R_w}
-            \end{equation}
-
-            reemplazando \ref{eq:trolleyForce1} y \ref{eq:trans2rot} en \ref{eq:SSeq1} se obtiene
-
-
-            \begin{equation} \label{eq:trolleyForce2}
-                F_t(t) = \frac{J_w + J_m r^2}{{R_w}^2} \ddot{x_t}(t) + \frac{r_t}{R_w} T_m(t) - \frac{b_w + b_m r^2}{{R_w}^2} \dot{x_t}(t)
-            \end{equation}
-
-            la traslación del carro, por segunda ley de Newton es:
-
-            \begin{equation} \label{eq:trolleyMovement}
-                m_t \ddot{x_t}(t) = F_t(t) + F_l(t) - b_t \dot{x_t}(t)
+            \begin{equation} \label{eq:izajeFhw}
+                2\frac{(J_{hd+hEb} + J_{hm+hb} i_h^2)}{r_{hd}^2} \frac{d^2 l_h(t)}{dt^2} = - 2\frac{(b_{hd} + b_{hm}i_h^2)}{r_{hd}^2} \frac{d l_h(t)}{dt} - \frac{i_h}{r_{hd}} (T_{hm}(t) + T_{hb}(t)) - \frac{T_{hEb}(t)}{r_{hd}} + F_{hw}(t)
             \end{equation}
             
-            $F_l(t)$ es la fuerza de la carga por balanceo:
-
-            \begin{equation} \label{eq:cableForce}
-                F_l(t) = F_w \sin{\theta(t)}
-            \end{equation}
-
-            Donde $F_w$ es la fuerza elástica del cable sobre el carro.
-
-            reemplazando \ref{eq:cableForce}  y \ref{eq:trolleyForce2} en \ref{eq:trolleyMovement}
-
-
-            \begin{equation} \label{eq:mechSSlong}
-                (m_t + \frac{J_w + J_m r^2}{{R_w}^2}) \ddot{x_t}(t) = F_w \sin{\theta(t)} +  \frac{r_t}{R_w} T_m(t) - (b_t + \frac{b_w + b_m r^2}{{R_w}^2}) \dot{x_t}(t)
-            \end{equation}
-
-            que se puede expresar como:
-
-            \begin{equation} \label{eq:mechSSshort}
-                m_{eq} \ddot{x_t}(t) = F_w \sin{\theta(t)} +  \frac{r_t}{R_w} T_m(t) - b_{eq} \dot{x_t}(t)
+            Reemplazando por parametros equivalentes:
+            
+            \begin{equation} \label{eq:izajeEquiv}
+                M_{Eh} \ddot{l_h}(t) = - b_{Eh} \dot{l_h}(t) - \frac{i_h}{r_{hd}} (T_{hm}(t) + T_{hb}(t)) - \frac{T_{hEb}(t)}{r_{hd}} + F_{hw}(t)
             \end{equation}
 
             Donde
 
-            \begin{equation} \label{eq:eqMass}
-                m_{eq} = m_t + \frac{J_w + J_m r^2}{{R_w}^2}
+            \begin{align} \label{eq:izajeParamsEquiv}
+                M_{Eh} = 2\frac{(J_{hd+hEb} + J_{hm+hb} i_h^2)}{r_{hd}^2}\\
+                b_{Eh} = 2\frac{(b_{hd} + b_{hm}i_h^2)}{r_{hd}^2}\\
+            \end{align}
+            
+
+        \subsubsection{Subsistema Carro}
+            Segunda ley de Newton del lado tambor:
+            \begin{equation} \label{eq:tamborCarro}
+                J_{td} \frac{d \omega_{td}(t)}{dt} = T_{td}(t) - b_{td} \omega_{td}(t) - T_{tdl}(t)
             \end{equation}
 
-            y
-
-            \begin{equation} \label{eq:eqDamp}
-                b_{eq} = b_t + \frac{b_w + b_m r^2}{{R_w}^2}
+            Segunda ley de Newton del lado motor:
+            \begin{equation} \label{eq:motorCarro}
+                J_{tm+tb} \frac{d \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t) - b_{tm} \omega_{tm}(t) - T_{tml}(t)
             \end{equation}
 
+            relacion de transmision
+            \begin{equation} \label{eq:transmisionCarro}
+                i_t = \frac{\omega_{tm}(t)}{\omega_{td}(t)} = \frac{T_{td}(t)}{T_{tml}(t)}
+            \end{equation}
 
-        \subsubsection{Modelo de Izaje}
+            si reemplazo \ref{eq:transmisionCarro} en \ref{eq:motorCarro} y despejo $T_{td}(t)$
 
+            \begin{equation} \label{eq:Ttd}
+                T_{td}(t) = J_{tm+tb} \frac{d \omega_{td}(t)}{dt} {i_t}^2 - b_{tm} \omega_{td}(t) {i_t}^2 + i_t (T_{tm}(t) + T_{tb}(t))
+            \end{equation}
 
+            Reemplazo \ref{eq:Ttd} en \ref{eq:tamborCarro} y reordeno:
+
+            \begin{equation} \label{eq:carroTtdl}
+                (J_{td} + J_{tm+tb}*i_t^2) \frac{d \omega_{td}(t)}{dt} = i_t (T_{tm}(t) + T_{tb}(t)) - (b_{td} + b_{tm}{i_t}^2) \omega_{td}(t) - T_{tdl}(t)
+            \end{equation}
+        
+            Como $\omega_{td}(t) r_{td} = V_{td}(t)$, $F_{tw}(t)r_{td} = T_{tdl}(t)$ y $V_{td}(t) = \frac{d x_{td}}{dt}$ y dividiendo por $r_{td}$:
+            
+            \begin{equation} \label{eq:carroFtw}
+                \frac{(J_{td} + J_{tm+tb}*i_t^2)}{r_{td}^2} \frac{d^2 x_{td}(t)}{dt^2} = - \frac{(b_{td} + b_{tm}{i_t}^2)}{r_{td}^2} \frac{d x_{td}(t)}{dt} + \frac{i_t}{r_{td}} (T_{tm}(t) + T_{tb}(t)) - F_{tw}(t)
+            \end{equation}
+
+            Reemplazando por parametros equivalentes se obtiene la ecuacion del tambor del subsistema carro:
+
+            \begin{equation} \label{eq:TamborCarro}
+                M_{Etd} \ddot{x_{td}}(t) = - b_{Etd} \dot{x_{td}}(t) + \frac{i_t}{r_{td}} (T_{tm}(t) + T_{tb}(t)) - F_{tw}(t)
+            \end{equation}
+
+            La ecuacion de movimiento del carro es:
+
+            \begin{equation} \label{eq:Carro}
+                M_t \ddot{x_{t}}(t) = - b_t \dot{x_{t}}(t) + F_{tw}(t) + 2F_{hw}(t)\sin{\theta_l(t)}
+            \end{equation}
+
+            Y la fuerza transmitida por el cable del subsistema carro es:
+
+            \begin{equation} \label{eq:fuerzaCableCarro}
+                F_{tw}(t) = K_{tw}(x_{td}(t) - x_t(t)) + b_{tw}(\dot{x_{td}}(t) - \dot{x_t}(t))
+            \end{equation}
+
+            seria un sistema acoplado? preguntar si se resuelve asi
 
 
 \section{Resultados} \label{sec:results}
