@@ -64,10 +64,26 @@ Ttb_max = 5.0e-3;       % Max brake torque
 Tau_tm = 1e-3;          % Torque modulator time constant
 Ttm_max = 3.0e-3;       % Max motor/regenerative-braking torque
 
+% Hoist Subsystem equivalent parameters
+MEh = 2*(Jhd_hEb + Jhm_hb * ih^2)/rhd^2;
+bEh = 2*(bhd + bhm*ih^2)/rhd^2;
 
+% Trolley Drum Subsystem equivalent parameters
+MEtd = (Jtd + Jtm_tb*it^2)/rtd^2;
+bEtd = (btd + btm*it^2)/rtd^2;
 
+%%%%TODO Script to initialize and store container layout
+columns = 9;
+maxContainers = 13;
+minMass = 2000;
+maxMass = 50000;
 
+initialLayout = randi([0, maxContainers], 1, columns);
+initialMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
 
+% Save initial layout and masses to workspace variables
+assignin('base', 'initialLayout', initialLayout);
+assignin('base', 'initialMasses', initialMasses);
 
 
 
