@@ -1,10 +1,13 @@
 % Axes
 
 x_axis = [-30 50];      % shore to ship range[m]
+SHORE_LIMIT = x_axis(1);
+SHIP_LIMIT = x_axis(2);
 vx_max = 4;             % max speed[m/s]
 ax_max = 0.8;           % max acceleration[m/s2]
 
 y_axis = [-20 40];      % ship bottom to trolley pulleys range[m]
+MAX_CABLE_LENGTH = y_axis(2) - y_axis(1);  % max theorical cable length[m]
 vy_loaded_max = 1.5;    % max speed[m/s] - rated load - see constant power graph
 vy_unloaded_max = 3;    % max speed[m/s] - unloaded
 ay_max = 0.75;          % max acceleration[m/s2]
@@ -12,14 +15,14 @@ ay_max = 0.75;          % max acceleration[m/s2]
 Yt0 = 45;               % trolley pulleys height[m]
 Ysb = 15;               % sill beam height[m]
 
-% !!!! yl + lh(cable height) = Yt0
+% !!!! yl + lh(unrolled cable length) = Yt0
 
 % Parameters
 Hc = 2.5;               % container height[m]
 Ms = 15000;             % Spreader + Headblock mass[kg]
 Mc_range = [2000 50000];      % container mass range[kg]
 % Random container mass
-Mc = Ms + Mc_range(1) + rand() * (Mc_range(2) - Mc_range(1));
+Mc = Mc_range(1) + rand() * (Mc_range(2) - Mc_range(1));
 g = 9.80665;            % gravity[m/s2]
 
 % Supported load parameters
@@ -43,7 +46,7 @@ bhm = 18.0;             % Equivalent mechanical viscous friction (fast axle)
 bhb = 1.0e8;            % Equivalent mechanical viscous friction (brake)
 Thb_max = 5.0e4;        % Max brake torque
 Fhb_max = Thb_max/rhd;  % Max brake force (at drum diameter)
-Thm = 1e-3;             % Torque modulator time constant
+Tau_hm = 1e-3;             % Torque modulator time constant
 Thm_max = 2.0e4;        % Max motor/regenerative-braking torque
 
 % Trolley equivalent wirerope parameters TOTAL
