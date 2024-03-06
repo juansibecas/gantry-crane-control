@@ -128,7 +128,18 @@ theta_hm0 = 0;
 theta_tm0 = 0;
 
 
+%% Level 2 PID Constants
+Ksia_PID_hoist = 0;
+Ksi_PID_hoist = 0;
+b_PID_hoist = 0;
 
+Ksia_PID_trolley = 0;
+Ksi_PID_trolley = 0;
+b_PID_trolley = 0;
+
+Ksia_PID_sway = 0;
+Ksi_PID_sway = 0;
+b_PID_sway = 0;
 
 
 
