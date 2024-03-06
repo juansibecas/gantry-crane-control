@@ -91,8 +91,41 @@ profile = generate_profile_from_vector(initialLayout, Hc);
 xc0 = profile(1,:);
 yc0 = profile(2,:);
 
+% Hoist Overspeed Sensor
 
+hoist_v115 = 115; %TODO how much is it
 
+% Initial conditions
+%{ 
+lh0 = 0;
+theta_hm0 = 0;
+dxt0 = 0;
+xt0 = 0;
+dxtd0 = 0;
+xtd0 = 0;
+theta_tm0 = 0;
+xl0 = 0;
+yl0 = 0;
+Vlx0 = 0;
+Vly0 = 0;
+%}
+% Sway test (TODO)
+dlh0 = 0;
+lh0 = 0;
+
+dxt0 = 0;
+xt0 = 0;
+
+dxtd0 = 0;
+xtd0 = 0;
+
+xl0 = 0;
+yl0 = 0;
+Vlx0 = 0;
+Vly0 = 0;
+
+theta_hm0 = 0;
+theta_tm0 = 0;
 
 
 
