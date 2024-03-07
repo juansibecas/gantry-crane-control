@@ -144,19 +144,6 @@ Ksia_PID_trolley = 0;
 Ksa_PID_trolley = 0;
 b_PID_trolley = 0;
 
-Ksia_PID_sway = 0;
-Ksa_PID_sway = 0;
-b_PID_sway = 0;
-
-
-
-
-
-
-    
-
-
-
 
 
 
