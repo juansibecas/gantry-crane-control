@@ -82,12 +82,12 @@ maxContainers = 13;
 minMass = 2000;
 maxMass = 50000;
 
-initialLayout = randi([0, maxContainers], 1, columns);
-initialMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
+containerLayout = randi([0, maxContainers], 1, columns);
+containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
 
 % Generate profile(yc0) from layout
 
-profile = generate_profile_from_vector(initialLayout, Hc);
+profile = generate_profile_from_vector(containerLayout, Hc);
 xc0 = profile(1,:);
 yc0 = profile(2,:);
 
