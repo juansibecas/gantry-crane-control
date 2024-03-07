@@ -97,30 +97,37 @@ hoist_v115 = 115; %TODO how much is it
 
 % Initial conditions
 %{ 
-lh0 = 0;
-theta_hm0 = 0;
+dlh0 = 0;
+lh0 = 30;
+
 dxt0 = 0;
-xt0 = 0;
+xt0 = 30;
+
 dxtd0 = 0;
-xtd0 = 0;
-theta_tm0 = 0;
-xl0 = 0;
-yl0 = 0;
+xtd0 = 30;
+
+%Load position
+xl0 = 30;
+yl0 = Yt0 - lh0;
 Vlx0 = 0;
 Vly0 = 0;
+
+theta_hm0 = 0;
+theta_tm0 = 0;
 %}
 % Sway test (TODO)
 dlh0 = 0;
-lh0 = 0;
+lh0 = 30;
 
-dxt0 = 0;
-xt0 = 0;
+dxt0 = 0.5;
+xt0 = 30;
 
-dxtd0 = 0;
-xtd0 = 0;
+dxtd0 = 0.5;
+xtd0 = 30;
 
-xl0 = 0;
-yl0 = 0;
+%Load position
+xl0 = 30;
+yl0 = Yt0 - lh0;
 Vlx0 = 0;
 Vly0 = 0;
 
@@ -130,15 +137,15 @@ theta_tm0 = 0;
 
 %% Level 2 PID Constants
 Ksia_PID_hoist = 0;
-Ksi_PID_hoist = 0;
+Ksa_PID_hoist = 0;
 b_PID_hoist = 0;
 
 Ksia_PID_trolley = 0;
-Ksi_PID_trolley = 0;
+Ksa_PID_trolley = 0;
 b_PID_trolley = 0;
 
 Ksia_PID_sway = 0;
-Ksi_PID_sway = 0;
+Ksa_PID_sway = 0;
 b_PID_sway = 0;
 
 
