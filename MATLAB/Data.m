@@ -1,5 +1,5 @@
 clear, clc
-% Axes
+%% Axes
 
 x_axis = [-30 50];      % shore to ship range[m]
 SHORE_LIMIT = x_axis(1);
@@ -18,7 +18,7 @@ Ysb = 15;               % sill beam height[m]
 
 % !!!! yl + lh(unrolled cable length) = Yt0
 
-% Parameters
+%% Parameters
 Hc = 2.5;               % container height[m]
 Ms = 15000;             % Spreader + Headblock mass[kg]
 Mc_range = [2000 50000];      % container mass range[kg]
@@ -76,7 +76,7 @@ bEh = 2*(bhd + bhm*ih^2)/rhd^2;
 MEtd = (Jtd + Jtm_tb*it^2)/rtd^2;
 bEtd = (btd + btm*it^2)/rtd^2;
 
-% Initialize container layout and masses of the top containers
+%% Initialize container layout and masses of the top containers
 columns = 9;
 maxContainers = 13;
 minMass = 2000;
@@ -85,17 +85,17 @@ maxMass = 50000;
 containerLayout = randi([0, maxContainers], 1, columns);
 containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
 
-% Generate profile(yc0) from layout
+%% Generate profile(yc0) from layout
 
-profile = generate_profile_from_vector(containerLayout, Hc);
-xc0 = profile(1,:);
-yc0 = profile(2,:);
+%profile = generate_profile_from_vector(containerLayout, Hc);
+%xc0 = profile(1,:);
+%yc0 = profile(2,:);
 
-% Hoist Overspeed Sensor
+%% Hoist Overspeed Sensor
 
 hoist_v115 = 115; %TODO how much is it
 
-% Initial conditions
+%% Initial conditions
 %{ 
 dlh0 = 0;
 lh0 = 30;
@@ -117,16 +117,16 @@ theta_tm0 = 0;
 %}
 % Sway test (TODO)
 dlh0 = 0;
-lh0 = 30;
+lh0 = 10;
 
-dxt0 = 0.5;
-xt0 = 30;
+dxt0 = 0;
+xt0 = 11;
 
-dxtd0 = 0.5;
-xtd0 = 30;
+dxtd0 = 0;
+xtd0 = 11;
 
 %Load position
-xl0 = 30;
+xl0 = 11;
 yl0 = Yt0 - lh0;
 Vlx0 = 0;
 Vly0 = 0;
