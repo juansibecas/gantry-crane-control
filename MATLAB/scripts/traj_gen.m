@@ -119,18 +119,29 @@ function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
  %Etapa 2 - aceleracion constate
     t2=(v2-v1)/amax;
     p2=p1+v1*t2+0.5*amax*t2^2;
-    
     %etapa 3
-    p3=p2+v2*t3+0.5*amax*t3^2+(1/6)*j*t3^3;
+    p3=p2+v2*t3+0.5*amax*t3^2-(1/6)*j*t3^3;
+ 
+ %Etapa 7 - jerk constate
+    af=[0 0]
+    t7=(af-(-amax))/j;
+    v6=-vf-af*t7+0.5*j*t7^2; %reves
+    p6=pf-vf*t1-0.5*af*t1^2+(1/6)*j*t7^3; %reves
+ 
+ %Etapa 5 - jerk costante
+    t5=(amax-0)/j;
+    
+    
+ %Etapa 6 - aceleracion constante
+    
     
  %Etapa 4 - velocidad constate
  
     
- %Etapa 5 - jerk costante
+   
+ 
     
- %Etapa 6 - aceleracion constante
-    
- %Etapa 7 - jerk constate
+ 
 
     
     
