@@ -98,16 +98,43 @@ plot(Pf(1),Pf(2),'x')
 %=========================================================================
 
 
+[Q, vf_real] = trap_acc_prof([P0(1),H0],[x02,Hmax],[0,1],[1,0],[1,1],[10,10],[20,20]);
 
 
+plot(Q(1,:),Q(2,:))
 
 
+function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
+    
+ %Etapa 1 - jerk costante 
+    t1=(amax-a0)/j;
+    v1=v0+a0*t1+0.5*j*t1^2;
+    p1=p0+v0*t1+0.5*a0*t1^2+(1/6)*j*t1^3;
+    
+ %Etapa 3 - jerk constate
+    t3=amax/j;
+    v2=vmax+0*t1-0.5*j*t3^2; %reves
+    %p3=?
+    
+ %Etapa 2 - aceleracion constate
+    t2=(v2-v1)/amax;
+    p2=p1+v1*t2+0.5*amax*t2^2;
+    
+    %etapa 3
+    p3=p2+v2*t3+0.5*amax*t3^2+(1/6)*j*t3^3;
+    
+ %Etapa 4 - velocidad constate
+ 
+    
+ %Etapa 5 - jerk costante
+    
+ %Etapa 6 - aceleracion constante
+    
+ %Etapa 7 - jerk constate
 
-
-
-
-
-
+    
+    
+end
 
 
 
