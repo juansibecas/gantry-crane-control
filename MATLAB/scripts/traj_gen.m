@@ -14,11 +14,14 @@ for i=1:N
     end
 end    
 
-P0=[-5 2];
-Pf=[15 4];
+Pf=[-5 2];
+P0=[15 4];
 hseg=3;
 xbox=3;
 %=========================================================================
+%Calculo de puntos
+%=========================================================================
+
 %recortar profile entre x0 y xf (profile_r)
 profile_r=subprofile(profile,P0(1),Pf(1));
 
@@ -41,10 +44,10 @@ if Pf(1)>P0(1)
     Hl=H0;
     Hh=Hf;
 else
-    xl=P0(1);
+    xh=P0(1);
     xl=Pf(1);
     Hh=H0;
-    Hh=Hf;
+    Hl=Hf;
 end
 
 mmax=0;
@@ -79,8 +82,6 @@ else
     xf2=Pf(1)+DXl;
 end
 
-
-
 %graficar
 plot(profile(:,1),profile(:,2))
 hold on
@@ -88,7 +89,36 @@ plot(profile_r(:,1),profile_r(:,2))
 plot(x02,Hmax,'x')
 plot(xf2,Hmax,'x')
 plot(P0(1),H0,'x')
+plot(Pf(1),Hf,'x')
+plot(P0(1),P0(2),'x')
+plot(Pf(1),Pf(2),'x')
 %end
+%=========================================================================
+%Calculo de trajectoria
+%=========================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function subprof=subprofile(vector,x0,xf)
     if x0>xf
