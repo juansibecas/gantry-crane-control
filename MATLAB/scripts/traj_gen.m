@@ -106,41 +106,49 @@ plot(Q(1,:),Q(2,:))
 
 function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     
- %Etapa 1 - jerk costante 
+ %Etapa 1 - jerk constante 
     t1=(amax-a0)/j;
     v1=v0+a0*t1+0.5*j*t1^2;
     p1=p0+v0*t1+0.5*a0*t1^2+(1/6)*j*t1^3;
     
- %Etapa 3 - jerk constate
+ %Etapa 3 - jerk constante
     t3=amax/j;
-    v2=vmax+0*t1-0.5*j*t3^2; %reves
+    v2=vmax-amax*t3+0.5*t3^2;
     %p3=?
     
- %Etapa 2 - aceleracion constate
+ %Etapa 2 - aceleracion constante
     t2=(v2-v1)/amax;
     p2=p1+v1*t2+0.5*amax*t2^2;
     %etapa 3
     p3=p2+v2*t3+0.5*amax*t3^2-(1/6)*j*t3^3;
  
- %Etapa 7 - jerk constate
-    af=[0 0]
+ %Etapa 7 - jerk constante
+    af=[0 0];
     t7=(af-(-amax))/j;
-    v6=-vf-af*t7+0.5*j*t7^2; %reves
-    p6=pf-vf*t1-0.5*af*t1^2+(1/6)*j*t7^3; %reves
+    v6=vf+amax*t7-0.5*j*t7^2;
+    p6=pf-v6*t7+0.5*amax*t7^2-(1/6)*j*t7^3;
  
- %Etapa 5 - jerk costante
-    t5=(amax-0)/j;
-    
+ %Etapa 5 - jerk constante
+    t5=amax/j;
+    v5=vmax-0.5*j*t5^2;
+    %p4=?
     
  %Etapa 6 - aceleracion constante
+    t6=(v6-v5)/-amax;
+    p5=p6-v5*t6+0.5*amax*t6^2;
+    %etapa 5
+    p4=p5-vmax*t5+(1/6)*j*t6^3;
     
     
- %Etapa 4 - velocidad constate
+ %Etapa 4 - velocidad constante
+    t4=(p4-p3)/vmax;
+    
+
+ t_total=t1+t2+t3+t4+t5+t6+t7;
+ dt=0.1;
+ t=0:dt:t_total;
  
-    
-   
  
-    
  
 
     
