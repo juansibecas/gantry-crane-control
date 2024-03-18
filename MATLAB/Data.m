@@ -120,13 +120,13 @@ dlh0 = 0;
 lh0 = 10;
 
 dxt0 = 0;
-xt0 = 11;
+xt0 = 16;
 
 dxtd0 = 0;
-xtd0 = 11;
+xtd0 = xt0;
 
 %Load position
-xl0 = 11;
+xl0 = xt0;
 yl0 = Yt0 - lh0;
 Vlx0 = 0;
 Vly0 = 0;
@@ -136,13 +136,17 @@ theta_tm0 = 0;
 
 
 %% Level 2 PID Constants
-Ksia_PID_hoist = 0;
-Ksa_PID_hoist = 0;
-b_PID_hoist = 0;
+wh = bEh/MEh;
+nh = 2.5;
+Ksia_PID_hoist = MEh * (10*wh)^3;
+Ksa_PID_hoist = MEh * nh * (10*wh)^2;
+b_PID_hoist = MEh * nh *(10*wh);
 
-Ksia_PID_trolley = 0;
-Ksa_PID_trolley = 0;
-b_PID_trolley = 0;
+wtd = bEtd/MEtd;
+ntd = 2.5;
+Ksia_PID_trolley = MEtd * (10*wtd)^3;
+Ksa_PID_trolley = MEh * ntd * (10*wtd)^2;
+b_PID_trolley = MEh * ntd *(10*wtd);
 
 
 
