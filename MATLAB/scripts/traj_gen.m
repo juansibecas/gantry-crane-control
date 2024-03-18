@@ -98,7 +98,7 @@ plot(Pf(1),Pf(2),'x')
 %=========================================================================
 
 
-[Q, vf_real] = trap_acc_prof([P0(1),H0],[x02,Hmax],[0,1],[1,0],[1,1],[10,10],[20,20]);
+[Q, vf_real] = trap_acc_prof([P0(1) H0],[x02 Hmax],[0,1],[1,0],[1,1],[0 0],[10,10],[20,20]);
 
 
 plot(Q(1,:),Q(2,:))
@@ -143,8 +143,6 @@ function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
  %Etapa 4 - velocidad constante
     t4=(p4-p3)/vmax;
     
-
- t_total=t1+t2+t3+t4+t5+t6+t7;
  dt=0.1;
  Q1=const_j(p0,v0,a0,j,0:dt:t1);
  Q2=const_a(Q1(-1),Q1(-2),amax,0:dt:t2);
@@ -164,21 +162,21 @@ end
 function Q=const_j(p0,v0,a0,j,t)
 Q=zeros(4);
 Q(4)=j;
-Q(3)=
+Q(3)=0;
 
 end
 
 function Q=const_a(p0,v0,a,t)
 Q=zeros(4);
 Q(4)=j;
-Q(3)=
+Q(3)=0;
 
 end
 
 function Q=const_v(p0,v,t)
 Q=zeros(4);
 Q(4)=j;
-Q(3)=
+Q(3)=0;
 
 end
 
