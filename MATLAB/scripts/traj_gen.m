@@ -146,18 +146,41 @@ function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
 
  t_total=t1+t2+t3+t4+t5+t6+t7;
  dt=0.1;
- t=0:dt:t_total;
+ Q1=const_j(p0,v0,a0,j,0:dt:t1);
+ Q2=const_a(Q1(-1),Q1(-2),amax,0:dt:t2);
+ Q3=const_j(Q2(-1),Q2(-2),amax,-j,0:dt:t3);
+ Q4=const_v(Q3(-1),vmax,0:dt:t4);
  
  
+ Q=[Q1;Q2;Q3;Q4];
  
-
+ 
+    
     
     
 end
 
 
+function Q=const_j(p0,v0,a0,j,t)
+Q=zeros(4);
+Q(4)=j;
+Q(3)=
 
+end
 
+function Q=const_a(p0,v0,a,t)
+Q=zeros(4);
+Q(4)=j;
+Q(3)=
+
+end
+
+function Q=const_v(p0,v,t)
+Q=zeros(4);
+Q(4)=j;
+Q(3)=
+
+end
 
 
 
