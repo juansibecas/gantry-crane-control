@@ -83,6 +83,7 @@ else
 end
 
 %graficar
+figure(10)
 plot(profile(:,1),profile(:,2))
 hold on
 plot(profile_r(:,1),profile_r(:,2))
@@ -92,19 +93,55 @@ plot(P0(1),H0,'x')
 plot(Pf(1),Hf,'x')
 plot(P0(1),P0(2),'x')
 plot(Pf(1),Pf(2),'x')
+
 %end
 %=========================================================================
-%Calculo de trajectoria
+%Calculo de trayectoria
 %=========================================================================
 
+[Traise,Qraise] = trap_acc_prof(P0(2),Hmax,0,0,0,5,30,500);
+[Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,0,0,5,30,500);
+[Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,5,30,500);
 
-[Q, vf_real] = trap_acc_prof([P0(1) H0],[x02 Hmax],[0,1],[1,0],[1,1],[0 0],[10,10],[20,20]);
+%figure(2)
+%plot(Tlower,Qlower(1,:))
+%figure(3)
+%plot(Tlower,Qlower(2,:))
+%figure(4)
+%plot(Tlower,Qlower(3,:))
+%figure(5)
+%plot(Tlower,Qlower(4,:))
+
+iy=length(Traise);
+while Qraise(1,iy)>H0
+    iy=iy-1;
+end
+T02y=Tlower(end)-Tlower(iy);
+ix=1;
+while Qslide(1,ix)<x02
+    ix=ix+1;
+end
+T02x=Tslide(ix);
+
+if T02y>T02x
+    Qtroley=zeros(4,length(Traise)-ix);
+    Qtroley(1,:)=Qslide(1,1);
+    Qtroley=[Qtroley Qslide];
+    T=[Traise(1:length(Traise)-ix) Tslide+Traise(length(Traise)-ix)];
+else
+    Qtroley=zeros(4,length(Traise)-iy);
+    Qtroley(1,:)=Qslide(1,1);
+    Qtroley=[Qtroley Qslide];
+    T=[Traise(1:length(Traise)-iy) Tslide+Traise(length(Traise)-iy)];
+end
 
 
-plot(Q(1,:),Q(2,:))
 
 
-function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
+
+
+
+function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     
  %Etapa 1 - jerk constante 
     t1=(amax-a0)/j;
@@ -113,7 +150,7 @@ function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     
  %Etapa 3 - jerk constante
     t3=amax/j;
-    v2=vmax-amax*t3+0.5*t3^2;
+    v2=vmax-amax*t3+0.5*j*t3^2;
     %p3=?
     
  %Etapa 2 - aceleracion constante
@@ -123,7 +160,7 @@ function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     p3=p2+v2*t3+0.5*amax*t3^2-(1/6)*j*t3^3;
  
  %Etapa 7 - jerk constante
-    af=[0 0];
+    af=0;
     t7=(af-(-amax))/j;
     v6=vf+amax*t7-0.5*j*t7^2;
     p6=pf-v6*t7+0.5*amax*t7^2-(1/6)*j*t7^3;
@@ -141,28 +178,63 @@ function [Q, vf_real] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     
     
  %Etapa 4 - velocidad constante
-    t4=(p4-p3)/vmax;
+    t4=abs(p4-p3)/vmax;
     
- dt=0.1;
- Q1=const_j(p0,v0,a0,j,0:dt:t1);
- Q2=const_j(Q1(1,-1),Q1(2,-1),amax,0,0:dt:t2);
- Q3=const_j(Q2(1,-1),Q2(2,-1),amax,-j,0:dt:t2);
- Q4=const_j(Q3(1,-1),vmax,0,0,0:dt:t2);
+dt=0.001;
+T1=0:dt:t1;
+T2=0:dt:t2;
+T3=0:dt:t3;
+T4=0:dt:t4;
+T5=0:dt:t5;
+T6=0:dt:t6;
+T7=0:dt:t7;
+Q1=zeros(4,length(T1));
+Q2=zeros(4,length(T2));
+Q3=zeros(4,length(T3));
+Q4=zeros(4,length(T4));
+Q5=zeros(4,length(T5));
+Q6=zeros(4,length(T6));
+Q7=zeros(4,length(T7));
+disp("--------------")
+disp(t1)
+disp(t2)
+disp(t3)
+disp(t4)
+disp(t5)
+disp(t6)
+disp(t7)
 
-
+for i=1:length(T1)
+Q1(:,i)=const_j(p0,v0,a0,j,T1(i));
+end
+for i=1:length(T2)
+Q2(:,i)=const_j(Q1(1,end),Q1(2,end),amax,0,T2(i));
+end
+for i=1:length(T3)
+Q3(:,i)=const_j(Q2(1,end),Q2(2,end),amax,-j,T3(i));
+end
+for i=1:length(T4)
+Q4(:,i)=const_j(Q3(1,end),vmax,0,0,T4(i));
+end
+for i=1:length(T5)
+Q5(:,i)=const_j(Q4(1,end),vmax,0,-j,T5(i));
+end
+for i=1:length(T6)
+Q6(:,i)=const_j(Q5(1,end),Q5(2,end),-amax,0,T6(i));
+end
+for i=1:length(T7)
+Q7(:,i)=const_j(Q6(1,end),Q6(2,end),-amax,j,T7(i));
+end
  
+ Q=[Q1 Q2 Q3 Q4 Q5 Q6 Q7];
  
- Q=[Q1;Q2;Q3;Q4];
- 
- 
-    
-    
-    
+ T=[T1 T2+t1 T3+t1+t2 T4+t1+t2+t3 T5+t1+t2+t3+t4 T6+t1+t2+t3+t4+t5 T7+t1+t2+t3+t4+t5+t6];
 end
 
 
+
 function Q=const_j(p0,v0,a0,j,t)
-Q=zeros(4);
+Q=zeros(4,1);
 Q(4)=j;
 Q(3)=a0+j*t;
 Q(2)=v0+a0*t+0.5*j*t^2;
