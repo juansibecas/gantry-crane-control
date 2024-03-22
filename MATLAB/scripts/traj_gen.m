@@ -1,6 +1,7 @@
 %function traj=traj_gen(profile,P0,Pf)
 clear
 close
+clc
 %=========================================================================
 profile(:,1)=(-10:0.1:20);
 N=length(profile(:,1));
@@ -98,14 +99,14 @@ plot(Pf(1),Pf(2),'x')
 %=========================================================================
 %Calculo de trayectoria
 %=========================================================================
-%disp("raise")
+disp("raise")
 [Traise,Qraise] = trap_acc_prof(P0(2),Hmax,0,0,0,5,30,500);
-%disp("lower")
+disp("lower")
 [Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,0,0,10,60,1000);
-%disp("slide")
+disp("slide")
 [Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,5,30,500);
-%disp("----")
-
+disp("----")
+%disp(Qlower(1,:))
 %figure(2)
 %plot(Tlower,Qlower(1,:))
 %figure(3)
@@ -115,46 +116,34 @@ plot(Pf(1),Pf(2),'x')
 %figure(5)
 %plot(Tlower,Qlower(4,:))
 %-----------------------------------------------------------------------
-T02x=time_between(Qslide(1,:),Tslide,P0(1),x02);
-T02y=time_between(Qraise(1,:),Trise,Hmax,H0);
+N0x=time_between(Qslide(1,:),Tslide,P0(1),x02);
+N0y=time_between(Qraise(1,:),Traise,Hmax,H0);
 
-if T02y>T02x
-    Qtroley=zeros(4,length(Traise)-ix);
+if N0y>N0x
+    Qtroley=zeros(4,length(Traise)-N0x);
     Qtroley(1,:)=Qslide(1,1);
     Qtroley=[Qtroley Qslide];
-    T=[Traise(1:length(Traise)-ix) Tslide+Traise(length(Traise)-ix)];
+    T=[Traise(1:length(Traise)-N0x) Tslide+Traise(length(Traise)-N0x)];
 else
-    Qtroley=zeros(4,length(Traise)-iy);
+    Qtroley=zeros(4,length(Traise)-N0y);
     Qtroley(1,:)=Qslide(1,1);
     Qtroley=[Qtroley Qslide];
-    T=[Traise(1:length(Traise)-iy) Tslide+Traise(length(Traise)-iy)];
+    T=[Traise(1:length(Traise)-N0y) Tslide+Traise(length(Traise)-N0y)];
 end
 %-----------------------------------------------------------------------
-iy=1;
+Nfx=time_between(Qslide(1,:),Tslide,Pf(1),xf2);
+Nfy=time_between(Qlower(1,:),Tlower,Hmax,Hf);
 
-while Qlower(1,iy)>Hf
-    iy=iy+1;
-end
-Tf2y=Tlower(iy);
-
-ix=length(Tslide);
-while Qslide(1,ix)<xf2
-    ix=ix-1;
-end
-disp(length(Tslide))
-disp(ix)
-Tf2x=Tslide(end)-Tslide(length(Tslide)-ix);
-
-if Tf2y>Tf2x
-    aux=zeros(4,length(Tlower)-iy);
+if Nfx>Nfy
+    aux=zeros(4,length(Tlower)-Nfy);
     aux(1,:)=Qslide(1,end);
     Qtroley=[Qtroley aux];
-    T=[T T(end)+Tlower(1:length(Tlower)-iy)];
+    T=[T T(end)+Tlower(1:length(Tlower)-Nfy)];
 else
-    aux=zeros(4,length(Tlower)-ix);
+    aux=zeros(4,length(Tlower)-Nfx);
     aux(1,:)=Qslide(1,end);
     Qtroley=[Qtroley aux];
-    T=[T T(end)+Tlower(1:length(Tlower)-ix)];
+    T=[T T(end)+Tlower(1:length(Tlower)-Nfx)];
 end
 %-----------------------------------------------------------------------
 Qhoist=zeros(4,length(Qtroley)-length(Qlower)-length(Qraise));
@@ -162,6 +151,10 @@ Qhoist(1,:)=Hmax;
 Qhoist=[Qraise Qhoist Qlower];
 
 plot(Qtroley(1,:),Qhoist(1,:),'g')
+figure(3)
+plot(T,Qtroley(1,:))
+hold on
+plot(T,Qhoist(1,:))
 
 
 
@@ -179,6 +172,7 @@ function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     t1=(amax-a0)/j;
     v1=v0+a0*t1+0.5*j*t1^2;
     p1=p0+v0*t1+0.5*a0*t1^2+(1/6)*j*t1^3;
+    disp("p1: "+p1)
     
  %Etapa 3 - jerk constante
     t3=amax/j;
@@ -190,12 +184,15 @@ function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     p2=p1+v1*t2+0.5*amax*t2^2;
     %etapa 3
     p3=p2+v2*t3+0.5*amax*t3^2-(1/6)*j*t3^3;
+    disp("p2: "+p2)
+    disp("p3: "+p3)
  
  %Etapa 7 - jerk constante
     af=0;
     t7=(af-(-amax))/j;
     v6=vf+amax*t7-0.5*j*t7^2;
     p6=pf-v6*t7+0.5*amax*t7^2-(1/6)*j*t7^3;
+    disp("p6: "+p6)
     
  
  %Etapa 5 - jerk constante
@@ -208,6 +205,8 @@ function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     p5=p6-v5*t6+0.5*amax*t6^2;
     %etapa 5
     p4=p5-vmax*t5+(1/6)*j*t6^3;
+    disp("p5: "+p5)
+    disp("p4: "+p4)
 
  %Etapa 4 - velocidad constante
     t4=(p4-p3)/vmax;
@@ -258,6 +257,13 @@ end
 for i=1:length(T7)
 Q7(:,i)=const_j(Q6(1,end),Q6(2,end),-amax,j,T7(i));
 end
+
+disp("-p1: "+Q1(1,end))
+disp("-p2: "+Q2(1,end))
+disp("-p3: "+Q3(1,end))
+disp("-p4: "+Q4(1,end))
+disp("-p5: "+Q5(1,end))
+disp("-p6: "+Q6(1,end))
  
  Q=[Q1 Q2 Q3 Q4 Q5 Q6 Q7];
  
@@ -274,38 +280,25 @@ Q(2)=v0+a0*t+0.5*j*t^2;
 Q(1)=p0+v0*t+0.5*a0*t^2+(1/6)*j*t^3;
 end
 
-function t=time_between(Q,T,x0,x1)
+function num_puntos = time_between(Q, ~, x0, x1)
+    % Encontrar el índice más cercano a x0 en Q
+    [~, i0] = min(abs(Q - x0));
     
-    if Q(1)<Q(end)
-        i0=1;
-        while Q(i0)<x0
-           i0=i0+1;
-           t0=T(i0);
-        end
-        i1=1;
-        while Q(i1)<x1
-           i1=i1+1;
-           t1=T(i1);
-        end
-        t=abs(t1-t0);
-        
-    else
-        i0=length(Q);
-        while Q(i0)<x0
-           i0=i0+1;
-           t0=T(i0);
-        end
-        i1=length(Q);
-        while Q(i1)<x1
-           i1=i1+1;
-           t1=T(i1);
-        end
-        t=abs(t0-t1);
-        
+    % Verificar si x0 es menor o mayor que el valor correspondiente en Q
+    if x0 < Q(i0)
+        i0 = i0 - 1;
     end
     
-
-
+    % Encontrar el índice más cercano a x1 en Q
+    [~, i1] = min(abs(Q - x1));
+    
+    % Verificar si x1 es menor o mayor que el valor correspondiente en Q
+    if x1 < Q(i1)
+        i1 = i1 - 1;
+    end
+    
+    % Calcular la cantidad de puntos entre las posiciones x0 y x1
+    num_puntos = abs(i1 - i0);
 end
 
 
