@@ -98,10 +98,13 @@ plot(Pf(1),Pf(2),'x')
 %=========================================================================
 %Calculo de trayectoria
 %=========================================================================
-
+%disp("raise")
 [Traise,Qraise] = trap_acc_prof(P0(2),Hmax,0,0,0,5,30,500);
-[Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,0,0,5,30,500);
+%disp("lower")
+[Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,0,0,10,60,1000);
+%disp("slide")
 [Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,5,30,500);
+%disp("----")
 
 %figure(2)
 %plot(Tlower,Qlower(1,:))
@@ -111,17 +114,9 @@ plot(Pf(1),Pf(2),'x')
 %plot(Tlower,Qlower(3,:))
 %figure(5)
 %plot(Tlower,Qlower(4,:))
-
-iy=length(Traise);
-while Qraise(1,iy)>H0
-    iy=iy-1;
-end
-T02y=Tlower(end)-Tlower(iy);
-ix=1;
-while Qslide(1,ix)<x02
-    ix=ix+1;
-end
-T02x=Tslide(ix);
+%-----------------------------------------------------------------------
+T02x=time_between(Qslide(1,:),Tslide,P0(1),x02);
+T02y=time_between(Qraise(1,:),Trise,Hmax,H0);
 
 if T02y>T02x
     Qtroley=zeros(4,length(Traise)-ix);
@@ -134,6 +129,39 @@ else
     Qtroley=[Qtroley Qslide];
     T=[Traise(1:length(Traise)-iy) Tslide+Traise(length(Traise)-iy)];
 end
+%-----------------------------------------------------------------------
+iy=1;
+
+while Qlower(1,iy)>Hf
+    iy=iy+1;
+end
+Tf2y=Tlower(iy);
+
+ix=length(Tslide);
+while Qslide(1,ix)<xf2
+    ix=ix-1;
+end
+disp(length(Tslide))
+disp(ix)
+Tf2x=Tslide(end)-Tslide(length(Tslide)-ix);
+
+if Tf2y>Tf2x
+    aux=zeros(4,length(Tlower)-iy);
+    aux(1,:)=Qslide(1,end);
+    Qtroley=[Qtroley aux];
+    T=[T T(end)+Tlower(1:length(Tlower)-iy)];
+else
+    aux=zeros(4,length(Tlower)-ix);
+    aux(1,:)=Qslide(1,end);
+    Qtroley=[Qtroley aux];
+    T=[T T(end)+Tlower(1:length(Tlower)-ix)];
+end
+%-----------------------------------------------------------------------
+Qhoist=zeros(4,length(Qtroley)-length(Qlower)-length(Qraise));
+Qhoist(1,:)=Hmax;
+Qhoist=[Qraise Qhoist Qlower];
+
+plot(Qtroley(1,:),Qhoist(1,:),'g')
 
 
 
@@ -142,7 +170,11 @@ end
 
 
 function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
-    
+    if p0>pf
+        vmax=-vmax;
+        amax=-amax;
+        j=-j;    
+    end
  %Etapa 1 - jerk constante 
     t1=(amax-a0)/j;
     v1=v0+a0*t1+0.5*j*t1^2;
@@ -164,6 +196,7 @@ function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     t7=(af-(-amax))/j;
     v6=vf+amax*t7-0.5*j*t7^2;
     p6=pf-v6*t7+0.5*amax*t7^2-(1/6)*j*t7^3;
+    
  
  %Etapa 5 - jerk constante
     t5=amax/j;
@@ -175,11 +208,11 @@ function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
     p5=p6-v5*t6+0.5*amax*t6^2;
     %etapa 5
     p4=p5-vmax*t5+(1/6)*j*t6^3;
-    
-    
+
  %Etapa 4 - velocidad constante
-    t4=abs(p4-p3)/vmax;
+    t4=(p4-p3)/vmax;
     
+
 dt=0.001;
 T1=0:dt:t1;
 T2=0:dt:t2;
@@ -239,9 +272,41 @@ Q(4)=j;
 Q(3)=a0+j*t;
 Q(2)=v0+a0*t+0.5*j*t^2;
 Q(1)=p0+v0*t+0.5*a0*t^2+(1/6)*j*t^3;
-
 end
 
+function t=time_between(Q,T,x0,x1)
+    
+    if Q(1)<Q(end)
+        i0=1;
+        while Q(i0)<x0
+           i0=i0+1;
+           t0=T(i0);
+        end
+        i1=1;
+        while Q(i1)<x1
+           i1=i1+1;
+           t1=T(i1);
+        end
+        t=abs(t1-t0);
+        
+    else
+        i0=length(Q);
+        while Q(i0)<x0
+           i0=i0+1;
+           t0=T(i0);
+        end
+        i1=length(Q);
+        while Q(i1)<x1
+           i1=i1+1;
+           t1=T(i1);
+        end
+        t=abs(t0-t1);
+        
+    end
+    
+
+
+end
 
 
 
