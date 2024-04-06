@@ -99,12 +99,12 @@ plot(Pf(1),Pf(2),'x')
 %=========================================================================
 %Calculo de trayectoria
 %=========================================================================
-disp("raise")
+disp("raise---------------------------")
 [Traise,Qraise] = trap_acc_prof(P0(2),Hmax,0,0,0,5,30,500);
-disp("lower")
+disp("lower-------------------------------")
 [Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,0,0,10,60,1000);
-disp("slide")
-[Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,5,30,500);
+disp("slide----------------------")
+[Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,5,20,1000);
 disp("----")
 %disp(Qlower(1,:))
 %figure(2)
@@ -162,57 +162,60 @@ plot(T,Qhoist(1,:))
 
 
 
-function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, j)
+function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, jk)
     if p0>pf
         vmax=-vmax;
         amax=-amax;
-        j=-j;    
+        jk=-jk;    
     end
  %Etapa 1 - jerk constante 
-    t1=(amax-a0)/j;
-    v1=v0+a0*t1+0.5*j*t1^2;
-    p1=p0+v0*t1+0.5*a0*t1^2+(1/6)*j*t1^3;
-    disp("p1: "+p1)
-    
- %Etapa 3 - jerk constante
-    t3=amax/j;
-    v2=vmax-amax*t3+0.5*j*t3^2;
+    t1=(amax-a0)/jk;
+    v1=v0+a0*t1+0.5*jk*t1^2;
+    p1=p0+v0*t1+0.5*a0*t1^2+(1/6)*jk*t1^3;
+
+ %Etapa 3 - jkerk constante
+    t3=amax/jk;
+    v2=vmax-amax*t3+0.5*jk*t3^2;
     %p3=?
     
  %Etapa 2 - aceleracion constante
     t2=(v2-v1)/amax;
     p2=p1+v1*t2+0.5*amax*t2^2;
     %etapa 3
-    p3=p2+v2*t3+0.5*amax*t3^2-(1/6)*j*t3^3;
-    disp("p2: "+p2)
-    disp("p3: "+p3)
+    p3=p2+v2*t3+0.5*amax*t3^2-(1/6)*jk*t3^3;
  
  %Etapa 7 - jerk constante
     af=0;
-    t7=(af-(-amax))/j;
-    v6=vf+amax*t7-0.5*j*t7^2;
-    p6=pf-v6*t7+0.5*amax*t7^2-(1/6)*j*t7^3;
-    disp("p6: "+p6)
-    
+    t7=(af-(-amax))/jk;
+    v6=vf+amax*t7-0.5*jk*t7^2;
+    p6=pf-v6*t7+0.5*amax*t7^2-(1/6)*jk*t7^3; 
  
  %Etapa 5 - jerk constante
-    t5=amax/j;
-    v5=vmax-0.5*j*t5^2;
+    t5=amax/jk;
+    v5=vmax-0.5*jk*t5^2;
     %p4=?
     
  %Etapa 6 - aceleracion constante
     t6=(v6-v5)/-amax;
     p5=p6-v5*t6+0.5*amax*t6^2;
     %etapa 5
-    p4=p5-vmax*t5+(1/6)*j*t6^3;
-    disp("p5: "+p5)
-    disp("p4: "+p4)
+    p4=p5-vmax*t5+(1/6)*jk*t5^3;
 
  %Etapa 4 - velocidad constante
     t4=(p4-p3)/vmax;
     
+    
+    disp("p0: "+p0)
+    disp("p1: "+p1)
+    disp("p2: "+p2)
+    disp("p3: "+p3)
+    disp("p4: "+p4)
+    disp("p5: "+p5)
+    disp("p6: "+p6)
+    disp("pf: "+pf)
 
-dt=0.001;
+
+dt=0.00001;
 T1=0:dt:t1;
 T2=0:dt:t2;
 T3=0:dt:t3;
@@ -227,35 +230,28 @@ Q4=zeros(4,length(T4));
 Q5=zeros(4,length(T5));
 Q6=zeros(4,length(T6));
 Q7=zeros(4,length(T7));
-disp("--------------")
-disp(t1)
-disp(t2)
-disp(t3)
-disp(t4)
-disp(t5)
-disp(t6)
-disp(t7)
+
 
 for i=1:length(T1)
-Q1(:,i)=const_j(p0,v0,a0,j,T1(i));
+Q1(:,i)=const_j(p0,v0,a0,jk,T1(i));
 end
 for i=1:length(T2)
 Q2(:,i)=const_j(Q1(1,end),Q1(2,end),amax,0,T2(i));
 end
 for i=1:length(T3)
-Q3(:,i)=const_j(Q2(1,end),Q2(2,end),amax,-j,T3(i));
+Q3(:,i)=const_j(Q2(1,end),Q2(2,end),amax,-jk,T3(i));
 end
 for i=1:length(T4)
 Q4(:,i)=const_j(Q3(1,end),vmax,0,0,T4(i));
 end
 for i=1:length(T5)
-Q5(:,i)=const_j(Q4(1,end),vmax,0,-j,T5(i));
+Q5(:,i)=const_j(Q4(1,end),vmax,0,-jk,T5(i));
 end
 for i=1:length(T6)
 Q6(:,i)=const_j(Q5(1,end),Q5(2,end),-amax,0,T6(i));
 end
 for i=1:length(T7)
-Q7(:,i)=const_j(Q6(1,end),Q6(2,end),-amax,j,T7(i));
+Q7(:,i)=const_j(Q6(1,end),Q6(2,end),-amax,jk,T7(i));
 end
 
 disp("-p1: "+Q1(1,end))
@@ -264,20 +260,24 @@ disp("-p3: "+Q3(1,end))
 disp("-p4: "+Q4(1,end))
 disp("-p5: "+Q5(1,end))
 disp("-p6: "+Q6(1,end))
+disp("-p7: "+Q7(1,end))
  
  Q=[Q1 Q2 Q3 Q4 Q5 Q6 Q7];
  
  T=[T1 T2+t1 T3+t1+t2 T4+t1+t2+t3 T5+t1+t2+t3+t4 T6+t1+t2+t3+t4+t5 T7+t1+t2+t3+t4+t5+t6];
+
 end
 
 
 
-function Q=const_j(p0,v0,a0,j,t)
+function Q=const_j(p0,v0,a0,jk,t)
 Q=zeros(4,1);
-Q(4)=j;
-Q(3)=a0+j*t;
-Q(2)=v0+a0*t+0.5*j*t^2;
-Q(1)=p0+v0*t+0.5*a0*t^2+(1/6)*j*t^3;
+Q(4)=jk;
+Q(3)=a0+jk*t;
+Q(2)=v0+a0*t+0.5*jk*t^2;
+Q(1)=p0+v0*t+0.5*a0*t^2+(1/6)*jk*t^3;
+
+ 
 end
 
 function num_puntos = time_between(Q, ~, x0, x1)
