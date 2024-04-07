@@ -16,164 +16,221 @@ for i=1:N
 end    
 
 Pf=[-5 2];
-P0=[-7 4];
+P0=[14 4];
 hseg=3;
 xbox=3;
-%=========================================================================
-%Calculo de puntos
-%=========================================================================
+jh=1000;
+jt=1000;
 
-%recortar profile entre x0 y xf (profile_r)
-profile_r=subprofile(profile,P0(1),Pf(1));
 
-%Hmax es igual a la altula maxima en profile_r mas una altura de seguridad "h_seg"
-Hmax=max(profile_r(:,2))+hseg;
+[T,Qhoist,Qtroley]=Traj_gen(profile,P0,Pf,3,2,5,5,10,10,50,50);
 
-%H0 es la altura que parte de Y0 y termina cuando el profile es superado en
-%un entorno de 1.5 xbox de X0 mas h_seg.
-H0=max(subprofile(profile,P0(1)-xbox*1.5,P0(1)+xbox*1.5))+hseg;
-H0=H0(2);
-%H1 lo mismo
-Hf=max(subprofile(profile,Pf(1)-xbox*1.5,Pf(1)+xbox*1.5))+hseg;
-Hf=Hf(2);
-%se traza una recta entre xo y el se la hace "tangente" (que solo toca un 
-%punto del profile)
 
-if Pf(1)>P0(1)
-    xl=P0(1);
-    xh=Pf(1);
-    Hl=H0;
-    Hh=Hf;
-else
-    xh=P0(1);
-    xl=Pf(1);
-    Hh=H0;
-    Hl=Hf;
-end
-
-mmax=0;
-prof=subprofile(profile,xl+xbox*0.5,inf);
-for i=1:length(prof)
-    if prof(i,2)+hseg<Hl
-        continue
-    end
-    if (prof(i,2)+hseg-Hl)/(prof(i,1)-xbox-xl(1))>mmax
-        mmax=(prof(i,2)-Hl+hseg)/(prof(i,1)-xl(1)-xbox);
-    end
-end
-DXl=(Hmax-Hl)/mmax;
-
-mmax=0;
-prof=subprofile(profile,xh-xbox*0.5,-inf);
-for i=1:length(prof)
-    if prof(i,2)+hseg<Hh
-        continue
-    end
-    if (prof(i,2)+hseg-Hh)/(prof(i,1)+xbox-xh(1))<mmax
-        mmax=(prof(i,2)-Hh+hseg)/(prof(i,1)-xh(1)+xbox);
-    end
-end
-DXh=(Hmax-Hh)/mmax;
-
-if Pf(1)>P0(1)
-    x02=P0(1)+DXl;
-    xf2=Pf(1)+DXh;
-else
-    x02=P0(1)+DXh;
-    xf2=Pf(1)+DXl;
-end
-
-%graficar
 figure(10)
 plot(profile(:,1),profile(:,2))
 hold on
-plot(profile_r(:,1),profile_r(:,2))
-plot(x02,Hmax,'x')
-plot(xf2,Hmax,'x')
-plot(P0(1),H0,'x')
-plot(Pf(1),Hf,'x')
-plot(P0(1),P0(2),'x')
-plot(Pf(1),Pf(2),'x')
-
-%end
-%=========================================================================
-%Calculo de trayectoria
-%=========================================================================
-%trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax, jk)
-disp("raise---------------------------")
-[Traise,Qraise] = trap_acc_prof(P0(2),Hmax,0,0,0,0,5,30,500);
-disp("lower-------------------------------")
-[Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,0,0,0,10,60,1000);
-disp("slide----------------------")
-[Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,10,20,25,150,1000);
-disp("----")
-
-% Configuración de los subplots
-num_plots = size(Qslide, 1); % Número de vectores en Qslide
-num_rows = ceil(sqrt(num_plots)); % Número de filas de subplots
-num_cols = ceil(num_plots / num_rows); % Número de columnas de subplots
-
-% Crear figura para subplots
-figure;
-
-% Plotear los vectores Qslide utilizando subplots
-for i = 1:num_plots
-    subplot(num_rows, num_cols, i);
-    plot(Tslide, Qslide(i, :));
-    title(['Qslide(', num2str(i), ', :)']);
-    xlabel('Tiempo');
-    ylabel('Qslide');
-end
-%disp(Qlower(1,:))
-%figure(2)
-%plot(Tlower,Qlower(1,:))
-%figure(3)
-%plot(Tlower,Qlower(2,:))
-%figure(4)
-%plot(Tlower,Qlower(3,:))
-%figure(5)
-%plot(Tlower,Qlower(4,:))
-%-----------------------------------------------------------------------
-N0x=time_between(Qslide(1,:),Tslide,P0(1),x02);
-N0y=time_between(Qraise(1,:),Traise,Hmax,H0);
-
-if N0y>N0x
-    Qtroley=zeros(4,length(Traise)-N0x);
-    Qtroley(1,:)=Qslide(1,1);
-    Qtroley=[Qtroley Qslide];
-    T=[Traise(1:length(Traise)-N0x) Tslide+Traise(length(Traise)-N0x)];
-else
-    Qtroley=zeros(4,length(Traise)-N0y);
-    Qtroley(1,:)=Qslide(1,1);
-    Qtroley=[Qtroley Qslide];
-    T=[Traise(1:length(Traise)-N0y) Tslide+Traise(length(Traise)-N0y)];
-end
-%-----------------------------------------------------------------------
-Nfx=time_between(Qslide(1,:),Tslide,Pf(1),xf2);
-Nfy=time_between(Qlower(1,:),Tlower,Hmax,Hf);
-
-if Nfx>Nfy
-    aux=zeros(4,length(Tlower)-Nfy);
-    aux(1,:)=Qslide(1,end);
-    Qtroley=[Qtroley aux];
-    T=[T T(end)+Tlower(1:length(Tlower)-Nfy)];
-else
-    aux=zeros(4,length(Tlower)-Nfx);
-    aux(1,:)=Qslide(1,end);
-    Qtroley=[Qtroley aux];
-    T=[T T(end)+Tlower(1:length(Tlower)-Nfx)];
-end
-%-----------------------------------------------------------------------
-Qhoist=zeros(4,length(Qtroley)-length(Qlower)-length(Qraise));
-Qhoist(1,:)=Hmax;
-Qhoist=[Qraise Qhoist Qlower];
-figure(10)
 plot(Qtroley(1,:),Qhoist(1,:),'g')
-figure(3)
-plot(T,Qtroley(1,:))
-hold on
-plot(T,Qhoist(1,:))
+% figure(3)
+% plot(T,Qtroley(1,:))
+% hold on
+% plot(T,Qhoist(1,:))
 
+function [T,Qhoist,Qtroley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,amaxh,amaxt)
+% Esta función genera una trayectoria para un sistema de elevación, como un
+% montacargas o una grúa, en función de un perfil de elevación dado. 
+% La trayectoria contempla aceleración con perfil trapeziodal.
+% Busca generar una trayectoria eficiente donde evite los obstaculos con un
+% marquen dado.
+% Además admite casos donde la la aceleracion maxima o la velocidad maxima sean
+% mayores a las posible para un determinado recorrido. Estos casos de
+% diminuye automaticamente su valor para cumplir con los otros
+% requirimientos.
+%
+% Argumentos de entrada:
+% - profile: matriz que contiene el perfil de elevación. Cada fila representa
+%   un punto en el perfil, donde la primera columna contiene las coordenadas
+%   horizontales y la segunda columna contiene las alturas correspondientes.
+% - P0: punto inicial de la trayectoria, dado como [x0, y0].
+% - Pf: punto final de la trayectoria, dado como [xf, yf].
+% - v0h: velocidad inicial de elevación.
+% - vfh: velocidad final de elevación.
+% - vmaxh: velocidad máxima de elevación.
+% - vmaxt: velocidad máxima de desplazamiento horizontal.
+% - a0h: aceleración inicial de elevación.
+% - afh: aceleración final de elevación.
+% - amaxh: aceleración máxima de elevación.
+% - amaxt: aceleración máxima de desplazamiento horizontal.
+%
+% Las siguientes variables se toman del espacio de trabajo (workspace):
+% - hseg: altura de seguridad adicional a considerar.
+% - xbox: distancia horizontal alrededor de los puntos iniciales y finales
+%   para buscar el perfil.
+% - jh: jerk máximo permitido en la elevación.
+% - jt: jerk máximo permitido en el desplazamiento horizontal.
+%
+% Argumentos de salida:
+% - T: vector de tiempo de la trayectoria generada.
+% - Qhoist: matriz que describe la trayectoria de elevación generada.
+%   Siento las filas Q(1,:) la posición, Q(2,:) la velocidad,
+%   Q(3,:)aceleracion y Q(4,:) el jerk
+% - Qtroley: matriz que describe la trayectoria de desplazamiento horizontal
+%   generada. misma estructura que Qtroley
+    hseg = evalin('caller', 'hseg');
+    xbox = evalin('caller', 'xbox');
+    jh = evalin('caller', 'jh');
+    jt = evalin('caller', 'jt');
+    
+
+
+    %=========================================================================
+    %Calculo de puntos
+    %=========================================================================
+    %recortar profile entre x0 y xf (profile_r)
+    profile_r=subprofile(profile,P0(1),Pf(1));
+
+    %Hmax es igual a la altula maxima en profile_r mas una altura de seguridad "h_seg"
+    Hmax=max(profile_r(:,2))+hseg;
+
+    %H0 es la altura que parte de Y0 y termina cuando el profile es superado en
+    %un entorno de 1.5 xbox de X0 mas h_seg.
+    H0=max(subprofile(profile,P0(1)-xbox*1.5,P0(1)+xbox*1.5))+hseg;
+    H0=H0(2);
+    %H1 lo mismo
+    Hf=max(subprofile(profile,Pf(1)-xbox*1.5,Pf(1)+xbox*1.5))+hseg;
+    Hf=Hf(2);
+    %se traza una recta entre xo y el se la hace "tangente" (que solo toca un 
+    %punto del profile)
+
+    if Pf(1)>P0(1)
+        xl=P0(1);
+        xh=Pf(1);
+        Hl=H0;
+        Hh=Hf;
+    else
+        xh=P0(1);
+        xl=Pf(1);
+        Hh=H0;
+        Hl=Hf;
+    end
+
+    mmax=0;
+    prof=subprofile(profile,xl+xbox*0.5,inf);
+    for i=1:length(prof)
+        if prof(i,2)+hseg<Hl
+            continue
+        end
+        if (prof(i,2)+hseg-Hl)/(prof(i,1)-xbox-xl(1))>mmax
+            mmax=(prof(i,2)-Hl+hseg)/(prof(i,1)-xl(1)-xbox);
+        end
+    end
+    DXl=(Hmax-Hl)/mmax;
+
+    mmax=0;
+    prof=subprofile(profile,xh-xbox*0.5,-inf);
+    for i=1:length(prof)
+        if prof(i,2)+hseg<Hh
+            continue
+        end
+        if (prof(i,2)+hseg-Hh)/(prof(i,1)+xbox-xh(1))<mmax
+            mmax=(prof(i,2)-Hh+hseg)/(prof(i,1)-xh(1)+xbox);
+        end
+    end
+    DXh=(Hmax-Hh)/mmax;
+
+    if Pf(1)>P0(1)
+        x02=P0(1)+DXl;
+        xf2=Pf(1)+DXh;
+    else
+        x02=P0(1)+DXh;
+        xf2=Pf(1)+DXl;
+    end
+
+    %graficar
+    %figure(10)
+    %plot(profile(:,1),profile(:,2))
+    %hold on
+    %plot(profile_r(:,1),profile_r(:,2))
+    %plot(x02,Hmax,'x')
+    %plot(xf2,Hmax,'x')
+    %plot(P0(1),H0,'x')
+    %plot(Pf(1),Hf,'x')
+    %plot(P0(1),P0(2),'x')
+    %plot(Pf(1),Pf(2),'x')
+
+    %end
+    %=========================================================================
+    %Calculo de trayectoria
+    %=========================================================================
+    %trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax, jk)
+    %disp("raise---------------------------")
+    [Traise,Qraise] = trap_acc_prof(P0(2),Hmax,v0h,0,a0h,0,vmaxh,amaxh,jh);
+    %disp("lower-------------------------------")
+    [Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,vfh,0,afh,vmaxh,amaxh,jh);
+    %disp("slide----------------------")
+    [Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,0,vmaxt,amaxt,jt);
+    %disp("----")
+
+    % Configuración de los subplots
+%     num_plots = size(Qslide, 1); % Número de vectores en Qslide
+%     num_rows = ceil(sqrt(num_plots)); % Número de filas de subplots
+%     num_cols = ceil(num_plots / num_rows); % Número de columnas de subplots
+
+    % Crear figura para subplots
+%     figure;
+% 
+%     % Plotear los vectores Qslide utilizando subplots
+%     for i = 1:num_plots
+%         subplot(num_rows, num_cols, i);
+%         plot(Tslide, Qslide(i, :));
+%         title(['Qslide(', num2str(i), ', :)']);
+    %    xlabel('Tiempo');
+    %    ylabel('Qslide');
+    %end
+    %disp(Qlower(1,:))
+    %figure(2)
+    %plot(Tlower,Qlower(1,:))
+    %figure(3)
+    %plot(Tlower,Qlower(2,:))
+    %figure(4)
+    %plot(Tlower,Qlower(3,:))
+    %figure(5)
+    %plot(Tlower,Qlower(4,:))
+    %-----------------------------------------------------------------------
+    N0x=time_between(Qslide(1,:),Tslide,P0(1),x02);
+    N0y=time_between(Qraise(1,:),Traise,Hmax,H0);
+
+    if N0y>N0x
+        Qtroley=zeros(4,length(Traise)-N0x);
+        Qtroley(1,:)=Qslide(1,1);
+        Qtroley=[Qtroley Qslide];
+        T=[Traise(1:length(Traise)-N0x) Tslide+Traise(length(Traise)-N0x)];
+    else
+        Qtroley=zeros(4,length(Traise)-N0y);
+        Qtroley(1,:)=Qslide(1,1);
+        Qtroley=[Qtroley Qslide];
+        T=[Traise(1:length(Traise)-N0y) Tslide+Traise(length(Traise)-N0y)];
+    end
+    %-----------------------------------------------------------------------
+    Nfx=time_between(Qslide(1,:),Tslide,Pf(1),xf2);
+    Nfy=time_between(Qlower(1,:),Tlower,Hmax,Hf);
+
+    if Nfx>Nfy
+        aux=zeros(4,length(Tlower)-Nfy);
+        aux(1,:)=Qslide(1,end);
+        Qtroley=[Qtroley aux];
+        T=[T T(end)+Tlower(1:length(Tlower)-Nfy)];
+    else
+        aux=zeros(4,length(Tlower)-Nfx);
+        aux(1,:)=Qslide(1,end);
+        Qtroley=[Qtroley aux];
+        T=[T T(end)+Tlower(1:length(Tlower)-Nfx)];
+    end
+    
+    %-----------------------------------------------------------------------
+    Qhoist=zeros(4,length(Qtroley)-length(Qlower)-length(Qraise));
+    Qhoist(1,:)=Hmax;
+    Qhoist=[Qraise Qhoist Qlower];
+end
 
 
 
@@ -190,14 +247,6 @@ function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax, jk)
     amaxf=amax;
   
     [t1,t2,t3,t4,t5,t6,t7]=times_trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax0, amaxf, jk);
-    
-    disp("t1: "+t1)
-    disp("t2: "+t2)
-    disp("t3: "+t3)
-    disp("t4: "+t4)
-    disp("t5: "+t5)
-    disp("t6: "+t6)
-    disp("t7: "+t7)
     
 
         while t2<0
@@ -232,15 +281,6 @@ function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax, jk)
             [t1,t2,t3,t4,t5,t6,t7]=times_trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax0, amaxf, jk);   
         end
 
-
-
-    disp("t1: "+t1)
-    disp("t2: "+t2)
-    disp("t3: "+t3)
-    disp("t4: "+t4)
-    disp("t5: "+t5)
-    disp("t6: "+t6)
-    disp("t7: "+t7)
 
 
 dt=0.00001;
