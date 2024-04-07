@@ -1,6 +1,6 @@
 %function traj=traj_gen(profile,P0,Pf)
 clear
-close
+close all
 clc
 %=========================================================================
 profile(:,1)=(-10:0.1:20);
@@ -16,7 +16,7 @@ for i=1:N
 end    
 
 Pf=[-5 2];
-P0=[15 4];
+P0=[-7 4];
 hseg=3;
 xbox=3;
 %=========================================================================
@@ -99,13 +99,31 @@ plot(Pf(1),Pf(2),'x')
 %=========================================================================
 %Calculo de trayectoria
 %=========================================================================
+%trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax, jk)
 disp("raise---------------------------")
-[Traise,Qraise] = trap_acc_prof(P0(2),Hmax,0,0,0,5,30,500);
+[Traise,Qraise] = trap_acc_prof(P0(2),Hmax,0,0,0,0,5,30,500);
 disp("lower-------------------------------")
-[Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,0,0,10,60,1000);
+[Tlower,Qlower] = trap_acc_prof(Hmax,Pf(2),0,0,0,0,10,60,1000);
 disp("slide----------------------")
-[Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,5,20,1000);
+[Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,10,20,25,150,1000);
 disp("----")
+
+% Configuración de los subplots
+num_plots = size(Qslide, 1); % Número de vectores en Qslide
+num_rows = ceil(sqrt(num_plots)); % Número de filas de subplots
+num_cols = ceil(num_plots / num_rows); % Número de columnas de subplots
+
+% Crear figura para subplots
+figure;
+
+% Plotear los vectores Qslide utilizando subplots
+for i = 1:num_plots
+    subplot(num_rows, num_cols, i);
+    plot(Tslide, Qslide(i, :));
+    title(['Qslide(', num2str(i), ', :)']);
+    xlabel('Tiempo');
+    ylabel('Qslide');
+end
 %disp(Qlower(1,:))
 %figure(2)
 %plot(Tlower,Qlower(1,:))
@@ -149,7 +167,7 @@ end
 Qhoist=zeros(4,length(Qtroley)-length(Qlower)-length(Qraise));
 Qhoist(1,:)=Hmax;
 Qhoist=[Qraise Qhoist Qlower];
-
+figure(10)
 plot(Qtroley(1,:),Qhoist(1,:),'g')
 figure(3)
 plot(T,Qtroley(1,:))
@@ -162,67 +180,79 @@ plot(T,Qhoist(1,:))
 
 
 
-function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, vmax, amax, jk)
+function [T,Q] = trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax, jk)
     if p0>pf
         vmax=-vmax;
         amax=-amax;
         jk=-jk;    
     end
- %Etapa 1 - jerk constante 
-    t1=(amax-a0)/jk;
-    v1=v0+a0*t1+0.5*jk*t1^2;
-    p1=p0+v0*t1+0.5*a0*t1^2+(1/6)*jk*t1^3;
+    amax0=amax;
+    amaxf=amax;
+  
+    [t1,t2,t3,t4,t5,t6,t7]=times_trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax0, amaxf, jk);
+    
+    disp("t1: "+t1)
+    disp("t2: "+t2)
+    disp("t3: "+t3)
+    disp("t4: "+t4)
+    disp("t5: "+t5)
+    disp("t6: "+t6)
+    disp("t7: "+t7)
+    
 
- %Etapa 3 - jkerk constante
-    t3=amax/jk;
-    v2=vmax-amax*t3+0.5*jk*t3^2;
-    %p3=?
-    
- %Etapa 2 - aceleracion constante
-    t2=(v2-v1)/amax;
-    p2=p1+v1*t2+0.5*amax*t2^2;
-    %etapa 3
-    p3=p2+v2*t3+0.5*amax*t3^2-(1/6)*jk*t3^3;
- 
- %Etapa 7 - jerk constante
-    af=0;
-    t7=(af-(-amax))/jk;
-    v6=vf+amax*t7-0.5*jk*t7^2;
-    p6=pf-v6*t7+0.5*amax*t7^2-(1/6)*jk*t7^3; 
- 
- %Etapa 5 - jerk constante
-    t5=amax/jk;
-    v5=vmax-0.5*jk*t5^2;
-    %p4=?
-    
- %Etapa 6 - aceleracion constante
-    t6=(v6-v5)/-amax;
-    p5=p6-v5*t6+0.5*amax*t6^2;
-    %etapa 5
-    p4=p5-vmax*t5+(1/6)*jk*t5^3;
+        while t2<0
+            amax0=amax0*0.99;
+            [t1,t2,t3,t4,t5,t6,t7]=times_trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax0, amaxf, jk);
+        end
+        if t2<=0
+            a=-1/jk;
+            c=vmax-v0+a0^2/jk/2;
+            amax0=sign(amax)*abs(sqrt(- 4 * a * c) / 2 / a);
+            [t1,t2,t3,t4,t5,t6,t7]=times_trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax0, amaxf, jk);   
+        end
 
- %Etapa 4 - velocidad constante
-    t4=(p4-p3)/vmax;
-    
-    
-    disp("p0: "+p0)
-    disp("p1: "+p1)
-    disp("p2: "+p2)
-    disp("p3: "+p3)
-    disp("p4: "+p4)
-    disp("p5: "+p5)
-    disp("p6: "+p6)
-    disp("pf: "+pf)
+        if t6<=0
+            a=1/jk;
+            c=vf-vmax-af^2/jk/2;
+            amaxf=sign(amax)*abs(sqrt(- 4 * a * c) / 2 / a);
+            [t1,t2,t3,t4,t5,t6,t7]=times_trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax0, amaxf, jk);   
+        end
+        
+        while t2<0 || t6<0 ||t4<0
+            if t2<0
+                amax0=amax0*0.97;
+            end
+            if t6<0
+                amaxf=amaxf*0.97;
+            end
+            if t4<0
+                vmax=vmax*0.97;
+            end
+                
+            [t1,t2,t3,t4,t5,t6,t7]=times_trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax0, amaxf, jk);   
+        end
+
+
+
+    disp("t1: "+t1)
+    disp("t2: "+t2)
+    disp("t3: "+t3)
+    disp("t4: "+t4)
+    disp("t5: "+t5)
+    disp("t6: "+t6)
+    disp("t7: "+t7)
 
 
 dt=0.00001;
-T1=0:dt:t1;
-T2=0:dt:t2;
-T3=0:dt:t3;
-T4=0:dt:t4;
-T5=0:dt:t5;
-T6=0:dt:t6;
-T7=0:dt:t7;
+T1=0:sign(t1)*dt:t1;
+T2=0:sign(t2)*dt:t2;
+T3=0:sign(t3)*dt:t3;
+T4=0:sign(t4)*dt:t4;
+T5=0:sign(t5)*dt:t5;
+T6=0:sign(t6)*dt:t6;
+T7=0:sign(t7)*dt:t7;
+
+
 Q1=zeros(4,length(T1));
 Q2=zeros(4,length(T2));
 Q3=zeros(4,length(T3));
@@ -236,10 +266,11 @@ for i=1:length(T1)
 Q1(:,i)=const_j(p0,v0,a0,jk,T1(i));
 end
 for i=1:length(T2)
-Q2(:,i)=const_j(Q1(1,end),Q1(2,end),amax,0,T2(i));
+Q2(:,i)=const_j(Q1(1,end),Q1(2,end),amax0,0,T2(i));
 end
+
 for i=1:length(T3)
-Q3(:,i)=const_j(Q2(1,end),Q2(2,end),amax,-jk,T3(i));
+Q3(:,i)=const_j(Q2(1,end),Q2(2,end),amax0,-jk,T3(i));
 end
 for i=1:length(T4)
 Q4(:,i)=const_j(Q3(1,end),vmax,0,0,T4(i));
@@ -248,19 +279,11 @@ for i=1:length(T5)
 Q5(:,i)=const_j(Q4(1,end),vmax,0,-jk,T5(i));
 end
 for i=1:length(T6)
-Q6(:,i)=const_j(Q5(1,end),Q5(2,end),-amax,0,T6(i));
+Q6(:,i)=const_j(Q5(1,end),Q5(2,end),-amaxf,0,T6(i));
 end
 for i=1:length(T7)
-Q7(:,i)=const_j(Q6(1,end),Q6(2,end),-amax,jk,T7(i));
+Q7(:,i)=const_j(Q6(1,end),Q6(2,end),-amaxf,jk,T7(i));
 end
-
-disp("-p1: "+Q1(1,end))
-disp("-p2: "+Q2(1,end))
-disp("-p3: "+Q3(1,end))
-disp("-p4: "+Q4(1,end))
-disp("-p5: "+Q5(1,end))
-disp("-p6: "+Q6(1,end))
-disp("-p7: "+Q7(1,end))
  
  Q=[Q1 Q2 Q3 Q4 Q5 Q6 Q7];
  
@@ -268,6 +291,45 @@ disp("-p7: "+Q7(1,end))
 
 end
 
+
+function [t1,t2,t3,t4,t5,t6,t7] = times_trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax0, amaxf, jk)
+
+ %Etapa 1 - jerk constante 
+    t1=(amax0-a0)/jk;
+    v1=v0+a0*t1+0.5*jk*t1^2;
+    p1=p0+v0*t1+0.5*a0*t1^2+(1/6)*jk*t1^3;
+
+ %Etapa 3 - jkerk constante
+    t3=amax0/jk;
+    v2=vmax-amax0*t3+0.5*jk*t3^2;
+    %p3=?
+    
+ %Etapa 2 - aceleracion constante
+    t2=(v2-v1)/amax0;
+    p2=p1+v1*t2+0.5*amax0*t2^2;
+    %etapa 3
+    p3=p2+v2*t3+0.5*amax0*t3^2-(1/6)*jk*t3^3;
+ 
+ %Etapa 7 - jerk constante
+    t7=(af-(-amaxf))/jk;
+    v6=vf+amaxf*t7-0.5*jk*t7^2;
+    p6=pf-v6*t7+0.5*amaxf*t7^2-(1/6)*jk*t7^3; 
+ 
+ %Etapa 5 - jerk constante
+    t5=amaxf/jk;
+    v5=vmax-0.5*jk*t5^2;
+    %p4=?
+    
+ %Etapa 6 - aceleracion constante
+    t6=(v6-v5)/-amaxf;
+    p5=p6-v5*t6+0.5*amaxf*t6^2;
+    %etapa 5
+    p4=p5-vmax*t5+(1/6)*jk*t5^3;
+
+ %Etapa 4 - velocidad constante
+    t4=(p4-p3)/vmax;
+ 
+end
 
 
 function Q=const_j(p0,v0,a0,jk,t)
