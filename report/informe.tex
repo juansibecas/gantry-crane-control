@@ -183,6 +183,26 @@
 
             seria un sistema acoplado? preguntar si se resuelve asi
 
+                
+        \subsection{Diseño del controlador}
+
+            \begin{equation}\label{eq:PID}
+                T_m'(t) = b_ae_\omega(t) + K_{sa} e_\theta(t) + K_{sia}\int e_\theta(t) dt
+            \end{equation}
+            Por lo tanto, por Laplace:
+            \begin{equation}\label{eq:PID_Laplace}
+                T_m(s) = G(s)[b_aE_\omega(s) + K_{sa} \frac{1}{s} + K_{sia} \frac{1}{s^2}]E_\theta(s)
+            \end{equation}
+
+            Donde \(G_T(s)\) es la función de transferencia del modulador de torque que, como se supone ideal, es igual a 1.
+
+
+            Para obtener la expresión que nos permita obtener las constante que definen al controlador se remplaza la ecuacion \ref{eq:PID} en la ecuacion de movimiento del izaje y del carro, se obtiene:
+            Para el izaje, reemplazando \ref{eq:PID} en \ref{eq:izajeEquiv} y transformandola con Laplace, se obtiene:
+            \begin{equation}\label{eq:izajeControl}
+                M_{Eh} \ddot{L_h}(s) = - b_{Eh} sL_h(s) - \frac{i_h}{r_{hd}} [G(s)[b_aE_\omega(s) + K_{sa} \frac{1}{s} + K_{sia} \frac{1}{s^2}]E_\theta(s)] + F_{hw}(s)
+            \end{equation}
+            despejando 
 
 \section{Resultados} \label{sec:results}
 
