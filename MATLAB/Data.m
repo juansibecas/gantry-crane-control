@@ -136,13 +136,13 @@ theta_tm0 = 0;
 
 
 %% Level 2 PID Constants
-wh = bEh/MEh;
+wh = -bEh/MEh;
 nh = 2.5;
 Ksia_PID_hoist = MEh * (10*wh)^3;
 Ksa_PID_hoist = MEh * nh * (10*wh)^2;
 b_PID_hoist = MEh * nh *(10*wh);
 
-wtd = bEtd/MEtd;
+wtd = -bEtd/MEtd;
 ntd = 2.5;
 Ksia_PID_trolley = MEtd * (10*wtd)^3;
 Ksa_PID_trolley = MEh * ntd * (10*wtd)^2;
