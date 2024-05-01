@@ -137,20 +137,33 @@ theta_tm0 = 0;
 
 %% Level 2 PID Constants
 wh = 7*bEh/MEh;
-nh = 2;
-Ksia_PID_hoist = -ih * MEh * wh^3 / rhd;
-Ksa_PID_hoist = -ih * MEh * nh * wh^2 /rhd;
-b_PID_hoist = -(ih * MEh * nh *wh - ih * bEh ) /rhd;
+nh = 2.5;
+% Ksia_PID_hoist = -ih * MEh * nh * wh^3 / rhd;
+% Ksa_PID_hoist = -ih * MEh * nh * wh^2 /rhd;
+% b_PID_hoist = -(ih * MEh * nh *wh - ih * bEh ) /rhd;
 
-wtd = 0.5*bEtd/MEtd;
-ntd = 1;
-% Ksia_PID_trolley =it * MEtd * wtd^3 / rtd;
-% Ksa_PID_trolley =it * MEh * ntd * wtd^2 / rtd;
-% b_PID_trolley =(it * MEh * ntd *wtd- it * bEtd)/rtd ;
-% 
-Ksia_PID_trolley =1.026e6;
-Ksa_PID_trolley =3.8e6; 
-b_PID_trolley =6.75e5; 
+
+
+Ksia_PID_hoist = -MEh * nh * wh^3;
+Ksa_PID_hoist = -MEh * nh * wh^2;
+b_PID_hoist = -MEh * nh * wh;
+
+
+
+
+wtd = 10*bEtd/MEtd;
+ntd = 2.5;
+% Ksia_PID_trolley =it * MEtd * ntd * wtd^3 / rtd;
+% Ksa_PID_trolley =it * MEtd * ntd * wtd^2 / rtd;
+% b_PID_trolley =(it * MEtd * ntd *wtd- it * bEtd)/rtd ;
+% % 
+% Ksia_PID_trolley =+1.026e7;
+% Ksa_PID_trolley =3.8e7; 
+% b_PID_trolley =6.75e5; 
+
+Ksia_PID_trolley =MEtd*ntd*wtd^3;
+Ksa_PID_trolley =MEtd*ntd*wtd^2;
+b_PID_trolley = MEtd*ntd*wtd;
 
 
 
