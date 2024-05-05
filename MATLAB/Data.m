@@ -6,12 +6,14 @@ SHORE_LIMIT = x_axis(1);
 SHIP_LIMIT = x_axis(2);
 vx_max = 4;             % max speed[m/s]
 ax_max = 0.8;           % max acceleration[m/s2]
+jerkt=1000;
 
 y_axis = [-20 40];      % ship bottom to trolley pulleys range[m]
 MAX_CABLE_LENGTH = y_axis(2) - y_axis(1);  % max theorical cable length[m]
 vy_loaded_max = 1.5;    % max speed[m/s] - rated load - see constant power graph
 vy_unloaded_max = 3;    % max speed[m/s] - unloaded
 ay_max = 0.75;          % max acceleration[m/s2]
+jerkh=1000;
 
 Yt0 = 45;               % trolley pulleys height[m]
 Ysb = 15;               % sill beam height[m]
@@ -82,6 +84,7 @@ maxContainers = 13;
 minMass = 2000;
 maxMass = 50000;
 containerWidth=2.5;
+Hseg=3;
 
 containerLayout = randi([0, maxContainers], 1, columns);
 containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
