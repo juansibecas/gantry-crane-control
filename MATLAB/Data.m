@@ -81,6 +81,7 @@ columns = 9;
 maxContainers = 13;
 minMass = 2000;
 maxMass = 50000;
+containerWidth=2.5;
 
 containerLayout = randi([0, maxContainers], 1, columns);
 containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
