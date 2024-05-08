@@ -170,5 +170,6 @@ Ksa_PID_trolley =MEtd*ntd*wtd^2;
 b_PID_trolley = MEtd*ntd*wtd;
 
 
-
+AnalogV_=0;
+AnalogH_=0;
 
