@@ -169,6 +169,18 @@ Ksia_PID_trolley =MEtd*ntd*wtd^3;
 Ksa_PID_trolley =MEtd*ntd*wtd^2;
 b_PID_trolley = MEtd*ntd*wtd;
 
+%% Quantizer interval
+
+quant = 0.001;
+
+%% Sensor sample frequency
+
+fs = 1000;
+
+st = 1/fs;
+
+
+
 
 AnalogV_=0;
 AnalogH_=0;
