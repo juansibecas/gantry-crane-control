@@ -193,3 +193,5 @@ st = 1/fs;
 AnalogV_=0;
 AnalogH_=0;
 
+message=["Exit manual zone to perform automatic positioning","Positioning","Manually engage the container","Manually release the container","Manual"];
+
