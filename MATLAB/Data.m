@@ -7,6 +7,7 @@ SHIP_LIMIT = x_axis(2);
 vx_max = 4;             % max speed[m/s]
 ax_max = 0.8;           % max acceleration[m/s2]
 jerkt=100;
+dx=0.1;
 
 y_axis = [-20 40];      % ship bottom to trolley pulleys range[m]
 MAX_CABLE_LENGTH = y_axis(2) - y_axis(1);  % max theorical cable length[m]
@@ -85,9 +86,16 @@ minMass = 2000;
 maxMass = 50000;
 containerWidth=2.5;
 Hseg=3;
+Bseg=2;
 
 containerLayout = randi([0, maxContainers], 1, columns);
 containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
+
+
+
+X_bay=[-10,-14,-15];
+
+X_container=[5,8,11,14,17,20,23,26,29];
 
 %% Generate profile(yc0) from layout
 
