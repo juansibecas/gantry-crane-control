@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+<head>
+</head>
+<Scene>
+<Background groundColor='0 0.8 0' skyAngle='1 1.2 1.5708' skyColor='0.8 0.8 1 0.7 0.7 0.8 0.5 0.5 0.8 0.4 0.4 0.8'>
+</Background>
+<Transform DEF='Beam'  translation='10 45.5 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 1 0'>
+      </Material>
+    </Appearance>
+    <Box size='80 1 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Ground'  translation='-15 -12 0'>
+  <Shape>
+    <Appearance>
+      <ImageTexture>
+      </ImageTexture>
+      <Material diffuseColor='0.6 0.6 0.6'>
+      </Material>
+    </Appearance>
+    <Box size='30 24 20'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='FistColum'  translation='-1 27.5 -5.5'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 1 0'>
+      </Material>
+    </Appearance>
+    <Box size='2 55 1'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='SecondColum'  translation='-29 22.5 -5.5'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 1 0'>
+      </Material>
+    </Appearance>
+    <Box size='2 45 1'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='MiddleBeam'  translation='-1 14 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.4 0'>
+      </Material>
+    </Appearance>
+    <Box size='2 2 10'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='ship1'  translation='1 -2.5 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 0 0'>
+      </Material>
+    </Appearance>
+    <Box size='1 15 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='ship5'  translation='25.4 -2.5 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 0 0'>
+      </Material>
+    </Appearance>
+    <Box size='1 15 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='ship2'  translation='1 -15 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.8 0 0'>
+      </Material>
+    </Appearance>
+    <Box size='1 10 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='ship4'  translation='25.4 -15 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.8 0 0'>
+      </Material>
+    </Appearance>
+    <Box size='1 10 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='ship3'  translation='13.2 -19.5 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.8 0 0'>
+      </Material>
+    </Appearance>
+    <Box size='23.4 1 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Bay2'  translation='-15 0.5 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.2 0.2 0.2'>
+      </Material>
+    </Appearance>
+    <Box size='3 1 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Bay1'  translation='-22 0.5 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.2 0.2 0.2'>
+      </Material>
+    </Appearance>
+    <Box size='3 1 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Bay3'  translation='-8 0.5 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.2 0.2 0.2'>
+      </Material>
+    </Appearance>
+    <Box size='3 1 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='cable1'  translation='-13.8 27 0' scale='1 34 1'>
+  <Shape>
+    <Appearance>
+      <Material>
+      </Material>
+    </Appearance>
+    <Cylinder radius='0.1' height='1'>
+    </Cylinder>
+  </Shape>
+</Transform>
+<Transform DEF='Trolley'  translation='-15 45.5 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.2 0'>
+      </Material>
+    </Appearance>
+    <Box size='4 2 12.5'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Spreader'  translation='-15 10 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.2 0'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 1 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='ActiveContainer1'  translation='-15 2.2 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.2 1 0.4'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container2'  translation='-8 2.2 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 0 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container3'  translation='2.8 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.2 1 0.4'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container4'  translation='5.4 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0.2 1 0.4'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container5'  translation='8 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<DirectionalLight direction='-1 1 -1' intensity='0.5'>
+</DirectionalLight>
+<DirectionalLight direction='1 -1 -1'>
+</DirectionalLight>
+<Transform DEF='Container6'  translation='10.6 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.4 0'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container7'  translation='13.2 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 0 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container8'  translation='15.8 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.4 0'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container9'  translation='18.4 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.4 0'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container10'  translation='21 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.2 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container12'  translation='10.6 -15.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 1 0.4'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container11'  translation='23.6 -17.8 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 0 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='cable2'  translation='-16.2 27 0' scale='1 34 1'>
+  <Shape>
+    <Appearance>
+      <Material>
+      </Material>
+    </Appearance>
+    <Cylinder radius='0.1' height='1'>
+    </Cylinder>
+  </Shape>
+</Transform>
+<Transform DEF='Container7_0001'  translation='15.8 -15.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 0 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container7_0002'  translation='8 -15.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 0 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container7_0003'  translation='18.4 -15.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 0 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container10_0001'  translation='13.2 -15.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.2 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container10_0002'  translation='23.6 -15.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.2 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container10_0003'  translation='10.6 -13 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.2 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container10_0004'  translation='2.8 -15.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.2 1'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container12_0001'  translation='10.6 -10.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 1 0.4'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container12_0002'  translation='13.2 -13 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 1 0.4'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container12_0003'  translation='23.6 -10.6 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 1 0.4'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container12_0004'  translation='15.8 -13 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='0 1 0.4'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='ActiveContainer2'  translation='15.8 -10.6 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.4 0'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container8_0002'  translation='23.6 -13 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.4 0'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container8_0003'  translation='5.4 -15.4 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.4 0'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+<Transform DEF='Container8_0004'  translation='2.8 -13 0'>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor='1 0.4 0'>
+      </Material>
+    </Appearance>
+    <Box size='2.4 2.4 12'>
+    </Box>
+  </Shape>
+</Transform>
+</Scene>
+</X3D>
