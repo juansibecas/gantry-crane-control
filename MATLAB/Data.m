@@ -88,7 +88,7 @@ containerWidth=2.5;
 Hseg=3;
 Bseg=2;
 
-containerLayout = randi([0, maxContainers], 1, columns);
+containerLayout = [1 1 1 1 1 1 1 1 1];%randi([0, maxContainers], 1, columns);
 containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
 
 
