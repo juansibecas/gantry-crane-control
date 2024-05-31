@@ -14,7 +14,7 @@ MAX_CABLE_LENGTH = y_axis(2) - y_axis(1);  % max theorical cable length[m]
 vy_loaded_max = 1.5;    % max speed[m/s] - rated load - see constant power graph
 vy_unloaded_max = 3;    % max speed[m/s] - unloaded
 ay_max = 0.75;          % max acceleration[m/s2]
-jerkh=1;
+jerkh=3;
 
 Yt0 = 45;               % trolley pulleys height[m]
 Ysb = 15;               % sill beam height[m]
