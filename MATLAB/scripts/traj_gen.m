@@ -36,15 +36,12 @@ Ob_profile=ObstUpdate(Ob_profile,24.9,25.9,5);
 
 profile=Ob_profile';
 
-P0=[-15 20];
-Pf=[-22 4];
-hseg=3;
-xbox=3;
-jh=1000;
-jt=1000;
+Pf=[-15 20];
+P0=[-22 4];
 
 
-[T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,0,0,2,2,2,2,3,3);
+
+[T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,0,0,2,2,0,0,2,2,3,3,3,3);
 
 
 figure(10)
@@ -66,7 +63,7 @@ while NewProfile(1,i)<x1
     NewProfile(2,i)=y;
 end
 end
-function [T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,amaxh,amaxt)
+function [T,Qhoist,Qtrolley]=Traj_gen(O_profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,amaxh,amaxt,jt,jh,xbox,hseg)
 % Esta función genera una trayectoria para un sistema de elevación, como un
 % montacargas o una grúa, en función de un perfil de elevación dado. 
 % La trayectoria contempla aceleración con perfil trapeziodal.
@@ -78,7 +75,7 @@ function [T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,
 % requirimientos.
 %
 % Argumentos de entrada:
-% - profile: matriz que contiene el perfil de elevación. Cada fila representa
+% - O_profile: matriz que contiene el perfil de elevación. Cada fila representa
 %   un punto en el perfil, donde la primera columna contiene las coordenadas
 %   horizontales y la segunda columna contiene las alturas correspondientes.
 % - P0: punto inicial de la trayectoria, dado como [x0, y0].
@@ -106,36 +103,34 @@ function [T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,
 %   Q(3,:)aceleracion y Q(4,:) el jerk
 % - Qtrolley: matriz que describe la trayectoria de desplazamiento horizontal
 %   generada. misma estructura que Qtrolley
-    hseg = evalin('caller', 'hseg');
-    xbox = evalin('caller', 'xbox');
-    jh = evalin('caller', 'jh');
-    jt = evalin('caller', 'jt');
-    %Caso degenerado=======================================================
+    
+    
+    %Caso degenerado 1(movimiento puramente vertical)=======================================================
     if P0(1)==Pf(1)
         [T,Qhoist] = trap_acc_prof(P0(2),Pf(2),v0h,0,a0h,0,vmaxh,amaxh,jh);
         Qtrolley=zeros(4,length(T));
         Qtrolley(1,:)=ones(1,length(T))*P0(1);
         return;
-    end  
+    end
 
     %=========================================================================
     %Calculo de puntos
     %=========================================================================
-    %recortar profile entre x0 y xf (profile_r)
-    profile_r=subprofile(profile,P0(1),Pf(1));
+    %recortar O_profile entre x0 y xf (O_profile_r)
+    O_profile_r=subO_profile(O_profile,P0(1),Pf(1));
 
-    %Hmax es igual a la altula maxima en profile_r mas una altura de seguridad "h_seg"
-    Hmax=max(profile_r(:,2))+hseg;
+    %Hmax es igual a la altula maxima en O_profile_r mas una altura de seguridad "h_seg"
+    Hmax=max(O_profile_r(:,2))+hseg;
 
-    %H0 es la altura que parte de Y0 y termina cuando el profile es superado en
+    %H0 es la altura que parte de Y0 y termina cuando el O_profile es superado en
     %un entorno de 1.5 xbox de X0 mas h_seg.
-    H0=max(subprofile(profile,P0(1)-xbox*1.5,P0(1)+xbox*1.5))+hseg;
+    H0=max(subO_profile(O_profile,P0(1)-xbox*1.5,P0(1)+xbox*1.5))+hseg;
     H0=H0(2);
     %H1 lo mismo
-    Hf=max(subprofile(profile,Pf(1)-xbox*1.5,Pf(1)+xbox*1.5))+hseg;
+    Hf=max(subO_profile(O_profile,Pf(1)-xbox*1.5,Pf(1)+xbox*1.5))+hseg;
     Hf=Hf(2);
     %se traza una recta entre xo y el se la hace "tangente" (que solo toca un 
-    %punto del profile)
+    %punto del O_profile)
 
     if Pf(1)>P0(1)
         xl=P0(1);
@@ -150,7 +145,7 @@ function [T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,
     end
 
     mmax=0;
-    prof=subprofile(profile,xl+xbox*0.5,inf);
+    prof=subO_profile(O_profile,xl+xbox*0.5,inf);
     for i=1:length(prof)
         if prof(i,2)+hseg<Hl
             continue
@@ -162,7 +157,7 @@ function [T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,
     DXl=(Hmax-Hl)/mmax;
 
     mmax=0;
-    prof=subprofile(profile,xh-xbox*0.5,-inf);
+    prof=subO_profile(O_profile,xh-xbox*0.5,-inf);
     for i=1:length(prof)
         if prof(i,2)+hseg<Hh
             continue
@@ -183,20 +178,58 @@ function [T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,
 
     %graficar
     %figure(10)
-    %plot(profile(:,1),profile(:,2))
+    %plot(O_profile(:,1),O_profile(:,2))
     %hold on
-    %plot(profile_r(:,1),profile_r(:,2))
+    %plot(O_profile_r(:,1),O_profile_r(:,2))
     %plot(x02,Hmax,'x')
     %plot(xf2,Hmax,'x')
     %plot(P0(1),H0,'x')
     %plot(Pf(1),Hf,'x')
     %plot(P0(1),P0(2),'x')
     %plot(Pf(1),Pf(2),'x')
-
     %end
     %=========================================================================
     %Calculo de trayectoria
     %=========================================================================
+    if Hmax==P0(2)
+        [Traise,Qraise] = trap_acc_prof(P0(2),Pf(2),v0h,0,a0h,0,vmaxh,amaxh,jh);
+        [Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,0,vmaxt,amaxt,jt);
+        
+        if Traise(end)>Tslide(end)
+            T=Traise;
+            Qhoist=Qraise;
+            Qtrolley=zeros(4,length(Traise)-length(Tslide));
+            Qtrolley(1,:)=Qslide(1,1);
+            Qtrolley=[Qtrolley Qslide];
+        else
+            T=Tslide;
+            Qtrolley=Qslide;
+            Qhoist=zeros(4,length(Traise)-length(Tslide));
+            Qhoist(1,:)=Qraise(1,1);
+            Qhoist=[Qhoist Qraise];
+        end
+    return
+    end
+    if Hmax==Pf(2)
+        [Tlower,Qlower] = trap_acc_prof(P0(2),Pf(2),v0h,0,a0h,0,vmaxh,amaxh,jh);
+        [Tslide, Qslide] = trap_acc_prof(P0(1),Pf(1),0,0,0,0,vmaxt,amaxt,jt);
+        
+        if Tlower(end)>Tslide(end)
+            T=Tlower;
+            Qhoist=Qlower;
+            Qtrolley=zeros(4,length(Tlower)-length(Tslide));
+            Qtrolley(1,:)=Qslide(1,end);
+            Qtrolley=[Qslide Qtrolley];
+        else
+            T=Tslide;
+            Qtrolley=Qslide;
+            Qhoist=zeros(4,length(Tlower)-length(Tslide));
+            Qhoist(1,:)=Qlower(1,1);
+            Qhoist=[Qhoist Qlower];
+        end
+    return
+    end
+    
     %trap_acc_prof(p0, pf, v0, vf, a0, af, vmax, amax, jk)
     %disp("raise---------------------------")
     [Traise,Qraise] = trap_acc_prof(P0(2),Hmax,v0h,0,a0h,0,vmaxh,amaxh,jh);
@@ -266,7 +299,6 @@ function [T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,
     Qhoist=zeros(4,length(Qtrolley)-length(Qlower)-length(Qraise));
     Qhoist(1,:)=Hmax;
     Qhoist=[Qraise Qhoist Qlower];
-    
 end
 
 
@@ -449,7 +481,7 @@ end
 
 
 
-function subprof=subprofile(vector,x0,xf)
+function subprof=subO_profile(vector,x0,xf)
     if x0>xf
         xmin=xf;
         xmax=x0;
