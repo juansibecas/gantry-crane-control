@@ -3,39 +3,70 @@ clear
 close all
 clc
 %=========================================================================
-profile(:,1)=(-10:0.1:20);
-N=length(profile(:,1));
-for i=1:N
-    if i<N/3
-        profile(i,2)=2;
-    elseif i<N*1/2
-        profile(i,2)=10;
-    else
-        profile(i,2)=4;
-    end
-end    
+xmin = -30;
+xmax = 50;
+dx = 0.1;
+N = (xmax - xmin)/dx + 1;
+Ob_profile = zeros(2,N);
+Ob_profile(1,:) = (xmin:0.1:xmax)';
 
-Pf=[-5 2];
-P0=[14 4];
+% Loading Bay1 - Bahia de carga 
+Ob_profile=ObstUpdate(Ob_profile,-23.5,-20.5,1);
+
+% Loading Bay2 - Bahia de carga 
+Ob_profile=ObstUpdate(Ob_profile,-16.5,-13.5,1);
+
+% Loading Bay3 - Bahia de carga 
+Ob_profile=ObstUpdate(Ob_profile,-9.5,-6.5,1);
+
+% Sill Beam - Viga Grua
+Ob_profile=ObstUpdate(Ob_profile,-2,0,15);
+
+% Gap 
+Ob_profile=ObstUpdate(Ob_profile,0,0.5,-2);
+
+% Ship wall - Pared barco
+Ob_profile=ObstUpdate(Ob_profile,0.5,1.5,5);
+
+% Ship floor - Piso barco
+Ob_profile=ObstUpdate(Ob_profile,1.5,24.9,-19);
+
+% Ship wall - Pared barco
+Ob_profile=ObstUpdate(Ob_profile,24.9,25.9,5); 
+
+profile=Ob_profile';
+
+P0=[-15 20];
+Pf=[-22 4];
 hseg=3;
 xbox=3;
 jh=1000;
 jt=1000;
 
 
-[T,Qhoist,Qtroley]=Traj_gen(profile,P0,Pf,3,2,5,5,10,10,50,50);
+[T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,0,0,2,2,2,2,3,3);
 
 
 figure(10)
 plot(profile(:,1),profile(:,2))
 hold on
-plot(Qtroley(1,:),Qhoist(1,:),'g')
+plot(Qtrolley(1,:),Qhoist(1,:),'g')
 % figure(3)
-% plot(T,Qtroley(1,:))
+% plot(T,Qtrolley(1,:))
 % hold on
 % plot(T,Qhoist(1,:))
-
-function [T,Qhoist,Qtroley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,amaxh,amaxt)
+function NewProfile=ObstUpdate(OldProfile,x0,x1,y)
+NewProfile=OldProfile;
+i=1;
+while NewProfile(1,i)<x0
+    i=i+1;
+end
+while NewProfile(1,i)<x1
+    i=i+1;
+    NewProfile(2,i)=y;
+end
+end
+function [T,Qhoist,Qtrolley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,amaxh,amaxt)
 % Esta función genera una trayectoria para un sistema de elevación, como un
 % montacargas o una grúa, en función de un perfil de elevación dado. 
 % La trayectoria contempla aceleración con perfil trapeziodal.
@@ -73,14 +104,19 @@ function [T,Qhoist,Qtroley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,a
 % - Qhoist: matriz que describe la trayectoria de elevación generada.
 %   Siento las filas Q(1,:) la posición, Q(2,:) la velocidad,
 %   Q(3,:)aceleracion y Q(4,:) el jerk
-% - Qtroley: matriz que describe la trayectoria de desplazamiento horizontal
-%   generada. misma estructura que Qtroley
+% - Qtrolley: matriz que describe la trayectoria de desplazamiento horizontal
+%   generada. misma estructura que Qtrolley
     hseg = evalin('caller', 'hseg');
     xbox = evalin('caller', 'xbox');
     jh = evalin('caller', 'jh');
     jt = evalin('caller', 'jt');
-    
-
+    %Caso degenerado=======================================================
+    if P0(1)==Pf(1)
+        [T,Qhoist] = trap_acc_prof(P0(2),Pf(2),v0h,0,a0h,0,vmaxh,amaxh,jh);
+        Qtrolley=zeros(4,length(T));
+        Qtrolley(1,:)=ones(1,length(T))*P0(1);
+        return;
+    end  
 
     %=========================================================================
     %Calculo de puntos
@@ -200,14 +236,14 @@ function [T,Qhoist,Qtroley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,a
     N0y=time_between(Qraise(1,:),Traise,Hmax,H0);
 
     if N0y>N0x
-        Qtroley=zeros(4,length(Traise)-N0x);
-        Qtroley(1,:)=Qslide(1,1);
-        Qtroley=[Qtroley Qslide];
+        Qtrolley=zeros(4,length(Traise)-N0x);
+        Qtrolley(1,:)=Qslide(1,1);
+        Qtrolley=[Qtrolley Qslide];
         T=[Traise(1:length(Traise)-N0x) Tslide+Traise(length(Traise)-N0x)];
     else
-        Qtroley=zeros(4,length(Traise)-N0y);
-        Qtroley(1,:)=Qslide(1,1);
-        Qtroley=[Qtroley Qslide];
+        Qtrolley=zeros(4,length(Traise)-N0y);
+        Qtrolley(1,:)=Qslide(1,1);
+        Qtrolley=[Qtrolley Qslide];
         T=[Traise(1:length(Traise)-N0y) Tslide+Traise(length(Traise)-N0y)];
     end
     %-----------------------------------------------------------------------
@@ -217,19 +253,20 @@ function [T,Qhoist,Qtroley]=Traj_gen(profile,P0,Pf,v0h,vfh,vmaxh,vmaxt,a0h,afh,a
     if Nfx>Nfy
         aux=zeros(4,length(Tlower)-Nfy);
         aux(1,:)=Qslide(1,end);
-        Qtroley=[Qtroley aux];
+        Qtrolley=[Qtrolley aux];
         T=[T T(end)+Tlower(1:length(Tlower)-Nfy)];
     else
         aux=zeros(4,length(Tlower)-Nfx);
         aux(1,:)=Qslide(1,end);
-        Qtroley=[Qtroley aux];
+        Qtrolley=[Qtrolley aux];
         T=[T T(end)+Tlower(1:length(Tlower)-Nfx)];
     end
     
     %-----------------------------------------------------------------------
-    Qhoist=zeros(4,length(Qtroley)-length(Qlower)-length(Qraise));
+    Qhoist=zeros(4,length(Qtrolley)-length(Qlower)-length(Qraise));
     Qhoist(1,:)=Hmax;
     Qhoist=[Qraise Qhoist Qlower];
+    
 end
 
 

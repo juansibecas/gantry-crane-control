@@ -6,7 +6,7 @@ SHORE_LIMIT = x_axis(1);
 SHIP_LIMIT = x_axis(2);
 vx_max = 4;             % max speed[m/s]
 ax_max = 0.8;           % max acceleration[m/s2]
-jerkt=1;
+jerkt=2;
 dx=0.1;
 
 y_axis = [-20 40];      % ship bottom to trolley pulleys range[m]
@@ -14,7 +14,7 @@ MAX_CABLE_LENGTH = y_axis(2) - y_axis(1);  % max theorical cable length[m]
 vy_loaded_max = 1.5;    % max speed[m/s] - rated load - see constant power graph
 vy_unloaded_max = 3;    % max speed[m/s] - unloaded
 ay_max = 0.75;          % max acceleration[m/s2]
-jerkh=3;
+jerkh=4;
 
 Yt0 = 45;               % trolley pulleys height[m]
 Ysb = 15;               % sill beam height[m]
@@ -88,7 +88,7 @@ containerWidth=2.5;
 Hseg=3;
 Bseg=2;
 
-containerLayout = [1 1 1 1 1 1 1 1 1];%randi([0, maxContainers], 1, columns);
+containerLayout = [3 2 2 4 3 4 2 1 4];%randi([0, maxContainers], 1, columns);
 containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
 
 
@@ -129,10 +129,10 @@ theta_tm0 = 0;
 %}
 % Sway test (TODO)
 dlh0 = 0;
-lh0 = 10;
+lh0 = 25;
 
 dxt0 = 0;
-xt0 = 1;
+xt0 = -15;
 
 dxtd0 = 0;
 xtd0 = xt0;
