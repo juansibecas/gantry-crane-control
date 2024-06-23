@@ -138,7 +138,7 @@ dxtd0 = 0;
 xtd0 = xt0;
 
 %Load position
-xl0 = xt0;
+xl0 = xt0-2;
 yl0 = Yt0 - lh0;
 Vlx0 = 0;
 Vly0 = 0;

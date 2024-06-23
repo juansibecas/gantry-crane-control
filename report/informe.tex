@@ -383,26 +383,335 @@
 
 
 
+\subsubsection{Control de balanceo}
+
+            A continuación se derivan las ecuaciones que modelan el sistema carro-pendulo. Se utilizará el metodo de Lagrange definiendo las cordenadas generalizadas 
+            \(x_t\) y \(\theta\) . Donde \(x_t\) es la posición del carro y \(\theta\) es el angulo del pendulo respecto a la vertical. 
+            A modo de simplificaion se toma \(l\) como un parametro y no como una funcion del tiempo.
+            El sistema se modela siguiento el modelo físico de la figura 3 del enunciado.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\textwidth]{figs/figure3_enunciado.png}
+                \caption{Modelo físico simplificado del subsistema Carro – Cable – Carga y Perfil de Obstáculos}
+                \label{fig:pendulo}
+            \end{figure}
+            
+            \begin{equation}\label{eq:kinetic1}
+                K = K_t + K_{lx} + K_{ly}
+            \end{equation}
+            \begin{equation}\label{eq:xl}
+                x_l=x_t+l\sin{\theta}
+            \end{equation}
+            \begin{equation}\label{eq:dxl}
+                \dot{x_l}=\dot{x_t}+l\cos{\theta}\dot{\theta}
+            \end{equation}
+            \begin{equation}\label{eq:y}
+                y_l=Y_{t0}-l\cos{\theta}
+            \end{equation}
+            \begin{equation}\label{eq:dy}
+                \dot{y_l}=-l\sin{\theta}\dot{\theta}
+            \end{equation}
+
+            \begin{equation}\label{eq:kinetic2}
+                K = \frac{1}{2}m_t\dot{x_t}^2   +\frac{1}{2}m_l\dot{x_l}^2  +\frac{1}{2}m_l\dot{y_l}^2
+            \end{equation}
+
+            \begin{equation}\label{eq:kinetic3}
+                K = \frac{1}{2}m_t\dot{x_t}^2   +\frac{1}{2}m_l(\dot{x_t}+l\cos{\theta}\dot{\theta})^2  +\frac{1}{2}m_l(-l\sin{\theta}\dot{\theta})^2
+            \end{equation}
+
+            \begin{equation}\label{eq:kinetic4}
+                    K = \frac{1}{2}m_t\dot{x_t}^2 +\frac{1}{2}m_l(\dot{x_t}^2+l^2\cos^2{\theta}\dot{\theta}^2
+                    +2l\dot{x_t}\cos{\theta}\dot{\theta})+\frac{1}{2}m_ll^2\sin^2{\theta}\dot{\theta}^2
+            \end{equation}
+
+            \begin{equation}\label{eq:potential}
+                U = -m_lgl\cos{\theta}
+            \end{equation}
+            \begin{equation}\label{eq:lagrange}
+                L = K - U
+            \end{equation}
+
+            \begin{equation}\label{eq:lagrange2}
+                    L = \frac{1}{2}m_t\dot{x_t}^2
+                    +\frac{1}{2}m_l(\dot{x_t}^2
+                +l^2\cos^2{\theta}\dot{\theta}^2
+                +2l\dot{x_t}\cos{\theta}\dot{\theta})
+                +\frac{1}{2}m_ll^2\sin^2{\theta}\dot{\theta}^2
+                +m_lgl\cos{\theta}
+            \end{equation}
+
+            \begin{equation}\label{eq:lagrange3}
+                L = \frac{1}{2}m_t\dot{x_t}^2+\frac{1}{2}m_l\dot{x_t}^2
+                +\frac{1}{2}m_ll^2\dot{\theta}^2
+                +m_l\dot{x_t}l\cos{\theta}\dot{\theta}
+                +m_lgl\cos{\theta}
+            \end{equation}
+
+            Se define el sistema de ecuaciones de Euler-Lagrange:
+            \begin{equation}\label{eq:euler1}
+                \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_i}\right)-\frac{\partial L}{\partial q_i}=Q_i
+            \end{equation}
+
+            Para \(q_i = x_t\):
+            \begin{equation}\label{eq:euler2}
+                \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_t}\right)-\frac{\partial L}{\partial x_t}=Q_t
+            \end{equation}
+            \begin{equation}
+                \frac{\partial L}{\partial \dot{x}_t}= (m_t+m_l)\dot{x}_t+m_ll\cos{\theta}\dot{\theta}
+            \end{equation}
+            \begin{equation}            
+                    \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_t}\right)= 
+                    (m_t+m_l)\ddot{x}_t+m_l l\cos{\theta}\ddot{\theta}-m_ll\sin{\theta}\dot{\theta}^2
+            \end{equation}
+            \begin{equation}
+                \frac{\partial L}{\partial x_t}=0
+            \end{equation}
+            Entonces:
+            \begin{equation}
+                (m_t+m_l)\ddot{x}_t+m_l l\cos{\theta}\ddot{\theta}-m_l l\sin{\theta}\dot{\theta}^2=F_t(t)-b_{eqt} \dot{x}_t
+            \end{equation}
+
+            Para \(q_i = \theta\):
+
+            \begin{equation}\label{eq:euler3}
+                \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}}\right)-\frac{\partial L}{\partial \theta}=Q_{\theta}
+            \end{equation}
+
+            \begin{equation}
+                \frac{\partial L}{\partial \dot{\theta}}=m_l\dot{x_t}l\cos{\theta}+m_ll^2\dot{\theta}
+            \end{equation}
+
+            \begin{equation}
+                    \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}}\right)= m_l\ddot{x_t}l\cos{\theta} -m_l\dot{x_t}l\sin{\theta}\dot{\theta}+m_ll^2\ddot{\theta}
+            \end{equation}
+
+            \begin{equation}
+                \frac{\partial L}{\partial \theta}=-m_l\dot{x_t}l\sin{\theta}\dot{\theta}-m_lgl\sin{\theta}
+            \end{equation}
+
+            Entonces:
+            \begin{equation}
+                m_l\ddot{x_t}l\cos{\theta} -m_l\dot{x_t}l\sin{\theta}\dot{\theta}+m_ll^2\ddot{\theta}+m_l\dot{x_t}l\sin{\theta}\dot{\theta}+m_lgl\sin{\theta}=0
+            \end{equation}
+
+            Finalmente, el sistema de ecuaciones que define el modelo del sistema carro-pendulo es:
+            \begin{equation}
+                \begin{cases}
+                    (m_t+m_l)\ddot{x}_t+m_ll\cos{\theta}\ddot{\theta}-m_ll\sin{\theta}\dot{\theta}^2=F_t(t)-b_{eqt} \dot{x}_t\\
+                    m_l\ddot{x_t}l\cos{\theta} -m_l\dot{x_t}l\sin{\theta}\dot{\theta}+m_ll^2\ddot{\theta}+m_l\dot{x_t}l\sin{\theta}\dot{\theta}+m_lgl\sin{\theta}=0
+                \end{cases}
+            \end{equation}
+
+            \begin{empheq}[box=\fbox]{equation}
+                \begin{cases}
+                    (m_t+m_l)\ddot{x}_t + m_l l \cos{\theta} \ddot{\theta} - m_l l \sin{\theta} \dot{\theta}^2 = 0 \\
+                    \ddot{x}_t \cos{\theta} + l \ddot{\theta} + g \sin{\theta} = 0
+                \end{cases}
+            \end{empheq}
+
+
+            Para representar lo en el espacio de estados se definen las siguientes variables de estado \(x\) y entradas \(u\):
+            \begin{equation}
+                x = \begin{bmatrix}
+                    \theta \\
+                    \dot{\theta}
+                \end{bmatrix}
+            \end{equation}
+            \begin{equation}
+                u = \ddot{x_l}
+            \end{equation}
+
+            Entonces, se obtiene el siguiente modelo en el espacio de estados no lineal:
+
+            \begin{equation}
+                \begin{cases}
+                    \dot{x} = f(x,u,t) ; x(0) = x_0 \\
+                    y = h(x,u,t)
+                \end{cases}
+            \end{equation}
 
 
 
+        \subsubsection{Control de balanceo}
+            \begin{equation}
+                U=\ddot{X}_t= \left(b_a s+k_{sa}\right) \left(X_l^*- X_l\right)
+            \end{equation}
+            \begin{equation}
+                \left(X_l^*- X_l\right)= \frac{1}{s}\left(\dot{X}_l^*- \dot{X}_l\right)
+            \end{equation}
+
+            \begin{equation}
+                U=\ddot{X}_t= \left(b_a+k_{sa}\frac{1}{s}\right) \left(\dot{X}_l^*- \dot{X}_l\right)
+            \end{equation}
+
+            \begin{equation}
+                s^2 \Theta = A_{21} \Theta + B_{2} \left( \left(b_a+k_{sa}\frac{1}{s}\right) \left(\dot{X}_l^*- C_1 \Theta-C_2 \Theta s - \dot{X}_t\right) \right)
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                s^2 \Theta = A_{21} \Theta + B_{2} \biggl(  b_a\left(\dot{X}_l^*- C_1 \Theta -C_2 \Theta s + \dot{X}_t\right) + k_{sa}\frac{1}{s}\left(\dot{X}_l^* -C_1 \Theta -C_2 \Theta s - \dot{X}_t\right)\biggr)
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                s^2 \Theta = A_{21} \Theta + B_{2}\biggl(  b_a\dot{X}_l^*- b_a C_1 \Theta -b_a C_2 \Theta s + k_{sa}\dot{X}_l^*\frac{1}{s} - k_{sa} C_1 \Theta \frac{1}{s} - k_{sa} C_2 \Theta \\
+                - \dot{X}_t\left(b_a+k_{sa}\frac{1}{s}\right)\biggr)
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                s^2 \Theta = A_{21} \Theta + B_{2}b_a\dot{X}_l^*- B_{2}b_a C_1 \Theta -B_{2}b_a C_2 \Theta s + B_{2}k_{sa}\dot{X}_l^*\frac{1}{s} - B_{2}k_{sa} C_1 \Theta \frac{1}{s} - B_{2}k_{sa} C_2 \Theta \\
+                - B_{2}\dot{X}_t\left(b_a+k_{sa}\frac{1}{s}\right)
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                \Theta s^3 =  A_{21} \Theta s + B_{2}b_a \dot{X}_l^* s- B_{2}b_a C_1 \Theta s -B_{2}b_a C_2 \Theta s^2 + B_{2}k_{sa} \dot{X}_l^* - B_{2}k_{sa} C_1 \Theta - B_{2}k_{sa} C_2 \Theta s \\
+                - B_{2}\dot{X}_t\left(b_a s+k_{sa}\right)
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                0= \Theta \left( s^3 + s^2 \left(B_{2}b_a C_2\right) + s \left(-A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right) \right)\\
+                - \dot{X}_l^*\left(B_{2}b_a s + B_{2}k_{sa}\right) +\dot{X}_t\left(B_{2}b_a s+B_{2}k_{sa}\right)   
+                \end{split}
+            \end{equation}
 
 
+            \begin{equation}
+                \begin{split}
+                    \Theta= \frac{B_{2}b_a s + B_{2}k_{sa}}{s^3 + s^2 \left(B_{2}b_a C_2\right) + s \left(-A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right)} \dot{X}_l^*\\
+                    - \frac{B_{2}b_a s+B_{2}k_{sa}}{s^3 + s^2 \left(B_{2}b_a C_2\right) + s \left(-A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right)} \dot{X}_t
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                p_r(s)=(s+\omega_n)(s^2+2\zeta\omega_n s+\omega_n^2)
+            \end{equation}
+            \begin{equation}
+                p_r(s)=s^3+\omega_n(2\zeta+1)s^2+\omega_n^2(2\zeta+1)s +\omega_n^3
+            \end{equation}
+            \begin{equation}
+                p_r(s)=s^3+\omega_n \eta s^2+\omega_n^2 \eta s +\omega_n^3
+            \end{equation}
+
+            \begin{equation}
+                \begin{cases}
+                    \omega_n^3 = B_{2}k_{sa} C_1 \\
+                    \omega_n^2 \eta = -A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \\
+                    \omega_n \eta  = B_{2}b_a C_2 
+                \end{cases}
+            \end{equation}
+
+            SI \(C_1=0\).
+
+            \begin{equation}
+                \begin{split}
+                    \Theta= \frac{B_{2}b_a s + B_{2}k_{sa}}{s\left(s^2 + s \left(B_{2}b_a C_2\right) + \left(-A_{21} +B_{2}k_{sa} C_2 \right)\right)} \dot{X}_l^*\\
+                    - \frac{B_{2}b_a s+B_{2}k_{sa}}{s\left(s^2 + s \left(B_{2}b_a C_2\right) + \left(-A_{21} +B_{2}k_{sa} C_2 \right)\right)} \dot{X}_t
+                \end{split}
+            \end{equation}
+
+        \subsubsection{Control de balanceo}
+            \begin{equation}
+                U=\ddot{X}_t= \left(b_a s+k_{sa}\right) \left(\dot{X}_l^*- \dot{X}_l\right)
+            \end{equation}
+            
+            \begin{equation}
+                s^2 \Theta = A_{21} \Theta + B_{2} \left( \left(b_a s+k_{sa}\right) \left(\dot{X}_l^*- C_1 \Theta-C_2 \Theta s - \dot{X}_t\right) \right)
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                s^2 \Theta = A_{21} \Theta + B_{2} \biggl(  b_a s\left(\dot{X}_l^*- C_1 \Theta -C_2 \Theta s + \dot{X}_t\right) + k_{sa}\left(\dot{X}_l^* -C_1 \Theta -C_2 \Theta s - \dot{X}_t\right)\biggr)
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                s^2 \Theta = A_{21} \Theta + B_{2}\biggl(  b_a \dot{X}_l^* s- b_a C_1 \Theta s-b_a  C_2 \Theta s^2 + k_{sa}\dot{X}_l^* - k_{sa} C_1 \Theta - k_{sa} C_2 \Theta s\\
+                - \dot{X}_t\left(b_a s+k_{sa}\right)\biggr)
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                s^2 \Theta = A_{21} \Theta + B_{2}b_a\dot{X}_l^* s - B_{2}b_a C_1 \Theta s-B_{2}b_a C_2 \Theta s^2 + B_{2}k_{sa}\dot{X}_l^* - B_{2}k_{sa} C_1 \Theta  - B_{2}k_{sa} C_2 \Theta s\\
+                - B_{2}\dot{X}_t\left(b_a+k_{sa}\frac{1}{s}\right)
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                \begin{split}
+                0= \Theta \left( s^2 \left(1+B_{2}b_a C_2\right) + s \left( B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right) \right)\\
+                - \dot{X}_l^*\left(B_{2}b_a s + B_{2}k_{sa}\right) +\dot{X}_t\left(B_{2}b_a s+B_{2}k_{sa}\right)
+                \end{split}
+            \end{equation}
 
 
+            \begin{equation}
+                \begin{split}
+                    \Theta= \frac{B_{2}b_a s + B_{2}k_{sa}}{ s^2 \left(1+B_{2}b_a C_2\right) + s \left( B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right)} \dot{X}_l^*\\
+                    - \frac{B_{2}b_a s+B_{2}k_{sa}}{ s^2 \left(1+B_{2}b_a C_2\right) + s \left( B_{2}b_a C_1 +B_{2}k_{sa} C_2 \Theta \right) + \left( B_{2}k_{sa} C_1 \right)} \dot{X}_t
+                \end{split}
+            \end{equation}
+
+            \begin{equation}
+                p_r(s)=s^2 + s \frac{B_{2}b_a C_1 +B_{2}k_{sa} C_2 }{1+B_{2}b_a C_2} + \frac{B_{2}k_{sa} C_1}{1+B_{2}b_a C_2}
+            \end{equation}
+            \begin{equation}
+                p_r(s)=(s^2+2\zeta\omega_n s+\omega_n^2)
+            \end{equation}
+
+            \begin{equation}
+                \begin{cases}
+                    2\zeta\omega_n = \frac{B_{2}b_a C_1 +B_{2}k_{sa} C_2 }{1+B_{2}b_a C_2} \\
+                    \omega_n^2 = \frac{B_{2}k_{sa} C_1}{1+B_{2}b_a C_2}
+                \end{cases}
+            \end{equation}
+
+            \begin{equation}
+                \begin{cases}
+                    (1+B_{2}b_a C_2)2\zeta\omega_n = B_{2}b_a C_1 +B_{2}k_{sa} C_2\\
+                    (1+B_{2}b_a C_2)\omega_n^2 = B_{2}k_{sa} C_1
+                \end{cases}
+            \end{equation}
+
+            \begin{equation}
+                \begin{cases}
+                    2\zeta\omega_n+ 2\zeta\omega_n B_{2}b_a C_2 = B_{2}b_a C_1 +B_{2}k_{sa} C_2\\
+                    \omega_n^2+B_{2}b_a C_2\omega_n^2= B_{2}k_{sa} C_1
+                \end{cases}
+            \end{equation}
+
+            \begin{equation}
+                \begin{cases}
+                    b_a(2\zeta\omega_n B_{2}C_2-B_{2}C_1) &+ k_{sa}(-B_{2}C_2) = -2\zeta\omega_n \\
+                    b_a(\omega_n^2B_{2}C_2) &+ k_{sa}(-B_{2}C_1) = -\omega_n^2
+                \end{cases}
+            \end{equation}
 
             
+
+
+
+
+                    
+
                 
 
 
 
-            
 
+\section{Resultados}\label{sec:results}
 
-
-\section{Resultados} \label{sec:results}
-
-\section{Conclusión} \label{sec:conclusion}
+\section{Conclusión}\label{sec:conclusion}
 
 
 % Estilo de citas
