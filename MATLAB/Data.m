@@ -132,13 +132,13 @@ dlh0 = 0;
 lh0 = 25;
 
 dxt0 = 0;
-xt0 = -15;
+xt0 = -5;
 
 dxtd0 = 0;
 xtd0 = xt0;
 
 %Load position
-xl0 = xt0-2;
+xl0 = xt0+2;
 yl0 = Yt0 - lh0;
 Vlx0 = 0;
 Vly0 = 0;
@@ -148,23 +148,23 @@ theta_tm0 = 0;
 
 
 %% Level 2 PID Constants
-wh = 7*bEh/MEh;
+wh = 20;
 nh = 2.5;
-% Ksia_PID_hoist = -ih * MEh * nh * wh^3 / rhd;
+% Ksia_PID_hoist = -ih *   * nh * wh^3 / rhd;
 % Ksa_PID_hoist = -ih * MEh * nh * wh^2 /rhd;
 % b_PID_hoist = -(ih * MEh * nh *wh - ih * bEh ) /rhd;
 
 
 
-Ksia_PID_hoist = -MEh * nh * wh^3;
-Ksa_PID_hoist = -MEh * nh * wh^2;
-b_PID_hoist = -MEh * nh * wh;
+Ksia_PID_hoist = MEh * wh^3 *rhd/ih;
+Ksa_PID_hoist =MEh * nh * wh^2 *rhd/ih;
+b_PID_hoist = MEh * nh * wh *rhd/ih;
 
 
 
 
-wtd = 10*bEtd/MEtd;
-ntd = 2.5;
+wtd = 40;
+ntd = 2.7;
 % Ksia_PID_trolley =it * MEtd * ntd * wtd^3 / rtd;
 % Ksa_PID_trolley =it * MEtd * ntd * wtd^2 / rtd;
 % b_PID_trolley =(it * MEtd * ntd *wtd- it * bEtd)/rtd ;
@@ -173,9 +173,9 @@ ntd = 2.5;
 % Ksa_PID_trolley =3.8e7; 
 % b_PID_trolley =6.75e5; 
 
-Ksia_PID_trolley =MEtd*ntd*wtd^3;
-Ksa_PID_trolley =MEtd*ntd*wtd^2;
-b_PID_trolley = MEtd*ntd*wtd;
+Ksia_PID_trolley = MEtd*wtd^3*rtd/it;
+Ksa_PID_trolley = MEtd*ntd*wtd^2*rtd/it;
+b_PID_trolley =  MEtd*ntd*wtd*rtd/it;
 
 %% Quantizer interval
 
