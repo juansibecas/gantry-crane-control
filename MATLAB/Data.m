@@ -173,9 +173,9 @@ ntd = 2.7;
 % Ksa_PID_trolley =3.8e7; 
 % b_PID_trolley =6.75e5; 
 
-Ksia_PID_trolley = MEtd*wtd^3*rtd/it;
-Ksa_PID_trolley = MEtd*ntd*wtd^2*rtd/it;
-b_PID_trolley =  MEtd*ntd*wtd*rtd/it;
+Ksia_PID_trolley = (MEtd+Mt)*wtd^3*rtd/it;
+Ksa_PID_trolley = (MEtd+Mt)*ntd*wtd^2*rtd/it;
+b_PID_trolley =  (MEtd+Mt)*ntd*wtd*rtd/it;
 
 %% Quantizer interval
 
