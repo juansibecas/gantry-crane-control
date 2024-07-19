@@ -163,7 +163,7 @@ b_PID_hoist = MEh * nh * wh *rhd/ih;
 
 
 
-wtd = 40;
+wtd = 8;
 ntd = 2.7;
 % Ksia_PID_trolley =it * MEtd * ntd * wtd^3 / rtd;
 % Ksa_PID_trolley =it * MEtd * ntd * wtd^2 / rtd;
