@@ -138,7 +138,7 @@ dxtd0 = 0;
 xtd0 = xt0;
 
 %Load position
-xl0 = xt0+0;
+xl0 = xt0+0.1;
 yl0 = Yt0 - lh0;
 Vlx0 = 0;
 Vly0 = 0;
@@ -163,7 +163,7 @@ b_PID_hoist = MEh * nh * wh *rhd/ih;
 
 
 
-wtd = 8;
+wtd = 40;
 ntd = 2.7;
 % Ksia_PID_trolley =it * MEtd * ntd * wtd^3 / rtd;
 % Ksa_PID_trolley =it * MEtd * ntd * wtd^2 / rtd;
