@@ -67,7 +67,7 @@ it = 30;                % gearbox ratio
 Jtm_tb = 7.0;           % Equivalent inertia moment of the fast axle (motor + break + gearbox input)
 btm = 6.0;              % Equivalent mechanical viscous friction (fast axle)
 btb = 5.0e6;            % Equivalent mechanical viscous friction (brake)
-Ttb_max = 5.0e-3;       % Max brake torque
+Ttb_max = 5.0e3;       % Max brake torque
 Tau_tm = 1e-3;          % Torque modulator time constant
 Ttm_max = 3.0e3;       % Max motor/regenerative-braking torque
 
@@ -106,46 +106,6 @@ X_container=[2.8,5.4,8,10.6,13.2,15.8,18.4,21,23.6];
 %% Hoist Overspeed Sensor
 
 hoist_v115 = 115; %TODO how much is it
-
-%% Initial conditions
-%{ 
-dlh0 = 0;
-lh0 = 30;
-
-dxt0 = 0;
-xt0 = 30;
-
-dxtd0 = 0;
-xtd0 = 30;
-
-%Load position
-xl0 = 30;
-yl0 = Yt0 - lh0;
-Vlx0 = 0;
-Vly0 = 0;
-
-theta_hm0 = 0;
-theta_tm0 = 0;
-%}
-% Sway test (TODO)
-dlh0 = 0;
-lh0 = 25;
-
-dxt0 = 0;
-xt0 = -15;
-
-dxtd0 = 0;
-xtd0 = xt0;
-
-%Load position
-xl0 = xt0;
-yl0 = Yt0 - lh0;
-Vlx0 = 0;
-Vly0 = 0;
-
-theta_hm0 = 0;
-theta_tm0 = 0;
-
 
 %% Level 2 PID Constants
 wh = 7*bEh/MEh;
