@@ -67,7 +67,7 @@ it = 30;                % gearbox ratio
 Jtm_tb = 7.0;           % Equivalent inertia moment of the fast axle (motor + break + gearbox input)
 btm = 6.0;              % Equivalent mechanical viscous friction (fast axle)
 btb = 5.0e6;            % Equivalent mechanical viscous friction (brake)
-Ttb_max = 5.0e-3;       % Max brake torque
+Ttb_max = 5.0e3;       % Max brake torque
 Tau_tm = 1e-3;          % Torque modulator time constant
 Ttm_max = 3.0e3;       % Max motor/regenerative-braking torque
 
@@ -107,64 +107,24 @@ X_container=[2.8,5.4,8,10.6,13.2,15.8,18.4,21,23.6];
 
 hoist_v115 = 115; %TODO how much is it
 
-%% Initial conditions
-%{ 
-dlh0 = 0;
-lh0 = 30;
-
-dxt0 = 0;
-xt0 = 30;
-
-dxtd0 = 0;
-xtd0 = 30;
-
-%Load position
-xl0 = 30;
-yl0 = Yt0 - lh0;
-Vlx0 = 0;
-Vly0 = 0;
-
-theta_hm0 = 0;
-theta_tm0 = 0;
-%}
-% Sway test (TODO)
-dlh0 = 0;
-lh0 = 25;
-
-dxt0 = 0;
-xt0 = -5;
-
-dxtd0 = 0;
-xtd0 = xt0;
-
-%Load position
-xl0 = xt0+0.1;
-yl0 = Yt0 - lh0;
-Vlx0 = 0;
-Vly0 = 0;
-
-theta_hm0 = 0;
-theta_tm0 = 0;
-
-
 %% Level 2 PID Constants
-wh = 20;
+wh = 7*bEh/MEh;
 nh = 2.5;
-% Ksia_PID_hoist = -ih *   * nh * wh^3 / rhd;
+% Ksia_PID_hoist = -ih * MEh * nh * wh^3 / rhd;
 % Ksa_PID_hoist = -ih * MEh * nh * wh^2 /rhd;
 % b_PID_hoist = -(ih * MEh * nh *wh - ih * bEh ) /rhd;
 
 
 
-Ksia_PID_hoist = MEh * wh^3 *rhd/ih;
-Ksa_PID_hoist =MEh * nh * wh^2 *rhd/ih;
-b_PID_hoist = MEh * nh * wh *rhd/ih;
+Ksia_PID_hoist = -MEh * nh * wh^3;
+Ksa_PID_hoist = -MEh * nh * wh^2;
+b_PID_hoist = -MEh * nh * wh;
 
 
 
 
-wtd = 40;
-ntd = 2.7;
+wtd = 10*bEtd/MEtd;
+ntd = 2.5;
 % Ksia_PID_trolley =it * MEtd * ntd * wtd^3 / rtd;
 % Ksa_PID_trolley =it * MEtd * ntd * wtd^2 / rtd;
 % b_PID_trolley =(it * MEtd * ntd *wtd- it * bEtd)/rtd ;
@@ -173,9 +133,9 @@ ntd = 2.7;
 % Ksa_PID_trolley =3.8e7; 
 % b_PID_trolley =6.75e5; 
 
-Ksia_PID_trolley = (MEtd+Mt)*wtd^3*rtd/it;
-Ksa_PID_trolley = (MEtd+Mt)*ntd*wtd^2*rtd/it;
-b_PID_trolley =  (MEtd+Mt)*ntd*wtd*rtd/it;
+Ksia_PID_trolley =MEtd*ntd*wtd^3;
+Ksa_PID_trolley =MEtd*ntd*wtd^2;
+b_PID_trolley = MEtd*ntd*wtd;
 
 %% Quantizer interval
 
