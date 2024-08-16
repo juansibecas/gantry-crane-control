@@ -31,11 +31,13 @@ Ob_profile=ObstUpdate(Ob_profile,1.5,24.9,-19);
 
 % Container stack
 for i=1:cols
-    Ob_profile=ObstUpdate(Ob_profile,1.5+(i-1)*2.6,1.5+i*2.6,containerLayout(i)*2.4-19);
+    Ob_profile=ObstUpdate(Ob_profile, 1.5+(i-1)*2.6, 1.5+i*2.6, containerLayout(i)*2.4-19);
 end
 
 % Ship wall - Pared barco
 Ob_profile=ObstUpdate(Ob_profile,24.9,25.9,5);
+
+% plot(Ob_profile(:,1), Ob_profile(:,2))
     
 function NewProfile=ObstUpdate(OldProfile,x0,x1,y)
     NewProfile=OldProfile;
