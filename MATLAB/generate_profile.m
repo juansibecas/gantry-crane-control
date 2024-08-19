@@ -1,8 +1,8 @@
 %% GENERATE FULL OBSTACLE PROFILE
 cols = length(containerLayout);
 containerWidth_ = 2.5;
-xmin = -30;
-xmax = 50;
+xmin = -35;
+xmax = 55;
 dx = 0.01;
 N = (xmax - xmin)/dx + 1;
 Ob_profile = zeros(N,2);
