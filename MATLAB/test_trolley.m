@@ -22,7 +22,7 @@ theta_hm0 = 0;
 theta_tm0 = 0;
 
 % Torque
-Tt = Ttm_max;
+Tt = Ttm_max/2;
 Th = 0;
 
 % Brakes
