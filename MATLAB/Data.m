@@ -133,22 +133,11 @@ ntd = 2.5;
 % Ksa_PID_trolley =3.8e7; 
 % b_PID_trolley =6.75e5; 
 
-Ksia_PID_trolley =MEtd*ntd*wtd^3;
+hois =MEtd*ntd*wtd^3;
 Ksa_PID_trolley =MEtd*ntd*wtd^2;
 b_PID_trolley = MEtd*ntd*wtd;
 
-%% Quantizer interval
-
-quant = 0.001;
-
-%% Sensor sample frequency
-
-fs = 1000;
-
-st = 1/fs;
-
-
-
+%% manual control
 
 AnalogV_=0;
 AnalogH_=0;
