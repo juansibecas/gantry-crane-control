@@ -114,13 +114,9 @@ nh = 2.5;
 % Ksa_PID_hoist = -ih * MEh * nh * wh^2 /rhd;
 % b_PID_hoist = -(ih * MEh * nh *wh - ih * bEh ) /rhd;
 
-
-
 Ksia_PID_hoist = -MEh * nh * wh^3;
 Ksa_PID_hoist = -MEh * nh * wh^2;
 b_PID_hoist = -MEh * nh * wh;
-
-
 
 
 wtd = 10*bEtd/MEtd;
@@ -133,7 +129,7 @@ ntd = 2.5;
 % Ksa_PID_trolley =3.8e7; 
 % b_PID_trolley =6.75e5; 
 
-hois =MEtd*ntd*wtd^3;
+Ksia_PID_trolley =MEtd*ntd*wtd^3;
 Ksa_PID_trolley =MEtd*ntd*wtd^2;
 b_PID_trolley = MEtd*ntd*wtd;
 
