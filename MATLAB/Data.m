@@ -35,8 +35,8 @@ bcy = 1e8;              % Internal friction[]
 bcx = 1e7;              % Horizontal drag friction (vertical contact)[]
 
 % Hoisting Equivalent wirerope parameters PER METER
-kwu = 2.36e8;           % Unit Traction stiffness [] %guia de trabajo 2.36e8
-bwu = 150;              % Unit Internal Friction []  %guia de trabajo 150
+kwu = 2.36e10;           % Unit Traction stiffness [] %guia de trabajo 2.36e8
+bwu = 150000;              % Unit Internal Friction []  %guia de trabajo 150
 
 % Hoisting drive system
 rhd = 0.75;             % Drum radius[m]
@@ -54,8 +54,8 @@ Tau_hm = 1e-3;             % Torque modulator time constant
 Thm_max = 2.0e4;        % Max motor/regenerative-braking torque
 
 % Trolley equivalent wirerope parameters TOTAL
-Ktw =4.8e5;             % Wirerope total equivalent traction stiffness %guia de trabajo 4.8e5
-btw =3e3;               % Internal friction %guia de trabajo 3e3
+Ktw =4.8e8;             % Wirerope total equivalent traction stiffness %guia de trabajo 4.8e5
+btw =3e6;               % Internal friction %guia de trabajo 3e3
 
 % Trolley drive system
 Mt = 30000;             % Trolley mass
