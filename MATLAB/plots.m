@@ -8,10 +8,16 @@ thm_real_log = logs.getElement('Thm').Values.Data;
 ttm_ref_log = logs.getElement('Ttm*').Values.Data;
 ttm_real_log = logs.getElement('Ttm').Values.Data;
 
+%% Contact Mode
+
+fcx_log = logs.getElement('Fcx').Values.Data;
+fcy_log = logs.getElement('Fcy').Values.Data;
+
 %% Mass estimation
 
 loadcell_log = logs.getElement('loadcell').Values.Data;
 est_mass_log = logs.getElement('est_mass').Values.Data;
+real_mass_log = logs.getElement('real_mass').Values.Data;
 
 %% Load X-Y coordinates
 
@@ -49,27 +55,52 @@ dtheta_obs_log = logs.getElement('dtheta_obs').Values.Data;
 ddtheta_obs_log = logs.getElement('ddtheta_obs').Values.Data;
 
 
-%% Observer performance
+%% Plots
 
 figure(1)
 hold on
 grid on
-plot(time, lh_real_log);
-plot(time, lh_obs_log);
+title('observador carro')
+plot(time, xt_real_log);
+plot(time, xt_obs_log);
 legend('lh real', 'lh obs')
 
 figure(2)
 hold on
 grid on
-plot(time, dlh_real_log);
-plot(time, dlh_obs_log);
-legend('dlh real', 'dlh obs')
+title('observador izaje')
+plot(time, lh_real_log);
+plot(time, lh_obs_log);
+legend('lh real', 'lh obs')
 
 figure(3)
 hold on
 grid on
-plot(time, ddlh_real_log);
-plot(time, ddlh_obs_log);
-legend('ddlh real', 'ddlh obs')
+title('observador balanceo')
+plot(time, theta_real_log);
+plot(time, theta_obs_log);
+legend('theta real', 'theta obs')
 
+figure(4)
+hold on
+grid on
+title('trayectoria de la carga')
+plot(xl_log, yl_log);
+%legend('trayectoria')
+
+figure(5)
+hold on
+grid on
+title('estimacion de masa')
+plot(time, real_mass_log);
+plot(time, est_mass_log);
+legend('masa real', 'masa estimada')
+
+figure(6)
+hold on
+grid on
+title('Fuerzas de contacto')
+plot(time, fcx_log);
+plot(time, fcy_log);
+legend('fcx', 'fcy')
 
