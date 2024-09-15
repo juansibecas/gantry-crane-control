@@ -43,10 +43,12 @@ theta_real_log = logs.getElement('theta_real').Values.Data;
 %% Trolley and Hoist observed profiles
 
 lh_obs_log = logs.getElement('lh_obs').Values.Data;
+deltalh_obs_log = logs.getElement('deltalh_obs').Values.Data;
 dlh_obs_log = logs.getElement('dlh_obs').Values.Data;
 ddlh_obs_log = logs.getElement('ddlh_obs').Values.Data;
 
 xt_obs_log = logs.getElement('xt_obs').Values.Data;
+deltaxt_obs_log = logs.getElement('deltaxt_obs').Values.Data;
 dxt_obs_log = logs.getElement('dxt_obs').Values.Data;
 ddxt_obs_log = logs.getElement('ddxt_obs').Values.Data;
 
@@ -63,7 +65,7 @@ grid on
 title('observador carro')
 plot(time, xt_real_log);
 plot(time, xt_obs_log);
-legend('lh real', 'lh obs')
+legend('xt real', 'xt obs')
 
 figure(2)
 hold on
@@ -103,4 +105,20 @@ title('Fuerzas de contacto')
 plot(time, fcx_log);
 plot(time, fcy_log);
 legend('fcx', 'fcy')
+
+figure(7)
+hold on
+grid on
+title('Torque en izaje')
+plot(time, thm_ref_log);
+plot(time, thm_real_log);
+legend('ref', 'real')
+
+figure(8)
+hold on
+grid on
+title('Torque en carro')
+plot(time, ttm_ref_log);
+plot(time, ttm_real_log);
+legend('ref', 'real')
 
