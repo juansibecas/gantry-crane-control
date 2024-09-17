@@ -35,8 +35,8 @@ bcy = 1e8;              % Internal friction[]
 bcx = 1e7;              % Horizontal drag friction (vertical contact)[]
 
 % Hoisting Equivalent wirerope parameters PER METER
-kwu = 2.36e8;           % Unit Traction stiffness [] %guia de trabajo 2.36e8
-bwu = 150;              % Unit Internal Friction []  %guia de trabajo 150
+kwu = 2.36e10;           % Unit Traction stiffness [] %guia de trabajo 2.36e8
+bwu = 15000;              % Unit Internal Friction []  %guia de trabajo 150
 
 % Hoisting drive system
 rhd = 0.75;             % Drum radius[m]
@@ -54,8 +54,8 @@ Tau_hm = 1e-3;             % Torque modulator time constant
 Thm_max = 2.0e4;        % Max motor/regenerative-braking torque
 
 % Trolley equivalent wirerope parameters TOTAL
-Ktw =4.8e5;             % Wirerope total equivalent traction stiffness %guia de trabajo 4.8e5
-btw =3e3;               % Internal friction %guia de trabajo 3e3
+Ktw =4.8e8;             % Wirerope total equivalent traction stiffness %guia de trabajo 4.8e5
+btw =3e5;               % Internal friction %guia de trabajo 3e3
 
 % Trolley drive system
 Mt = 30000;             % Trolley mass
@@ -72,12 +72,12 @@ Tau_tm = 1e-3;          % Torque modulator time constant
 Ttm_max = 3.0e3;       % Max motor/regenerative-braking torque
 
 % Hoist Subsystem equivalent parameters
-MEh = 2*(Jhd_hEb + Jhm_hb * ih^2)/rhd^2;
-bEh = 2*(bhd + bhm*ih^2)/rhd^2;
+MEh = (Jhd_hEb + Jhm_hb * ih^2)/rhd^2;
+bEh = bhd + (bhd + bhm*ih^2)/rhd^2;
 
 % Trolley Drum Subsystem equivalent parameters
-MEtd = (Jtd + Jtm_tb*it^2)/rtd^2;
-bEtd = (btd + btm*it^2)/rtd^2;
+MEtd = Mt + (Jtd + Jtm_tb*it^2)/rtd^2;
+bEtd = bt + (btd + btm*it^2)/rtd^2;
 
 %% Initialize container layout and masses of the top containers
 columns = 9;
@@ -108,15 +108,15 @@ X_container=[2.8,5.4,8,10.6,13.2,15.8,18.4,21,23.6];
 hoist_v115 = 115; %TODO how much is it
 
 %% Level 2 PID Constants
-wh = 7*bEh/MEh;
+wh = 10*bEh/MEh;
 nh = 2.5;
 % Ksia_PID_hoist = -ih * MEh * nh * wh^3 / rhd;
 % Ksa_PID_hoist = -ih * MEh * nh * wh^2 /rhd;
 % b_PID_hoist = -(ih * MEh * nh *wh - ih * bEh ) /rhd;
 
-Ksia_PID_hoist = -MEh * nh * wh^3;
-Ksa_PID_hoist = -MEh * nh * wh^2;
-b_PID_hoist = -MEh * nh * wh;
+Ksia_PID_hoist = MEh * wh^3;
+Ksa_PID_hoist = MEh * nh * wh^2;
+b_PID_hoist = MEh * nh * wh;
 
 
 wtd = 10*bEtd/MEtd;
@@ -129,9 +129,24 @@ ntd = 2.5;
 % Ksa_PID_trolley =3.8e7; 
 % b_PID_trolley =6.75e5; 
 
-Ksia_PID_trolley =MEtd*ntd*wtd^3;
+Ksia_PID_trolley =MEtd*wtd^3;
 Ksa_PID_trolley =MEtd*ntd*wtd^2;
 b_PID_trolley = MEtd*ntd*wtd;
+
+%% observer gains
+
+wh_obs = 5*wh;
+
+Ktheta_obs_h = 3*wh_obs;
+Kw_obs_h = 3*wh_obs^2;
+Ki_obs_h = wh_obs^3;
+
+wtd_obs = 5*wtd;
+
+Ktheta_obs_t = 3*wtd_obs;
+Kw_obs_t = 3*wtd_obs^2;
+Ki_obs_t = wtd_obs^3;
+
 
 %% manual control
 
