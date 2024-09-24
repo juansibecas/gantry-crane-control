@@ -135,13 +135,13 @@ b_PID_trolley = MEtd*ntd*wtd;
 
 %% observer gains
 
-wh_obs = 5*wh;
+wh_obs = 1*wh;
 
 Ktheta_obs_h = 3*wh_obs;
 Kw_obs_h = 3*wh_obs^2;
 Ki_obs_h = wh_obs^3;
 
-wtd_obs = 5*wtd;
+wtd_obs = 1*wtd;
 
 Ktheta_obs_t = 3*wtd_obs;
 Kw_obs_t = 3*wtd_obs^2;

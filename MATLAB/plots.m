@@ -52,9 +52,9 @@ deltaxt_obs_log = logs.getElement('deltaxt_obs').Values;
 dxt_obs_log = logs.getElement('dxt_obs').Values;
 ddxt_obs_log = logs.getElement('ddxt_obs').Values;
 
-theta_obs_log = logs.getElement('theta_obs').Values;
-dtheta_obs_log = logs.getElement('dtheta_obs').Values;
-ddtheta_obs_log = logs.getElement('ddtheta_obs').Values;
+% theta_obs_log = logs.getElement('theta_obs').Values;
+% dtheta_obs_log = logs.getElement('dtheta_obs').Values;
+% ddtheta_obs_log = logs.getElement('ddtheta_obs').Values;
 
 
 %% Plots
@@ -80,8 +80,8 @@ hold on
 grid on
 title('observador balanceo')
 plot(theta_real_log.Time, theta_real_log.Data);
-plot(theta_obs_log.Time, theta_obs_log.Data);
-legend('theta real', 'theta obs')
+%plot(theta_obs_log.Time, theta_obs_log.Data);
+legend('theta real')%, 'theta obs')
 
 figure(4)
 hold on
