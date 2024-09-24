@@ -73,7 +73,7 @@ Ttm_max = 3.0e3;       % Max motor/regenerative-braking torque
 
 % Hoist Subsystem equivalent parameters
 MEh = (Jhd_hEb + Jhm_hb * ih^2)/rhd^2;
-bEh = bhd + (bhd + bhm*ih^2)/rhd^2;
+bEh = (bhd + bhm*ih^2)/rhd^2;
 
 % Trolley Drum Subsystem equivalent parameters
 MEtd = Mt + (Jtd + Jtm_tb*it^2)/rtd^2;
@@ -147,6 +147,8 @@ Ktheta_obs_t = 3*wtd_obs;
 Kw_obs_t = 3*wtd_obs^2;
 Ki_obs_t = wtd_obs^3;
 
+%% sample frequency
+Ts = 0.001;
 
 %% manual control
 
@@ -156,3 +158,41 @@ AnalogH_=0;
 message=["Exit manual zone to perform automatic positioning","Positioning","Manually engage the container","Manually release the container","Manual"];
 Container1_x0=-15;
 Container1_y0=2.2;
+
+
+%% Discrete time observer gains
+Ts = 0.001;
+A = Ts*[1    1;
+            0    -bEh/MEh];
+B = Ts*[0;
+           -1/MEh];
+C = [1 0];
+
+syms L1 L2;
+
+wh_obs = 10*wh;
+zeta = 0.7;
+
+real_part = - zeta * wh_obs;
+imag_part = wh_obs * sqrt(1 - zeta^2);
+
+p1 = real_part + 1i * imag_part;
+p2 = real_part - 1i * imag_part;
+
+desired_poles = [p1;p2];
+desired_poles_disc = [exp(p2*0.001); exp(p1*0.001)];
+observerpoles = eig(A-[L1;L2]*C);
+equation = observerpoles == desired_poles_disc;
+sol = solve(equation, [L1, L2]);
+
+L = Ts*[double(vpa(sol.L1)); double(vpa(sol.L2))];
+
+
+
+
+
+
+
+
+
+
