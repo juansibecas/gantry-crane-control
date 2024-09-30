@@ -88,14 +88,15 @@ containerWidth=2.5;
 Hseg=3;
 Bseg=2;
 
-containerLayout = [3 2 2 4 3 4 2 1 4];%randi([0, maxContainers], 1, columns);
+containerLayout = [3 2 3 4 3 4 3 3 4];
 containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
 
-
+bayLayout = [0 1 1];
+bayMasses = randi([Mc_range(1), Mc_range(2)], 1, length(bayLayout));
 
 X_bay=[-22,-15,-8];
 
-X_container=[2.8,5.4,8,10.6,13.2,15.8,18.4,21,23.6];
+X_container=[2.75,5.25,7.75,10.25,12.75,15.25,17.75,20.25,22.75];
 
 %% Generate profile(yc0) from layout
 
@@ -158,36 +159,6 @@ AnalogH_=0;
 message=["Exit manual zone to perform automatic positioning","Positioning","Manually engage the container","Manually release the container","Manual"];
 Container1_x0=-15;
 Container1_y0=2.2;
-
-
-%% Discrete time observer gains
-Ts = 0.001;
-A = Ts*[1    1;
-            0    -bEh/MEh];
-B = Ts*[0;
-           -1/MEh];
-C = [1 0];
-
-syms L1 L2;
-
-wh_obs = 10*wh;
-zeta = 0.7;
-
-real_part = - zeta * wh_obs;
-imag_part = wh_obs * sqrt(1 - zeta^2);
-
-p1 = real_part + 1i * imag_part;
-p2 = real_part - 1i * imag_part;
-
-desired_poles = [p1;p2];
-desired_poles_disc = [exp(p2*0.001); exp(p1*0.001)];
-observerpoles = eig(A-[L1;L2]*C);
-equation = observerpoles == desired_poles_disc;
-sol = solve(equation, [L1, L2]);
-
-L = Ts*[double(vpa(sol.L1)); double(vpa(sol.L2))];
-
-
 
 
 

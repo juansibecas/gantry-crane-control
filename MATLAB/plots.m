@@ -1,6 +1,10 @@
 %% Plots and performance checks
 logs = out.logsout;
 time = out.tout;
+
+
+mode_log = logs.getElement('display').Values;
+tlk_log = logs.getElement('TLK').Values;
 %% Torque inputs
 
 thm_ref_log = logs.getElement('Thm*').Values;
@@ -43,18 +47,20 @@ theta_real_log = logs.getElement('theta_real').Values;
 %% Trolley and Hoist observed profiles
 
 lh_obs_log = logs.getElement('lh_obs').Values;
-deltalh_obs_log = logs.getElement('deltalh_obs').Values;
-dlh_obs_log = logs.getElement('dlh_obs').Values;
-ddlh_obs_log = logs.getElement('ddlh_obs').Values;
 
 xt_obs_log = logs.getElement('xt_obs').Values;
-deltaxt_obs_log = logs.getElement('deltaxt_obs').Values;
-dxt_obs_log = logs.getElement('dxt_obs').Values;
-ddxt_obs_log = logs.getElement('ddxt_obs').Values;
 
 % theta_obs_log = logs.getElement('theta_obs').Values;
 % dtheta_obs_log = logs.getElement('dtheta_obs').Values;
 % ddtheta_obs_log = logs.getElement('ddtheta_obs').Values;
+
+%% Trolley and Hoist speed references
+
+dlh_ref_log = logs.getElement('dlh_ref').Values;
+
+dxt_ref_log = logs.getElement('dxt_ref').Values;
+
+sway_ref_log = logs.getElement('sway_ref').Values;
 
 
 %% Plots
@@ -79,8 +85,7 @@ figure(3)
 hold on
 grid on
 title('observador balanceo')
-plot(theta_real_log.Time, theta_real_log.Data);
-%plot(theta_obs_log.Time, theta_obs_log.Data);
+plot(theta_real_log.Time, theta_real_log.Data*180/pi);
 legend('theta real')%, 'theta obs')
 
 figure(4)
@@ -121,4 +126,21 @@ title('Torque en carro')
 plot(ttm_ref_log.Time, ttm_ref_log.Data);
 plot(ttm_real_log.Time, ttm_real_log.Data);
 legend('ref', 'real')
+
+figure(9)
+hold on
+grid on
+title('velocidad de izaje')
+plot(dlh_ref_log.Time, dlh_ref_log.Data);
+plot(dlh_real_log.Time, dlh_real_log.Data);
+legend('ref', 'real')
+
+figure(10)
+hold on
+grid on
+title('velocidad de carro')
+plot(dxt_ref_log.Time, dxt_ref_log.Data);
+plot(dxt_real_log.Time, dxt_real_log.Data);
+plot(sway_ref_log.Time, sway_ref_log.Data);
+legend('ref', 'real', 'sway ref')
 
