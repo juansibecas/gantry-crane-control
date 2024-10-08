@@ -79,9 +79,20 @@
 
 \section{Introducción} \label{sec:intro}
 
+
+El presente informe aborda el control de una grúa portuaria destinada a la carga, descarga y reubicación de contenedores entre el barco y las bahías de carga. El objetivo es mejorar la eficiencia del sistema mediante trayectorias de movimiento que sean tanto suaves como rápidas.
+
+Para desarrollar este control, se comienza con el modelado del sistema físico, que consta de un carro para el movimiento horizontal y un sistema de izaje para el movimiento vertical. Ambos movimientos están acoplados por la carga, la cual consiste en un contenedor y un "spreader" que lo sostiene. La traslación y el izaje son accionados por motores eléctricos, lo que permite un control preciso de las trayectorias.
+
+El desarrollo del informe incluye el modelado del sistema físico, obteniendo las ecuaciones de movimiento y utilizando Simulink para simular su comportamiento. A continuación, se diseña un control híbrido de tres niveles: el nivel 2 se encarga del control en tiempo discretizado para los motores que accionan el izaje y el carro; el nivel 1 consiste en un controlador discreto basado en eventos, que genera trayectorias suaves y eficientes; y el nivel 0 actúa como sistema de seguridad, asegurando que el sistema entre en un estado seguro en caso de fallas. Para la simulación del controlador, se emplea el software Matlab/Simulink, y luego se implementa en Codesys para simular su ejecución en un PLC.
+
+
 \section{Desarrollo} \label{sec:desarrollo}
     \subsection{Modelo del Sistema Físico} \label{sec:plantModel}
 
+        El modelo del sistema se simplifica a un control de posición de la carga en el plano. No se tendran en cuenta grados liberdad que no estan complendidos en el plano perpendicular el eje longitudinal del muelle. Se considera que la esturcuruta de la grua es rigida y que no se producen vibraciones, no así los cable que se consideran flexibles.
+        Para el desarrollo de las ecuaciones se parde desde lo desarrollado en el enunciado del trabajo practico.
+        
         \subsubsection{Subsistema de Izaje}
             Segunda ley de Newton del lado tambor:
             \begin{equation} \label{eq:tamborIzaje}
@@ -206,184 +217,8 @@
             despejando 
 
 
-            \subsubsection{Control de balanceo}
-                Se deducen las ecuaciones de movimiento del sistema carro-péndulo, se obtiene:
 
-                Planteando el equilibrio dinámico de los torques en el anclaje del péndulo:
-                \begin{equation}
-                    \sum \tau = I \ddot{\theta}
-                \end{equation}
-                \begin{equation}
-                    m l^2 \ddot{\theta} = - m g \sin{\theta} + m \cos{\theta} \ddot{x}_t
-                \end{equation}
-                despejando \(\ddot{\theta}\):
-                \begin{equation}
-                    \ddot{\theta} = \frac{\cos{\theta} \ddot{x}_t}{l} - \frac{g \sin{\theta}}{l}
-                \end{equation}
-
-                También:
-                \begin{equation}
-                    x_l = \sin(\theta) l + x_t
-                \end{equation}
-                \begin{equation}
-                    \dot{x}_l = \cos(\theta) \dot{\theta} l + \dot{x}_t
-                \end{equation}
-
-                Se definen el vector de estado como:
-                \begin{equation}
-                    x = \begin{bmatrix}
-                        \theta \\
-                        \dot{\theta}
-                    \end{bmatrix}
-                \end{equation}
-                \begin{equation}
-                    u = \ddot{x}_t
-                \end{equation}
-                \begin{equation}
-                    y = \dot{x}_l
-                \end{equation}
-
-                Por lo tanto se expresa el modelo del sistema en el espacio de estados no lineal:
-                \begin{equation}
-                    \begin{cases}
-                        \dot{x} = f(x,u,t) ; x(0) = x_0 \\
-                        y = h(x,u,t)
-                    \end{cases}
-                \end{equation}
-                Donde:
-                \begin{equation}
-                    f(x,u,t) = \begin{bmatrix}
-                        \dot{\theta} \\
-                        \frac{\cos{\theta} u}{l} - \frac{g \sin{\theta}}{l}
-                    \end{bmatrix}
-                \end{equation}
-                \begin{equation}
-                    h(x,u,t) = \cos{\theta} \dot{\theta} l
-                \end{equation}
-                Se ignora \(\dot{x}_t\) dado que buscaremos el incremendo de velocidad que debemos aplicar al carro para que el péndulo se mantenga en equilibrio.
-
-                Se linealiza el sistema en torno a un punto de trabajo \(x(t), u(t)\) y se obtiene:
-                \begin{equation}
-                    \begin{cases}
-                        \dot{x} = A x + B u \\
-                        y = C x + D u
-                    \end{cases}
-                \end{equation}
-                Donde:
-                \begin{equation}
-                    A_{ij}= \frac{\partial f_i}{\partial x_j} \Bigg|_{x(t), u(t)}
-                \end{equation}
-                \begin{equation}
-                    B_{ij}= \frac{\partial f_i}{\partial u_j} \Bigg|_{x(t), u(t)}
-                \end{equation}
-                \begin{equation}
-                    C_{ij}= \frac{\partial h_i}{\partial x_j} \Bigg|_{x(t), u(t)}
-                \end{equation}
-                \begin{equation}
-                    D_{ij}= \frac{\partial h_i}{\partial u_j} \Bigg|_{x(t), u(t)}
-                \end{equation}
-
-                Se obtiene:
-                \begin{equation}
-                    A = \begin{bmatrix}
-                        0 & 1 \\
-                        -\cos{\theta}\frac{g}{l^2}-\sin{\theta}\frac{\ddot{x}_t}{l^2} & 0
-                    \end{bmatrix}
-                \end{equation}
-                \begin{equation}
-                    B = \begin{bmatrix}
-                        0 \\
-                        \frac{\cos{\theta}}{l^2}
-                    \end{bmatrix}
-                \end{equation}
-                \begin{equation}
-                    C = \begin{bmatrix}
-                        -\sin{\theta}\dot{\theta}l & \cos{\theta}l
-                    \end{bmatrix}
-                \end{equation}
-                \begin{equation}
-                    D = 0
-                \end{equation}
-
-                Se propone un controlador PD para el sistema:
-                \begin{equation}
-                    u =  K_p (y^*-y) + K_d \frac{d}{dt}(y^*-y)
-                \end{equation}
-
-                \begin{equation}
-                    \dot{x} = A x + B ( K_p (y^*-y) + K_d \frac{d}{dt}(y^*-y))
-                \end{equation}
-                \begin{equation}
-                    \dot{x} = A x + B ( K_p (y^*-C x) + K_d \frac{d}{dt}(y^*-C x))
-                \end{equation}
-
-                \begin{equation}
-                    \ddot{\theta} = A_{21} \dot{\theta} + B_{2} ( K_p (\dot{x}_l^*-C_1\theta-C_2\dot{\theta}) + K_d \frac{d}{dt}(\dot{x}_l^*-C_1\theta-C_2\dot{\theta}))
-                \end{equation}
-                \begin{equation}
-                    \ddot{\theta} = A_{21} \theta + B_{2} K_p \dot{x}_l^* - B_{2} K_p C_1 \theta - B_{2} K_p C_2 \dot{\theta} + \frac{d}{dt} \left( B_{2} K_d \dot{x}_l^* - B_{2} K_d C_1 \theta - B_{2} K_d C_2 \dot{\theta} \right)
-                \end{equation}
-                Utilizando la transformada de Laplace:
-                \begin{equation}
-                    s^2 \Theta = A_{21} \Theta + B_{2} K_p \dot{X}_l^* - B_{2} K_p C_1 \Theta - B_{2} K_p C_2 s \Theta + B_{2} K_d \dot{X}_l^*s - B_{2} K_d C_1 \Theta s - B_{2} K_d C_2 \Theta s^2
-                \end{equation}
-                Despejando \(\theta/\dot{X}_l^*\):
-                \begin{equation}
-                    \Theta( s^2(B_{2} K_d C_2) + s (B_{2} K_p C_2 - B_{2} K_d C_1) - A_{21} + B_{2} K_p C_1) = \dot{X}_l^* (B_{2} K_p + B_{2} K_d s)
-                \end{equation}
-
-                \begin{equation} \label{eq:thetaXl}
-                    \frac{\theta}{\dot{X}_l^*}= \frac{B_{2} K_p + B_{2} K_d s}{s^2(B_{2} K_d C_2) + s (B_{2} K_p C_2 - B_{2} K_d C_1) - A_{21} + B_{2} K_p C_1}
-                \end{equation}
-
-                Se obtinen las constantes \(K_p\) y \(K_d\) de forma que el denominado de \ref{eq:thetaXl} cumpla \(s^2 + s 2 \eta \omega + \omega^2 = 0\)
-
-                \begin{equation}
-                    \begin{cases}
-                        2 \eta \omega = \frac{B_{2} K_p C_2 - B_{2} K_d C_1 }{B_{2} K_d C_2} \\
-                        \omega^2 = \frac{A_{21} - B_{2} K_p C_1}{B_{2} K_d C_2}
-                    \end{cases}
-                \end{equation}
-                \begin{equation}
-                    \begin{cases}
-                        2 \eta \omega = \frac{K_p}{K_d}-\frac{C_1 }{C_2} \\
-                        \omega^2 = \frac{A_{21}}{B_{2} K_d C_2} - \frac{K_p C_1}{K_d C_2}
-                    \end{cases}
-                \end{equation}
-
-                \begin{equation}
-                    \begin{cases}
-                        2 \eta \omega K_d=  K_p - K_d \frac{C_1 }{C_2} \\
-                        \omega^2 K_d = \frac{A_{21}}{B_{2} C_2} - K_p \frac{C_1}{C_2}
-                    \end{cases}
-                \end{equation}
-
-                \begin{equation}
-                    \begin{cases}
-                        K_p + K_d (-\frac{C_1}{C_2} - 2 \eta \omega) = 0 \\
-                        K_p \frac{C_1}{C_2} + K_d \omega^2 = \frac{A_{21}}{B_{2} C_2} 
-                    \end{cases}
-                \end{equation}
-
-                \begin{equation}
-                    \begin{cases}
-                        K_p = \frac{\frac{A_{21}}{B_{2} C_2}}{\omega^2-(-\frac{C_1}{C_2} - 2 \eta \omega)\frac{C_1}{C_2}} \\
-                        K_d = \frac{-\frac{A_{21}}{B_{2} C_2} (-\frac{C_1}{C_2} - 2 \eta \omega)}{\omega^2-(-\frac{C_1}{C_2} - 2 \eta \omega)\frac{C_1}{C_2}}
-                    \end{cases}
-                \end{equation}
-
-                \begin{equation}
-                    \begin{cases}
-                        K_p = \frac{\frac{A_{21}}{B_{2} C_2}}{\omega^2+(\frac{C_1}{C_2} + 2 \eta \omega)\frac{C_1}{C_2}} \\
-                        K_d = \frac{\frac{A_{21}}{B_{2} C_2} (\frac{C_1}{C_2} + 2 \eta \omega)}{\omega^2+(\frac{C_1}{C_2} + 2 \eta \omega)\frac{C_1}{C_2}}
-                    \end{cases}
-                \end{equation}
-
-
-
-
-
-\subsubsection{Control de balanceo}
+        \subsubsection{Control de balanceo}
 
             A continuación se derivan las ecuaciones que modelan el sistema carro-pendulo. Se utilizará el metodo de Lagrange definiendo las cordenadas generalizadas 
             \(x_t\) y \(\theta\) . Donde \(x_t\) es la posición del carro y \(\theta\) es el angulo del pendulo respecto a la vertical. 
@@ -531,187 +366,144 @@
                 \end{cases}
             \end{equation}
 
-
-
-        \subsubsection{Control de balanceo}
+            donde:
             \begin{equation}
-                U=\ddot{X}_t= \left(b_a s+k_{sa}\right) \left(X_l^*- X_l\right)
+                f(x,u,t) = \begin{bmatrix}
+                    \dot{\theta} \\
+                    - \frac{(m_t+m_l)\ddot{x}_t}{m_l l \cos{\theta}} + \tan{\theta} \dot{\theta}^2
+                \end{bmatrix}
             \end{equation}
             \begin{equation}
-                \left(X_l^*- X_l\right)= \frac{1}{s}\left(\dot{X}_l^*- \dot{X}_l\right)
-            \end{equation}
-
-            \begin{equation}
-                U=\ddot{X}_t= \left(b_a+k_{sa}\frac{1}{s}\right) \left(\dot{X}_l^*- \dot{X}_l\right)
+                h(x,u,t) = -\frac{l \ddot{\theta}}{\cos{\theta}}  - g \tan{\theta}
             \end{equation}
 
-            \begin{equation}
-                s^2 \Theta = A_{21} \Theta + B_{2} \left( \left(b_a+k_{sa}\frac{1}{s}\right) \left(\dot{X}_l^*- C_1 \Theta-C_2 \Theta s - \dot{X}_t\right) \right)
-            \end{equation}
-
-            \begin{equation}
-                \begin{split}
-                s^2 \Theta = A_{21} \Theta + B_{2} \biggl(  b_a\left(\dot{X}_l^*- C_1 \Theta -C_2 \Theta s + \dot{X}_t\right) + k_{sa}\frac{1}{s}\left(\dot{X}_l^* -C_1 \Theta -C_2 \Theta s - \dot{X}_t\right)\biggr)
-                \end{split}
-            \end{equation}
-
-            \begin{equation}
-                \begin{split}
-                s^2 \Theta = A_{21} \Theta + B_{2}\biggl(  b_a\dot{X}_l^*- b_a C_1 \Theta -b_a C_2 \Theta s + k_{sa}\dot{X}_l^*\frac{1}{s} - k_{sa} C_1 \Theta \frac{1}{s} - k_{sa} C_2 \Theta \\
-                - \dot{X}_t\left(b_a+k_{sa}\frac{1}{s}\right)\biggr)
-                \end{split}
-            \end{equation}
-
-            \begin{equation}
-                \begin{split}
-                s^2 \Theta = A_{21} \Theta + B_{2}b_a\dot{X}_l^*- B_{2}b_a C_1 \Theta -B_{2}b_a C_2 \Theta s + B_{2}k_{sa}\dot{X}_l^*\frac{1}{s} - B_{2}k_{sa} C_1 \Theta \frac{1}{s} - B_{2}k_{sa} C_2 \Theta \\
-                - B_{2}\dot{X}_t\left(b_a+k_{sa}\frac{1}{s}\right)
-                \end{split}
-            \end{equation}
-
-            \begin{equation}
-                \begin{split}
-                \Theta s^3 =  A_{21} \Theta s + B_{2}b_a \dot{X}_l^* s- B_{2}b_a C_1 \Theta s -B_{2}b_a C_2 \Theta s^2 + B_{2}k_{sa} \dot{X}_l^* - B_{2}k_{sa} C_1 \Theta - B_{2}k_{sa} C_2 \Theta s \\
-                - B_{2}\dot{X}_t\left(b_a s+k_{sa}\right)
-                \end{split}
-            \end{equation}
-
-            \begin{equation}
-                \begin{split}
-                0= \Theta \left( s^3 + s^2 \left(B_{2}b_a C_2\right) + s \left(-A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right) \right)\\
-                - \dot{X}_l^*\left(B_{2}b_a s + B_{2}k_{sa}\right) +\dot{X}_t\left(B_{2}b_a s+B_{2}k_{sa}\right)   
-                \end{split}
-            \end{equation}
-
-            \begin{equation}
-                \begin{split}
-                0= \Theta \left( s^3 + s^2 \left(B_{2}b_a C_2\right) + s \left(-A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right) \right)\\
-                - \dot{X}_l^*\left(B_{2}b_a s + B_{2}k_{sa}\right) +\dot{X}_t\left(B_{2}b_a s+B_{2}k_{sa}\right)   
-                \end{split}
-            \end{equation}
-
-
-            \begin{equation}
-                \begin{split}
-                    \Theta= \frac{B_{2}b_a s + B_{2}k_{sa}}{s^3 + s^2 \left(B_{2}b_a C_2\right) + s \left(-A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right)} \dot{X}_l^*\\
-                    - \frac{B_{2}b_a s+B_{2}k_{sa}}{s^3 + s^2 \left(B_{2}b_a C_2\right) + s \left(-A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right)} \dot{X}_t
-                \end{split}
-            \end{equation}
-
-            \begin{equation}
-                p_r(s)=(s+\omega_n)(s^2+2\zeta\omega_n s+\omega_n^2)
-            \end{equation}
-            \begin{equation}
-                p_r(s)=s^3+\omega_n(2\zeta+1)s^2+\omega_n^2(2\zeta+1)s +\omega_n^3
-            \end{equation}
-            \begin{equation}
-                p_r(s)=s^3+\omega_n \eta s^2+\omega_n^2 \eta s +\omega_n^3
-            \end{equation}
+            Realizando la linealización del sistema en el punto de equilibrio \(\theta = \theta^*\), \(\dot{\theta} = \dot{\theta}^*\) y \(\ddot{x}_t = \ddot{x}_t^*\) se obtiene el siguiente modelo linealizado:
 
             \begin{equation}
                 \begin{cases}
-                    \omega_n^3 = B_{2}k_{sa} C_1 \\
-                    \omega_n^2 \eta = -A_{21} +B_{2}b_a C_1 +B_{2}k_{sa} C_2 \\
-                    \omega_n \eta  = B_{2}b_a C_2 
+                    \dot{z} = Az + Bu \\
+                    y = Cz + Dv
                 \end{cases}
             \end{equation}
 
-            SI \(C_1=0\).
+            Donde \(z = x - x^*\), \(u = \ddot{x}_t - \ddot{x}_t^*\), \(y = \theta - \theta^*\) y \(v = \dot{\theta} - \dot{\theta}^*\).
 
             \begin{equation}
-                \begin{split}
-                    \Theta= \frac{B_{2}b_a s + B_{2}k_{sa}}{s\left(s^2 + s \left(B_{2}b_a C_2\right) + \left(-A_{21} +B_{2}k_{sa} C_2 \right)\right)} \dot{X}_l^*\\
-                    - \frac{B_{2}b_a s+B_{2}k_{sa}}{s\left(s^2 + s \left(B_{2}b_a C_2\right) + \left(-A_{21} +B_{2}k_{sa} C_2 \right)\right)} \dot{X}_t
-                \end{split}
+                A = \begin{bmatrix}
+                    0 & 1 \\
+                    -\frac{(m_t+m_l)\ddot{x}_t\tan{\theta}}{m_l l \cos{\theta}} + \frac{\dot{\theta}^2}{\cos^2{\theta}} & 2 \tan{\theta} \dot{\theta}
+                \end{bmatrix}
             \end{equation}
 
+            \begin{equation}
+                B = \begin{bmatrix}
+                    0 \\
+                     -\frac{1}{m_l l \cos{\theta}}
+                \end{bmatrix}
+            \end{equation}
+
+
+
+
+
+
+
+       
         \subsubsection{Control de balanceo}
             \begin{equation}
-                U=\ddot{X}_t= \left(b_a s+k_{sa}\right) \left(\dot{X}_l^*- \dot{X}_l\right)
+                U=\ddot{X}_t= \left(k_d s+k_p\right) \frac{1}{s} \left(\dot{\Theta}^*- \dot{\Theta}\right)
+            \end{equation}
+
+            \begin{equation}
+                U=\ddot{X}_t= \left(k_d +\frac{k_p}{s}\right) \left(\dot{\Theta}^*- \dot{\Theta}\right)
             \end{equation}
             
             \begin{equation}
-                s^2 \Theta = A_{21} \Theta + B_{2} \left( \left(b_a s+k_{sa}\right) \left(\dot{X}_l^*- C_1 \Theta-C_2 \Theta s - \dot{X}_t\right) \right)
+                 s^2 \Theta = A_{21} \Theta + B_{2} \left(k_d +\frac{k_p}{s}\right) \left(\dot{\Theta}^*- \dot{\Theta}\right)
             \end{equation}
 
             \begin{equation}
-                \begin{split}
-                s^2 \Theta = A_{21} \Theta + B_{2} \biggl(  b_a s\left(\dot{X}_l^*- C_1 \Theta -C_2 \Theta s + \dot{X}_t\right) + k_{sa}\left(\dot{X}_l^* -C_1 \Theta -C_2 \Theta s - \dot{X}_t\right)\biggr)
-                \end{split}
+                s \dot{\Theta} = A_{21} \frac{\dot{\Theta}}{s} + B_{2} k_d \dot{\Theta}^* - B_{2} k_d \dot{\Theta}  + B_{2} k_p \frac{\dot{\Theta}^*}{s}  - B_{2} k_p \frac{\dot{\Theta}}{s} 
             \end{equation}
 
             \begin{equation}
-                \begin{split}
-                s^2 \Theta = A_{21} \Theta + B_{2}\biggl(  b_a \dot{X}_l^* s- b_a C_1 \Theta s-b_a  C_2 \Theta s^2 + k_{sa}\dot{X}_l^* - k_{sa} C_1 \Theta - k_{sa} C_2 \Theta s\\
-                - \dot{X}_t\left(b_a s+k_{sa}\right)\biggr)
-                \end{split}
+                s^2 \dot{\Theta} = A_{21} \dot{\Theta} + s B_{2} k_d \dot{\Theta}^* - s B_{2} k_d \dot{\Theta}  + B_{2} k_p \dot{\Theta}^* - B_{2} k_p \dot{\Theta}
             \end{equation}
 
             \begin{equation}
-                \begin{split}
-                s^2 \Theta = A_{21} \Theta + B_{2}b_a\dot{X}_l^* s - B_{2}b_a C_1 \Theta s-B_{2}b_a C_2 \Theta s^2 + B_{2}k_{sa}\dot{X}_l^* - B_{2}k_{sa} C_1 \Theta  - B_{2}k_{sa} C_2 \Theta s\\
-                - B_{2}\dot{X}_t\left(b_a+k_{sa}\frac{1}{s}\right)
-                \end{split}
+                \dot{\Theta}(s^2 - A_{21} + s B_{2} k_d + B_{2} k_p) = \dot{\Theta}^*(s B_{2} k_d + B_{2} k_p)
             \end{equation}
 
             \begin{equation}
-                \begin{split}
-                0= \Theta \left( s^2 \left(1+B_{2}b_a C_2\right) + s \left( B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right) \right)\\
-                - \dot{X}_l^*\left(B_{2}b_a s + B_{2}k_{sa}\right) +\dot{X}_t\left(B_{2}b_a s+B_{2}k_{sa}\right)
-                \end{split}
+                G(s)=\frac{\dot{\Theta}}{\dot{\Theta}^*}=\frac{s B_{2} k_d + B_{2} k_p}{s^2 + s B_{2} k_d + B_{2} k_p - A_{21}}
             \end{equation}
 
-
-            \begin{equation}
-                \begin{split}
-                    \Theta= \frac{B_{2}b_a s + B_{2}k_{sa}}{ s^2 \left(1+B_{2}b_a C_2\right) + s \left( B_{2}b_a C_1 +B_{2}k_{sa} C_2 \right) + \left( B_{2}k_{sa} C_1 \right)} \dot{X}_l^*\\
-                    - \frac{B_{2}b_a s+B_{2}k_{sa}}{ s^2 \left(1+B_{2}b_a C_2\right) + s \left( B_{2}b_a C_1 +B_{2}k_{sa} C_2 \Theta \right) + \left( B_{2}k_{sa} C_1 \right)} \dot{X}_t
-                \end{split}
-            \end{equation}
-
-            \begin{equation}
-                p_r(s)=s^2 + s \frac{B_{2}b_a C_1 +B_{2}k_{sa} C_2 }{1+B_{2}b_a C_2} + \frac{B_{2}k_{sa} C_1}{1+B_{2}b_a C_2}
-            \end{equation}
             \begin{equation}
                 p_r(s)=(s^2+2\zeta\omega_n s+\omega_n^2)
             \end{equation}
 
             \begin{equation}
                 \begin{cases}
-                    2\zeta\omega_n = \frac{B_{2}b_a C_1 +B_{2}k_{sa} C_2 }{1+B_{2}b_a C_2} \\
-                    \omega_n^2 = \frac{B_{2}k_{sa} C_1}{1+B_{2}b_a C_2}
+                    \omega_n^2 = B_{2} k_p - A_{21}\\
+                    2\zeta\omega_n = B_{2} k_d
                 \end{cases}
             \end{equation}
 
             \begin{equation}
                 \begin{cases}
-                    (1+B_{2}b_a C_2)2\zeta\omega_n = B_{2}b_a C_1 +B_{2}k_{sa} C_2\\
-                    (1+B_{2}b_a C_2)\omega_n^2 = B_{2}k_{sa} C_1
+                    k_p = \frac{\omega_n^2 + A_{21}}{B_{2}}\\
+                    k_d = \frac{2\zeta\omega_n}{B_{2}}
                 \end{cases}
             \end{equation}
 
-            \begin{equation}
-                \begin{cases}
-                    2\zeta\omega_n+ 2\zeta\omega_n B_{2}b_a C_2 = B_{2}b_a C_1 +B_{2}k_{sa} C_2\\
-                    \omega_n^2+B_{2}b_a C_2\omega_n^2= B_{2}k_{sa} C_1
-                \end{cases}
-            \end{equation}
+        \subsection{Generación de trayectorias}
 
-            \begin{equation}
-                \begin{cases}
-                    b_a(2\zeta\omega_n B_{2}C_2-B_{2}C_1) &+ k_{sa}(-B_{2}C_2) = -2\zeta\omega_n \\
-                    b_a(\omega_n^2B_{2}C_2) &+ k_{sa}(-B_{2}C_1) = -\omega_n^2
-                \end{cases}
-            \end{equation}
+            La generación de trayectorias se implementa cuando la grúa opera en modo automático. Su función es definir un perfil que posicione a la grúa en una ubicación \textit{xy} determinada de manera suave y eficiente. Para ello, se genera una matriz que describe la posición, velocidad y aceleración de cada motor en función del tiempo, utilizando un intervalo de tiempo \textit{dt}. La trayectoria considera la posición actual de la grúa y la columna de contenedores o bahía de carga de destino. Además, se tiene en cuenta el perfil de obstáculos y se establece una distancia de seguridad en las direcciones \textit{x} e \textit{y}, definiendo así una zona de seguridad en la que el modo automático no puede operar.
 
-            
+            En primer lugar, se definen los puntos significativos de la trayectoria: la posición inicial, la posición final y la altura máxima. Estos puntos se calculan considerando el perfil de obstáculos previamente mencionado.
 
+            Posteriormente, se calculan los perfiles de subida, bajada y traslación. Estos perfiles se ajustan teniendo en cuenta los estados inicial y final deseados, asegurando así que el movimiento sea suave. Los perfiles se determinan utilizando un perfil de aceleración trapezoidal, que incluye una sobreaceleración para lograr una trayectoria más fluida y eficiente. La figura \ref{fig:perfil} ilustra un ejemplo de un perfil de aceleración trapezoidal similar al que se utiliza. Se indican siete tiempos que definen el perfil necesario para alcanzar un estado deseado. En este perfil, se observa que tanto la velocidad como la aceleración inicial son distintas de cero, y el perfil se ajusta a estos valores de manera que la transición entre el estado inicial y el perfil sea suave.
 
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/Figure_trap_profile.png}
+                \caption{Perfil de aceleración trapezoidal con condiciones iniciales \(x_0=0 \, \text{m}\), \(v_0=1 \, \text{m/s}\) y \(a_0=-1.5 \, \text{m/s}^2\).}
+                \label{fig:perfil}
+            \end{figure}
 
+            Es importante destacar que la generación de la trayectoria admite casos degenerados, lo que contribuye a la robustez del sistema. Se aceptan situaciones en las que la distancia recorrida es menor que la requerida para alcanzar la aceleración o velocidad máxima. En estos casos, se ajustan los perfiles utilizando un algoritmo recursivo para adaptar el perfil trapezoidal a uno triangular, como se muestra en la figura \ref{fig:perfilTriangular}.
 
-                    
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/Figure_trap_profile_triangle.png}
+                \caption{Perfil de aceleración en un caso degenerado.}
+                \label{fig:perfilTriangular}
+            \end{figure}
 
-                
+            Con los cálculos de estos perfiles, se realiza un análisis del tiempo que toma cada uno de los movimientos. En función de estos tiempos y del perfil de obstáculos, se determina un solapamiento en los movimientos, de modo que la grúa no se detenga en ningún momento, acortando así los tiempos de translación. La figura \ref{fig:trayectoria} muestra un ejemplo de la trayectoria junto con el perfil de obstáculos.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/Figure_trayectoria.png}
+                \caption{Trayectoria de la carga.}
+                \label{fig:trayectoria}
+            \end{figure}
+
+            La sincronización del movimiento y la suavidad del desplazamiento se pueden corroborar en las figuras \ref{fig:posicion_carro_izaje} y \ref{fig:velocidad_carro_izaje}.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/Figure_posicion_carro_izaje.png}
+                \caption{Posición del carro e izaje.}
+                \label{fig:posicion_carro_izaje}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/Figure_velocidad_carro_izaje.png}
+                \caption{Velocidad del carro e izaje.}
+                \label{fig:velocidad_carro_izaje}
+            \end{figure}
 
 
 
