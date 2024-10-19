@@ -117,7 +117,7 @@ nh = 2.5;
 
 Ksia_PID_hoist = MEh * wh^3;
 Ksa_PID_hoist = MEh * nh * wh^2;
-b_PID_hoist = MEh * nh * wh;
+ba_PID_hoist = MEh * nh * wh;
 
 
 wtd = 10*bEtd/MEtd;
@@ -132,7 +132,7 @@ ntd = 2.5;
 
 Ksia_PID_trolley =MEtd*wtd^3;
 Ksa_PID_trolley =MEtd*ntd*wtd^2;
-b_PID_trolley = MEtd*ntd*wtd;
+ba_PID_trolley = MEtd*ntd*wtd;
 
 %% observer gains
 

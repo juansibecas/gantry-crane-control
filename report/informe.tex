@@ -50,7 +50,7 @@
 % ======================================================================
 
 % Titulo
-\title{PROYECTO AUTOMATAS}
+\title{PROYECTO INTEGRADOR AUTÓMATAS Y CONTROL DISCRETO}
 
 % Autores
 \author{Juan Pablo Sibecas \\ juan.sibecas@gmail.com \\Matias Gaviño\\ matias.linares.g@gmail.com \\ Autómatas y Control Discreto, Facultad de Ingeniería, \\ Universidad Nacional de Cuyo, \\ Mendoza, Argentina}
@@ -139,6 +139,25 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 M_{Eh} = 2\frac{(J_{hd+hEb} + J_{hm+hb} i_h^2)}{r_{hd}^2}\\
                 b_{Eh} = 2\frac{(b_{hd} + b_{hm}i_h^2)}{r_{hd}^2}\\
             \end{align}
+
+            En la figura \ref{fig:hoisting_drive_simulink} se muestra el modelo de Simulink del subsistema de izaje. Se observa que se implenta la ecuación \ref{eq:izajeEquiv} con sus respectivos parámetros equivalentes. Además, se incluye el modelo del sistema de freno y freno de emergencia. 
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/hoisting_drive_simulink.png}
+                \caption{Modelo de Simulink del subsistema de izaje}
+                \label{fig:hoisting_drive_simulink}
+            \end{figure}
+
+            \textbf{Modelo del cable de izaje}
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/hoisting_cable_mode_simulink.png}
+                \caption{Modelo de Simulink del cable de izaje}
+                \label{fig:hoisting_cable_mode_simulink}
+            \end{figure}
+
             
 
         \subsubsection{Subsistema Carro}
@@ -193,7 +212,12 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 F_{tw}(t) = K_{tw}(x_{td}(t) - x_t(t)) + b_{tw}(\dot{x_{td}}(t) - \dot{x_t}(t))
             \end{equation}
 
-            seria un sistema acoplado? preguntar si se resuelve asi
+            \begin{figure}
+                \centering
+                \includegraphics[width=1\textwidth]{figs/trolley_drive_simulink.png}
+                \caption{Modelo de Simulink del subsistema carro}
+                \label{fig:carriage_drive_simulink}
+            \end{figure}
 
                 
         \subsection{Diseño del controlador}
@@ -216,6 +240,135 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             \end{equation}
             despejando 
 
+
+        \subsubsection{Control del Carro}
+
+            Segun el modelo del sistema, la ecuacion de movimiento del carro es:
+            \begin{equation}
+                M_t \ddot{x_{t}}(t) = - b_E \dot{x_{t}}(t) + \frac{i_t}{r_{td}} T_{tm}(t) - F_{L}(t) 
+            \end{equation}
+
+            Se desacopla el primer termino sustituyendo:
+            \begin{equation}
+            T_m(t) = T_{tm}^*(t) + \frac{r_{td} b_E}{i_t} \dot{x_t}(t)
+            \end{equation}
+
+            Además, si no se tiene en cuenta \(F_{L}(t)\) se obtiene:
+            \begin{equation}
+                M_E \ddot{x_{t}}(t) =  \frac{i_t}{r_{td}} T_{tm}^*(t) 
+            \end{equation}
+
+            Aplicando la transformada de Laplace y definiendo como ley de control un controlador PID, se obtiene:
+
+            \begin{equation}
+                M_E s^2 X_t(s) =  \frac{i_t}{r_{td}} T_{tm}^*(s)
+            \end{equation}
+
+            \begin{equation}
+                T_m^*(s) = G_T(s)\Big( b_{at} + \frac{1}{s} k_{sat} + \frac{1}{s^2} k_{siat} \Big)(v_t^*(s) - v_t(s))
+            \end{equation}
+
+            \begin{equation}
+                M_E s^2 X_t(s) =  \frac{i_t}{r_{td}} G_T(s)\Big( b_at + \frac{1}{s} k_{sat} + \frac{1}{s^2} k_{siat} \Big)(v_t^*(s) - v_t(s))
+            \end{equation}
+
+            Despejando \(\frac{v_t(s)}{v_t^*(s)}\) se obtiene:
+
+            \begin{equation}
+                \frac{v_t(s)}{v_t^*(s)} = \frac{b_{at} s^2+k_{sat}s+k{siat}}{s^3 \frac{r_{td}}{i_t}M_E+ s^2 b_{at} + s k_{sat} + k_{siat}}
+            \end{equation}
+
+            Igualando el denominadodor con el polinomio deseado se obtiene:
+
+            \begin{equation}\label{(eq:polinomio)}
+                p(s)=s^3 + \omega_n \eta s^2 + \omega_n^2 \eta s + \omega_n^3
+            \end{equation}
+
+            \begin{equation}
+                \begin{cases}
+                    \omega_n \eta = \frac{b_{at} i_t}{r_{td}M_E}\\
+                    \omega_n^2 \eta = \frac{k_{sat} i_t}{r_{td}M_E}\\
+                    \omega_n^3 = \frac{k_{siat} i_t}{r_{td}M_E}
+                \end{cases}
+            \end{equation}
+
+            Entonces, las constantes del controlador PID son:
+
+            \begin{equation}
+                \begin{cases}
+                    b_{at} = \frac{r_{td}M_E \omega_n \eta}{i_t}\\
+                    k_{sat} = \frac{r_{td}M_E \omega_n^2 \eta}{i_t}\\
+                    k_{siat} = \frac{r_{td}M_E \omega_n^3}{i_t}
+                \end{cases}
+            \end{equation}
+
+            Los parámetros \(\omega_n\) y \(\eta\) se definen de tal forma que el sistema sea estable con el control de balanceo.
+
+            Finalmente, se observa en la figura \ref{fig:pid_trolley_simulink} la implementación del controlador en Simulink. Se realizó una discretizacion de tiempo aplicando la integral por el método de trapecios.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/PID_trolley_Simulink.png}
+                \caption{Controlador PID para el carro de la grúa}
+                \label{fig:pid_trolley_simulink}
+            \end{figure}
+
+
+        \subsubsection{Control del Izaje}
+
+            De forma similar al control del carro, se obtiene la ecuación dinámica para el control del izaje:
+            
+            \begin{equation}
+                M_{Eh} \ddot{l_h}(t) = -b_{Eh} \dot{l_h}(t) - \frac{i_h}{r_{hd}} T_{hm}(t)
+            \end{equation}
+            
+            La ley de control PID en el dominio de Laplace es:
+            
+            \begin{equation}
+                T_{hm}(s) = G_T(s) \left( b_{ah} + \frac{k_{sah}}{s} + \frac{k_{siah}}{s^2} \right) \left( v_h^*(s) - v_h(s) \right)
+            \end{equation}
+            
+            Aplicando la transformada de Laplace y despejando \(\frac{v_h(s)}{v_h^*(s)}\), se obtiene:
+            
+            \begin{equation}
+                \frac{v_h(s)}{v_h^*(s)} = \frac{b_{ah} s^2 + k_{sah} s + k_{siah}}{M_{Eh} \frac{r_{hd}}{i_h} s^3 + b_{ah} s^2 + k_{sah} s + k_{siah}}
+            \end{equation}
+            
+            Igualando el denominador con el polinomio característico deseado:
+            
+            \begin{equation}
+                s^3 + 2 \zeta \omega_n s^2 + \omega_n^2 s + \omega_n^3 = 0
+            \end{equation}
+            
+            Se obtienen las siguientes ecuaciones de comparación:
+            
+            \begin{equation}
+                \begin{cases}
+                    2 \zeta \omega_n = \frac{b_{ah} i_h}{r_{hd} M_{Eh}} \\
+                    \omega_n^2 = \frac{k_{sah} i_h}{r_{hd} M_{Eh}} \\
+                    \omega_n^3 = \frac{k_{siah} i_h}{r_{hd} M_{Eh}}
+                \end{cases}
+            \end{equation}
+            
+            Finalmente, las constantes del controlador PID son:
+            
+            \begin{equation}
+                \begin{cases}
+                    b_{ah} = \frac{2 \zeta \omega_n r_{hd} M_{Eh}}{i_h} \\
+                    k_{sah} = \frac{\omega_n^2 r_{hd} M_{Eh}}{i_h} \\
+                    k_{siah} = \frac{\omega_n^3 r_{hd} M_{Eh}}{i_h}
+                \end{cases}
+            \end{equation}
+
+            Finalmente, se observa en la figura \ref{fig:pid_hoist_simulink} la implementación del controlador en Simulink. Al igual que en el caso del carro, se realizó una discretización de tiempo aplicando la integral por el método de trapecios.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/PID_hoist_Simulink.png}
+                \caption{Controlador PID para el izaje de la grúa}
+                \label{fig:pid_hoist_simulink}
+            \end{figure}
+        
 
 
         \subsubsection{Control de balanceo}
