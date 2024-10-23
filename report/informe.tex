@@ -866,6 +866,31 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             \end{figure}
 
 
+            \subsubsection{Nivel 0 – Seguridad y Protección}
+
+            El \textbf{Nivel 0} se encarga de la seguridad y protección del sistema, actuando ante situaciones de emergencia para llevar la grúa a un estado seguro. Este nivel funciona de manera independiente al control operativo normal y toma el mando en caso de fallas críticas o riesgos para la seguridad. El autómata de este nivel supervisa eventos como la activación de pulsadores de emergencia, la detección de sobrevelocidad, y la llegada a los límites de carrera finales. En tales casos, se interrumpe la operación normal y se ejecutan acciones predeterminadas para detener la grúa de manera controlada y segura.
+            
+            El objetivo del Nivel 0 es minimizar riesgos tanto para los operadores como para la integridad del equipo. Entre las acciones que puede realizar están la activación de frenos de emergencia, el apagado de motores, y el bloqueo de cualquier maniobra hasta que se restablezca una condición segura. En caso de un evento crítico, este nivel debe llevar al sistema a un estado seguro.
+
+            A continuación, se muestra la lógica de funcionamiento de este nivel utilizando \textit{Stateflow} para modelar el autómata de estados. El modelo se compone de dos estados que operan en paralelo. A continuación, se describen estos estados.
+
+            \textbf{Seguridad:}
+            \begin{figure}
+                \centering
+                \includegraphics[width=1\textwidth]{figs/safety_stateflow.png}
+                \caption{Estado de seguridad del autómata de estados-Nivel 0.}
+                \label{fig:safety_stateflow}
+            \end{figure}
+
+            \textbf{\textit{Watchdog}}:
+            \begin{figure}
+                \centering
+                \includegraphics[width=1\textwidth]{figs/watchdog_stateflow.png}
+                \caption{Estado de \textit{Watchdog} del autómata de estados-Nivel 0.}
+                \label{fig:watchdog_stateflow}
+            \end{figure}
+
+
 
 
 \section{Resultados}\label{sec:results}
