@@ -50,7 +50,7 @@
 % ======================================================================
 
 % Titulo
-\title{PROYECTO INTEGRADOR AUTÓMATAS Y CONTROL DISCRETO}
+\title{PROYECTO INTEGRADOR DE AUTÓMATAS Y CONTROL DISCRETO}
 
 % Autores
 \author{Juan Pablo Sibecas \\ juan.sibecas@gmail.com \\Matias Gaviño\\ matias.linares.g@gmail.com \\ Autómatas y Control Discreto, Facultad de Ingeniería, \\ Universidad Nacional de Cuyo, \\ Mendoza, Argentina}
@@ -151,6 +151,8 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
             \textbf{Modelo del cable de izaje}
 
+            El modelo del cable de izaje se obtiene a partir de la ecuación 2/2.a. Además, se considera que el cable solo soporta cargar de traccción por lo que si la el resultado de la tension obtenido por dicha ecuación es negativo se toma como cero. En la figura \ref{fig:hoisting_cable_mode_simulink} se muestra el modelo implementado en Simulink del cable de izaje.
+
             \begin{figure} [H]
                 \centering
                 \includegraphics[width=1\textwidth]{figs/hoisting_cable_mode_simulink.png}
@@ -158,9 +160,34 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \label{fig:hoisting_cable_mode_simulink}
             \end{figure}
 
+
+
             
 
         \subsubsection{Subsistema Carro}
+
+            La conducción de carro se modela como tres subsistemas, el de accionamiento del motor, el del tambor y el del cable. En la figura \ref{fig:trolley_drive_simulink} se muestra el modelo de Simulink de estos subsistemas. 
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/trolley_drive_simulink.png}
+                \caption{Modelo de Simulink del subsistema carro}
+                \label{fig:trolley_drive_simulink}
+            \end{figure}
+
+            \textbf{Motor del carro}
+
+            El modelo se obtiene a partir de la ecuación 4 del enunciado. En la figura \ref{fig:trolley_drive_simulink} se muestra el modelo implementado en Simulink.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/trolley_subsystem_simulink.png}
+                \caption{Modelo de Simulink del subsistema carro}
+                \label{fig:trolley_subsystem_simulink}
+            \end{figure}
+
+            \textbf{Tambor del carro}
+
             Segunda ley de Newton del lado tambor:
             \begin{equation} \label{eq:tamborCarro}
                 J_{td} \frac{d \omega_{td}(t)}{dt} = T_{td}(t) - b_{td} \omega_{td}(t) - T_{tdl}(t)
@@ -212,12 +239,87 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 F_{tw}(t) = K_{tw}(x_{td}(t) - x_t(t)) + b_{tw}(\dot{x_{td}}(t) - \dot{x_t}(t))
             \end{equation}
 
+            En la figura \ref{fig:trolley_drum_mode_simulink} se muestra el modelo de Simulink que responde a la ecuación \ref{eq:Carro} con sus respectivos parametros equivalentes. Además, se introduce el modelo del freno del tambor.
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/trolley_drum_subsystem_simulink.png}
+                \caption{Modelo de Simulink del tambor del subsistema carro}
+                \label{fig:trolley_drum_mode_simulink}
+            \end{figure}
+
+            \textbf{Modelo del cable del carro}
+
+            La figura \ref{fig:trolley_cable_mode_simulink} muestra el modelo de Simulink del cable del subsistema carro. Se observa que se implementa la ecuación 4.a del encunciado para su modelado.
+            
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/trolley_cable_mode_simulink.png}
+                \caption{Modelo de Simulink del cable del subsistema carro}
+                \label{fig:trolley_cable_mode_simulink}
+            \end{figure}
+
+            %\textbf{Modelo los interruptores de fin de carrera}
+            
+
+
+        \subsubsection{Perfil de obstáculos}
+        El perfil de obstaculos se modela como uma matriz de Nx2 donde la primera columna representa la posicion en x y la segunda la altura del obstáculos perfil del obstáculo. El perfil esta discgretizado en x segun un dx determinado. 
+        AL iniciar la simulacion se inizializa esta matriz con el perfil de los obstáculos inmoviles. Luego se actualiza la matiz teneniendo en cuenta la cantidad de containes en cada comunma del barco o en la bahía de carga inicialmente.
+        Cuando durante la simulación se recoje o se deja un contenedor se actualiza la matriz de obstáculos mediante el modelo en stateflow que se muestra en la figura \ref{fig:container_profile_stateflow}.
+        \begin{figure} [H]
+            \centering
+            \includegraphics[width=1\textwidth]{figs/container_profile_stateflow.png}
+            \caption{Modelo en stateflow de la actualización del perfil de obstáculos}
+            \label{fig:container_profile_stateflow}
+        \end{figure}
+
+
+
+        \subsubsection{Modelo de la carga}
+            
+            La carga se modela teniando en cuenta la tensión del cable de izaje, así como muestran las ecuaciones 1.a y 1.b del enunciado. En la figura \ref{fig:load_simulink} se muestra el modelo de Simulink de la carga.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/load_simulink.png}
+                \caption{Modelo de Simulink de la carga}
+                \label{fig:load_simulink}
+            \end{figure}
+
+            El ángulo del cable de izaje respecto de la vertical se obtiene a partir de la posicion de la carga y el carro, así como indica la ecuación 0.d del enunciado. En la figura \ref{fig:load_sway_simulink} se muestra el modelo de Simulink del balanceo de la carga.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.5\textwidth]{figs/load_sway_simulink.png}
+                \caption{Modelo de Simulink del balanceo de la carga}
+                \label{fig:load_sway_simulink}
+            \end{figure}
+
+            Al igual que el ángulo del cable de izaje, el largo del mismo se obtiene a partir de la posición de la carga y el carro, así como indica la ecuación 0.c del enunciado. La velocidad de cambio de esta longitud se calcula de forma analítica utilizando la ecuación 1.c'. En la figura \ref{fig:wirerope_length_simulink} se muestra el modelo de Simulink lo anteriormente mencionado.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.5\textwidth]{figs/wirerope_length_simulink.png}
+                \caption{Modelo de Simulink del largo del cable de izaje}
+                \label{fig:wirerope_length_simulink}
+            \end{figure}
+
+            \textbf{Modelo de la fuerza de contacto}
+
+            La fuerza de contacto de la carga con el perfil de obstáculos se modela a partir de las ecuaciones 1.a y 1.b del enunciado. En la figura \ref{fig:contact_mode_simulink} se muestra el modelo de Simulink de la fuerza de contacto.
+
             \begin{figure}
                 \centering
-                \includegraphics[width=1\textwidth]{figs/trolley_drive_simulink.png}
-                \caption{Modelo de Simulink del subsistema carro}
-                \label{fig:carriage_drive_simulink}
+                \includegraphics[width=0.5\textwidth]{figs/contact_mode_simulink.png}
+                \caption{Modelo de Simulink de la fuerza de contacto}
+                \label{fig:contact_mode_simulink}
             \end{figure}
+
+
+
+
+            
+
 
                 
         \subsection{Diseño del controlador}
@@ -609,7 +711,112 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \end{cases}
             \end{equation}
 
-        \subsection{Generación de trayectorias}
+        
+
+        \subsubsection{Nivel 1 - Control Supervisor}
+
+        Como se mencionó antes el Nivel 1 se basa en un autómata de estados discretos activados por eventos (DEDS - Discrete Event Dynamic System). Este nivel coordina las operaciones de la grúa portuaria gestionando estados lógicos y comandos, garantizando transiciones seguras y eficientes entre modos operativos. Este control opera mediante un autómata secuencial, que gestiona las transiciones entre diferentes modos de funcionamiento. Además, se estructura de forma jerárquica o concurrente para coordinar varios componentes de manera eficiente.
+
+        Entre sus funciones de supervisión, monitorea los comandos emitidos por el operador y las señales provenientes de sensores. También se encarga de gestionar los límites operativos normales, tales como posiciones máximas de movimiento y velocidades permitidas, asegurando que la operación se mantenga dentro de parámetros seguros.
+        El Nivel 1 optimiza las trayectorias del movimiento para garantizar una operación eficiente y sin interrupciones. Gestiona la coordinación de frenos y el uso de \textit{twistlocks} para evitar errores operativos. Además, permite realizar transiciones suaves entre los modos manual y automático sin detener la operación, maximizando así la eficiencia.
+
+        A continuación, se presenta la lógica de funcionamiento de este nivel utilizando \textit{Stateflow} para modelar el autómata de estados. El modelo se organiza en varios estados que se ejecutan en \textbf{paralelo}. A continuación, se describen los estados más relevantes.
+
+
+        \textbf{Principal:} 
+            El estado se encarga de gestionar las consignas de referencia de cada eje según el modo en el que se encuentre. En la figura \ref{fig:main_stateflow} se observan cuatro posibles estados: \textit{Manual}, \textit{Automatic}, \textit{Homing} y \textit{MassEstimation}. 
+
+            En el \textbf{modo manual}, el operador controla directamente la velocidad de los motores, y la referencia de velocidad se calcula en función del control analógico del operario.
+
+            En el \textbf{modo automatic}, el sistema sigue la trayectoria generada por el módulo de planificación de trayectorias. Estas trayectorias se calculan cuando el sistema entra en modo automático, utilizando la función:
+            \begin{center}
+            \texttt{traj\_gen(obstacle\_profile, [x0, y0], [xf, yf], vy0, ay0, vy\_max, vyf, ayf);}
+            \end{center}
+            Esta función genera una matriz que contiene la posición, velocidad y aceleración de cada eje en función del tiempo. Se dará más detalle sobre esta función en la sección de generación de trayectorias \ref{sec:gen_trayectorias}.El segumiento de la trayectoria genereada se realiza de forma tal que no se vea afectada por diferencias entre la planificacion y el solver o PLC en el paso de tiempo. 
+
+            En el \textbf{modo homing}, el sistema lleva los motores a una posición inicial conocida, siguiendo la secuencia que se observa en la figura \ref{fig:main_stateflow}.
+
+            Por último, en el \textbf{modo MassEstimation}, el sistema calcula la masa de la carga. El calculo se realiza en otro estado.
+
+        
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/main_stateflow.png}
+                \caption{Estado principal del autómata de estados.}
+                \label{fig:main_stateflow}
+            \end{figure}
+
+        \textbf{Ejes de operación:}
+            Estos estados gestionan de manera individual los movimientos del carro y el izaje, estableciendo la consigna de velocidad correspondiente según el estado operativo del sistema. En modo automático, el sistema sigue la trayectoria generada por el módulo de planificación de trayectorias. En modo manual, la consigna de velocidad es definida directamente por el operador.
+
+            Para garantizar transiciones suaves entre consignas, se utiliza la función \texttt{vel\_prof\_gen(v0, vf, a0, v\_max, a\_max, j)}, que genera un perfil de aceleración trapezoidal. Este perfil se recalcula automáticamente cada vez que la variación en la consigna de velocidad supera el 1\%, asegurando así una operación suave.
+            En la figura \ref{fig:operation_axes_stateflow} se observa la implementación de lo mencionado en \textit{Stateflow}.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/hoist_trolley_stateflow.png}
+                \caption{Estado de los ejes de operación del autómata de estados.}
+                \label{fig:operation_axes_stateflow}
+            \end{figure}
+
+        \textbf{Secuencial automáticas:}
+            Este estado se encarga de gestionar las secuencias de movimientos de la grúa definidas por el operador en la HMI. En la figura \ref{fig:auto_secuence_stateflow} se muestra la implementación de este estado en \textit{Stateflow}, donde se definen cuatro estados: \textit{DropBay}, \textit{PickUpBay}, \textit{DropShip} y \textit{PickUpShip}. Cada uno se encarga de gestionar la secuencia correspondiente a un movimiento específico.
+
+            En cada estado se sigue una secuencia definida. Primero, se espera que el sistema salga de la zona manual para iniciar la trayectoria automática. A continuación, si se ha tomado un contenedor, se realiza la estimación de masa. Luego, se define la posición final deseada y se activa el modo automático para ejecutar el movimiento. Finalmente, el sistema vuelve a la zona manual para dejar o recoger un contenedor.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/auto_secuence_stateflow.png}
+                \caption{Estado Secuencia automática del autómata de estados.}
+                \label{fig:auto_secuence_stateflow}
+            \end{figure}
+
+        \textbf{Estimación de masa:}
+            El estado se encarga de calcular la masa del \textit{spreader} + carga. Para ello, utiliza la señal de una celda de carga que mide la tensión del cable de izaje. La masa se calcula realizando una estimación en función de la tensión medida. En la figura \ref{fig:mass_estimation_stateflow} se muestra la implementación de este estado en \textit{Stateflow}. 
+            El algoritmo se ejecuta de forma recursiva hasta que la masa estimada converge a un valor estable. Para calcular la masa en función de la tensión del cable, se utiliza la ecuación \ref{eq:masa_estimada}:
+            \begin{equation} \label{eq:masa_estimada}
+                M_{est} = \frac{T}{g - a_{y}}
+            \end{equation}
+            Donde \(T\) es la tensión medida en la celda de carga, \(g\) es la aceleración de la gravedad y \(a_{y}\) es la aceleración del sistema en la dirección vertical. Se tiene en cuenta la aceleración vertical porque la estimación se realiza mientras la carga está en movimiento acelerado.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/mass_estimation_stateflow.png}
+                \caption{Estado de estimación de masa del autómata de estados.}
+                \label{fig:mass_estimation_stateflow}
+            \end{figure}
+
+        \textbf{Perfil de obstáculos:}
+            El estado \textit{ReadObstacleProfile} se encarga de actualizar el perfil de obstáculos utilizando datos obtenidos del sensor LiDAR y de generar el perfil de obstáculos en función de esta información. 
+
+            Al iniciar, el perfil de obstáculos y la zona manual se inicializan con la misma información. Durante la ejecución, si la etapa de \textit{homing} ha finalizado y no hay una señal activa de bloqueo (\texttt{TLK\_out}), se busca el punto más cercano en el perfil de obstáculos a la posición actual en el eje \(X\). Luego, se actualiza el valor correspondiente en el eje \(Y\) utilizando la información del sensor LiDAR. Finalmente, se genera la nueva zona manual mediante la función \texttt{ObsToManualZone()}, basada en el perfil de obstáculos actualizado.
+
+            En la figura \ref{fig:obstacle_profile_stateflow} se observa la implementación de este estado en \textit{Stateflow}.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=1\textwidth]{figs/obstacle_profile_stateflow.png}
+                \caption{Estado de perfil de obstáculos del autómata de estados.}
+                \label{fig:obstacle_profile_stateflow}
+            \end{figure}
+
+        \textbf{Deteccíon de zona manual:}
+            El estado \textit{ManualZoneDetection} se encarga de detectar si la carga se encuentra dentro o fuera de la zona manual, utilizando una bandera llamada \texttt{MZF}. Esta bandera se inicializa en 1, indicando que la carga está dentro de la zona manual, y se ajusta dinámicamente según la posición de la carga.
+
+            El estado emplea un mecanismo de histeresis para evitar cambios rápidos entre estados. A través de una interpolación lineal, compara la posición actual de la carga con los límites de la zona manual definidos en \texttt{manualZone}. Si la carga cruza estos límites, se actualiza la bandera \texttt{MZF}, permitiendo al sistema identificar cuándo pasar del control manual al automático, o viceversa. En la figura \ref{fig:manual_zone_detection_stateflow} se observa la implementación de este estado en \textit{Stateflow}.
+        
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.7\textwidth]{figs/manual_zone_detection_stateflow.png}
+                \caption{Estado de detección de zona manual del autómata de estados.}
+                \label{fig:manual_zone_detection_stateflow}
+            \end{figure}
+
+
+    
+
+
+        \subsection{Generación de trayectorias} \label{sec:gen_trayectorias}
 
             La generación de trayectorias se implementa cuando la grúa opera en modo automático. Su función es definir un perfil que posicione a la grúa en una ubicación \textit{xy} determinada de manera suave y eficiente. Para ello, se genera una matriz que describe la posición, velocidad y aceleración de cada motor en función del tiempo, utilizando un intervalo de tiempo \textit{dt}. La trayectoria considera la posición actual de la grúa y la columna de contenedores o bahía de carga de destino. Además, se tiene en cuenta el perfil de obstáculos y se establece una distancia de seguridad en las direcciones \textit{x} e \textit{y}, definiendo así una zona de seguridad en la que el modo automático no puede operar.
 
@@ -673,3 +880,5 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 %\bibliography{references}
 
 \end{document}
+
+
