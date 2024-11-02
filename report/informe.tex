@@ -140,7 +140,7 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 b_{Eh} = 2\frac{(b_{hd} + b_{hm}i_h^2)}{r_{hd}^2}\\
             \end{align}
 
-            En la figura \ref{fig:hoisting_drive_simulink} se muestra el modelo de Simulink del subsistema de izaje. Se observa que se implenta la ecuación \ref{eq:izajeEquiv} con sus respectivos parámetros equivalentes. Además, se incluye el modelo del sistema de freno y freno de emergencia. 
+            En la figura \ref{fig:hoisting_drive_simulink} se presenta el modelo de Simulink del subsistema de izaje. En este modelo, se implementa la ecuación \ref{eq:izajeEquiv} junto con sus correspondientes parámetros equivalentes. Además, se incluye el modelo del sistema de freno y del freno de emergencia. 
 
             \begin{figure} [H]
                 \centering
@@ -151,7 +151,7 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
             \textbf{Modelo del cable de izaje}
 
-            El modelo del cable de izaje se obtiene a partir de la ecuación 2/2.a. Además, se considera que el cable solo soporta cargar de traccción por lo que si la el resultado de la tension obtenido por dicha ecuación es negativo se toma como cero. En la figura \ref{fig:hoisting_cable_mode_simulink} se muestra el modelo implementado en Simulink del cable de izaje.
+            El modelo del cable de izaje se obtiene a partir de la ecuación 2/2.a. Se considera que el cable solo soporta cargas de tracción; por lo tanto, si el resultado de la tensión obtenido de dicha ecuación es negativo, se toma como cero. En la figura \ref{fig:hoisting_cable_mode_simulink} se presenta el modelo implementado en Simulink del cable de izaje.
 
             \begin{figure} [H]
                 \centering
@@ -160,9 +160,6 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \label{fig:hoisting_cable_mode_simulink}
             \end{figure}
 
-
-
-            
 
         \subsubsection{Subsistema Carro}
 
@@ -258,6 +255,8 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \label{fig:trolley_cable_mode_simulink}
             \end{figure}
 
+
+
             %\textbf{Modelo los interruptores de fin de carrera}
             
 
@@ -272,8 +271,6 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             \caption{Modelo en stateflow de la actualización del perfil de obstáculos}
             \label{fig:container_profile_stateflow}
         \end{figure}
-
-
 
         \subsubsection{Modelo de la carga}
             
@@ -306,7 +303,30 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
             \textbf{Modelo de la fuerza de contacto}
 
-            La fuerza de contacto de la carga con el perfil de obstáculos se modela a partir de las ecuaciones 1.a y 1.b del enunciado. En la figura \ref{fig:contact_mode_simulink} se muestra el modelo de Simulink de la fuerza de contacto.
+            El modelo de la fuerza de contacto se refiere al análisis de las interacciones entre la carga suspendida (spreader o contenedor) y la superficie de apoyo durante las maniobras de izaje o descenso en una grúa portuaria. Este modelo tiene en cuenta los estados del cable de izaje (tenso o flojo) y los modos de contacto (carga suspendida o apoyada). Se consideran las fuerzas de fricción horizontal y las reacciones elásticas verticales que ocurren cuando la carga toca la superficie de apoyo, así como el comportamiento dinámico del sistema para evitar tirones bruscos en el cable.
+
+            El modelo se implementa en Simulink, como se muestra en la Figura \ref{fig:contact_mode_simulink}, y utiliza parámetros como la rigidez de compresión ($K_{cy}$) y la fricción ($b_{cx}, b_{cy}$) para simular las fuerzas de contacto bajo diferentes condiciones operativas. 
+
+            Las ecuaciones que definen el comportamiento de la fuerza de contacto son las siguientes:
+
+            \begin{equation}
+            F_{cx}(t) = -b_{cx} \cdot v_{lx}(t)
+            \end{equation}
+
+            \begin{equation}
+            F_{cy}(t) = K_{cy} \cdot (y_{c0}(x_l, t) - (y_l(t) - h_c(TLK))) - b_{cy} \cdot v_{ly}(t)
+            \end{equation}
+
+            Donde:
+            \begin{itemize}
+                \item $F_{cx}$ es la fuerza de fricción horizontal.
+                \item $F_{cy}$ es la fuerza de reacción elástica vertical.
+                \item $b_{cx}$ y $b_{cy}$ son los coeficientes de fricción horizontal y vertical, respectivamente.
+                \item $K_{cy}$ es la rigidez de compresión vertical.
+                \item $v_{lx}$ y $v_{ly}$ son las velocidades horizontales y verticales de la carga.
+                \item $y_{c0}(x_l, t)$ representa el perfil de obstáculos o la altura de apoyo vertical.
+                \item $h_c(TLK)$ indica la altura inferior de la carga, dependiendo del estado de los twistlocks (abiertos o cerrados).
+            \end{itemize}
 
             \begin{figure}
                 \centering
@@ -314,106 +334,90 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \caption{Modelo de Simulink de la fuerza de contacto}
                 \label{fig:contact_mode_simulink}
             \end{figure}
-
-
-
-
-            
-
-
                 
         \subsection{Diseño del controlador}
 
-            \begin{equation}\label{eq:PID}
-                T_m'(t) = b_ae_\omega(t) + K_{sa} e_\theta(t) + K_{sia}\int e_\theta(t) dt
-            \end{equation}
-            Por lo tanto, por Laplace:
-            \begin{equation}\label{eq:PID_Laplace}
-                T_m(s) = G(s)[b_aE_\omega(s) + K_{sa} \frac{1}{s} + K_{sia} \frac{1}{s^2}]E_\theta(s)
-            \end{equation}
+            En esta sección se presenta el desarrollo de los controladores para los distintos subsistemas de la grúa portuaria. Cada controlador se diseña para asegurar un desempeño eficiente y seguro, cumpliendo con las especificaciones operativas del sistema. Los subsistemas controlados incluyen el carro, el mecanismo de izaje y el balanceo de la carga, abordados en las siguientes subsecciones.
 
-            Donde \(G_T(s)\) es la función de transferencia del modulador de torque que, como se supone ideal, es igual a 1.
+            \subsubsection{Control del Carro} 
 
-
-            Para obtener la expresión que nos permita obtener las constante que definen al controlador se remplaza la ecuacion \ref{eq:PID} en la ecuacion de movimiento del izaje y del carro, se obtiene:
-            Para el izaje, reemplazando \ref{eq:PID} en \ref{eq:izajeEquiv} y transformandola con Laplace, se obtiene:
-            \begin{equation}\label{eq:izajeControl}
-                M_{Eh} \ddot{L_h}(s) = - b_{Eh} sL_h(s) - \frac{i_h}{r_{hd}} [G(s)[b_aE_\omega(s) + K_{sa} \frac{1}{s} + K_{sia} \frac{1}{s^2}]E_\theta(s)] + F_{hw}(s)
-            \end{equation}
-            despejando 
-
-
-        \subsubsection{Control del Carro}
-
-            Segun el modelo del sistema, la ecuacion de movimiento del carro es:
+            Según el modelo del sistema, la ecuación de movimiento del carro se describe por:
+            
             \begin{equation}
                 M_t \ddot{x_{t}}(t) = - b_E \dot{x_{t}}(t) + \frac{i_t}{r_{td}} T_{tm}(t) - F_{L}(t) 
             \end{equation}
-
-            Se desacopla el primer termino sustituyendo:
+            
+            Para simplificar el análisis, se desacopla el primer término sustituyendo:
+            
             \begin{equation}
             T_m(t) = T_{tm}^*(t) + \frac{r_{td} b_E}{i_t} \dot{x_t}(t)
             \end{equation}
-
-            Además, si no se tiene en cuenta \(F_{L}(t)\) se obtiene:
+            
+            Cuando se desprecia la fuerza externa $F_{L}(t)$, se obtiene la ecuación simplificada:
+            
             \begin{equation}
                 M_E \ddot{x_{t}}(t) =  \frac{i_t}{r_{td}} T_{tm}^*(t) 
             \end{equation}
-
-            Aplicando la transformada de Laplace y definiendo como ley de control un controlador PID, se obtiene:
-
+            
+            Aplicando la transformada de Laplace y definiendo la ley de control mediante un controlador PID, se tiene:
+            
             \begin{equation}
                 M_E s^2 X_t(s) =  \frac{i_t}{r_{td}} T_{tm}^*(s)
             \end{equation}
-
+            
+            La expresión para $T_m^*(s)$ bajo un control PID queda definida como:
+            
             \begin{equation}
-                T_m^*(s) = G_T(s)\Big( b_{at} + \frac{1}{s} k_{sat} + \frac{1}{s^2} k_{siat} \Big)(v_t^*(s) - v_t(s))
+                T_m^*(s) = G_T(s)\left( b_{at} + \frac{k_{sat}}{s} + \frac{k_{siat}}{s^2} \right)(v_t^*(s) - v_t(s))
             \end{equation}
-
+            
+            Sustituyendo en la ecuación del movimiento y reorganizando, se obtiene:
+            
             \begin{equation}
-                M_E s^2 X_t(s) =  \frac{i_t}{r_{td}} G_T(s)\Big( b_at + \frac{1}{s} k_{sat} + \frac{1}{s^2} k_{siat} \Big)(v_t^*(s) - v_t(s))
+                M_E s^2 X_t(s) =  \frac{i_t}{r_{td}} G_T(s)\left( b_{at} + \frac{k_{sat}}{s} + \frac{k_{siat}}{s^2} \right)(v_t^*(s) - v_t(s))
             \end{equation}
-
-            Despejando \(\frac{v_t(s)}{v_t^*(s)}\) se obtiene:
-
+            
+            Despejando $\frac{v_t(s)}{v_t^*(s)}$, se llega a:
+            
             \begin{equation}
-                \frac{v_t(s)}{v_t^*(s)} = \frac{b_{at} s^2+k_{sat}s+k{siat}}{s^3 \frac{r_{td}}{i_t}M_E+ s^2 b_{at} + s k_{sat} + k_{siat}}
+                \frac{v_t(s)}{v_t^*(s)} = \frac{b_{at} s^2 + k_{sat}s + k_{siat}}{s^3 \frac{r_{td}}{i_t}M_E + s^2 b_{at} + s k_{sat} + k_{siat}}
             \end{equation}
-
-            Igualando el denominadodor con el polinomio deseado se obtiene:
-
+            
+            Al igualar el denominador con el polinomio característico deseado, se define:
+            
             \begin{equation}\label{(eq:polinomio)}
-                p(s)=s^3 + \omega_n \eta s^2 + \omega_n^2 \eta s + \omega_n^3
+                p(s) = s^3 + \omega_n \eta s^2 + \omega_n^2 \eta s + \omega_n^3
             \end{equation}
-
+            
+            Lo que lleva a las siguientes relaciones:
+            
             \begin{equation}
                 \begin{cases}
-                    \omega_n \eta = \frac{b_{at} i_t}{r_{td}M_E}\\
-                    \omega_n^2 \eta = \frac{k_{sat} i_t}{r_{td}M_E}\\
+                    \omega_n \eta = \frac{b_{at} i_t}{r_{td}M_E} \\
+                    \omega_n^2 \eta = \frac{k_{sat} i_t}{r_{td}M_E} \\
                     \omega_n^3 = \frac{k_{siat} i_t}{r_{td}M_E}
                 \end{cases}
             \end{equation}
-
-            Entonces, las constantes del controlador PID son:
-
+            
+            Finalmente, las constantes del controlador PID se determinan como:
+            
             \begin{equation}
                 \begin{cases}
-                    b_{at} = \frac{r_{td}M_E \omega_n \eta}{i_t}\\
-                    k_{sat} = \frac{r_{td}M_E \omega_n^2 \eta}{i_t}\\
+                    b_{at} = \frac{r_{td}M_E \omega_n \eta}{i_t} \\
+                    k_{sat} = \frac{r_{td}M_E \omega_n^2 \eta}{i_t} \\
                     k_{siat} = \frac{r_{td}M_E \omega_n^3}{i_t}
                 \end{cases}
             \end{equation}
-
-            Los parámetros \(\omega_n\) y \(\eta\) se definen de tal forma que el sistema sea estable con el control de balanceo.
-
-            Finalmente, se observa en la figura \ref{fig:pid_trolley_simulink} la implementación del controlador en Simulink. Se realizó una discretizacion de tiempo aplicando la integral por el método de trapecios.
-
+            
+            Los parámetros $\omega_n$ y $\eta$ se ajustan para garantizar la estabilidad del sistema, considerando también el control del balanceo de la carga. En la Figura \ref{fig:pid_trolley_simulink}, se muestra la implementación del controlador PID en Simulink, donde se ha realizado una discretización temporal aplicando la integral por el método de trapecios.
+            
             \begin{figure}[H]
                 \centering
                 \includegraphics[width=0.8\textwidth]{figs/PID_trolley_Simulink.png}
                 \caption{Controlador PID para el carro de la grúa}
                 \label{fig:pid_trolley_simulink}
             \end{figure}
+            
 
 
         \subsubsection{Control del Izaje}
@@ -474,6 +478,8 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
 
         \subsubsection{Control de balanceo}
+
+        \textbf{Modelo simplificado de sistema físico Péndulo-Carro}
 
             A continuación se derivan las ecuaciones que modelan el sistema carro-pendulo. Se utilizará el metodo de Lagrange definiendo las cordenadas generalizadas 
             \(x_t\) y \(\theta\) . Donde \(x_t\) es la posición del carro y \(\theta\) es el angulo del pendulo respecto a la vertical. 
@@ -593,123 +599,79 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \end{cases}
             \end{equation}
 
-            \begin{empheq}[box=\fbox]{equation}
+            \begin{empheq}[box=\fbox]{equation}\label{eq:modeloPendulo-Carro}
                 \begin{cases}
-                    (m_t+m_l)\ddot{x}_t + m_l l \cos{\theta} \ddot{\theta} - m_l l \sin{\theta} \dot{\theta}^2 = 0 \\
+                    (m_t+m_l)\ddot{x}_t + m_l l \cos{\theta} \ddot{\theta} - m_l l \sin{\theta} \dot{\theta}^2 = F_t(t)-b_{eqt} \dot{x}_t \\
                     \ddot{x}_t \cos{\theta} + l \ddot{\theta} + g \sin{\theta} = 0
                 \end{cases}
             \end{empheq}
 
-
-            Para representar lo en el espacio de estados se definen las siguientes variables de estado \(x\) y entradas \(u\):
-            \begin{equation}
-                x = \begin{bmatrix}
-                    \theta \\
-                    \dot{\theta}
-                \end{bmatrix}
-            \end{equation}
-            \begin{equation}
-                u = \ddot{x_l}
-            \end{equation}
-
-            Entonces, se obtiene el siguiente modelo en el espacio de estados no lineal:
-
-            \begin{equation}
-                \begin{cases}
-                    \dot{x} = f(x,u,t) ; x(0) = x_0 \\
-                    y = h(x,u,t)
-                \end{cases}
-            \end{equation}
-
-            donde:
-            \begin{equation}
-                f(x,u,t) = \begin{bmatrix}
-                    \dot{\theta} \\
-                    - \frac{(m_t+m_l)\ddot{x}_t}{m_l l \cos{\theta}} + \tan{\theta} \dot{\theta}^2
-                \end{bmatrix}
-            \end{equation}
-            \begin{equation}
-                h(x,u,t) = -\frac{l \ddot{\theta}}{\cos{\theta}}  - g \tan{\theta}
-            \end{equation}
-
-            Realizando la linealización del sistema en el punto de equilibrio \(\theta = \theta^*\), \(\dot{\theta} = \dot{\theta}^*\) y \(\ddot{x}_t = \ddot{x}_t^*\) se obtiene el siguiente modelo linealizado:
-
-            \begin{equation}
-                \begin{cases}
-                    \dot{z} = Az + Bu \\
-                    y = Cz + Dv
-                \end{cases}
-            \end{equation}
-
-            Donde \(z = x - x^*\), \(u = \ddot{x}_t - \ddot{x}_t^*\), \(y = \theta - \theta^*\) y \(v = \dot{\theta} - \dot{\theta}^*\).
-
-            \begin{equation}
-                A = \begin{bmatrix}
-                    0 & 1 \\
-                    -\frac{(m_t+m_l)\ddot{x}_t\tan{\theta}}{m_l l \cos{\theta}} + \frac{\dot{\theta}^2}{\cos^2{\theta}} & 2 \tan{\theta} \dot{\theta}
-                \end{bmatrix}
-            \end{equation}
-
-            \begin{equation}
-                B = \begin{bmatrix}
-                    0 \\
-                     -\frac{1}{m_l l \cos{\theta}}
-                \end{bmatrix}
-            \end{equation}
-
-
-
-
-
-
-
        
-        \subsubsection{Control de balanceo}
-            \begin{equation}
-                U=\ddot{X}_t= \left(k_d s+k_p\right) \frac{1}{s} \left(\dot{\Theta}^*- \dot{\Theta}\right)
-            \end{equation}
+        \textbf{Diseño del control de balanceo}
 
-            \begin{equation}
-                U=\ddot{X}_t= \left(k_d +\frac{k_p}{s}\right) \left(\dot{\Theta}^*- \dot{\Theta}\right)
-            \end{equation}
-            
-            \begin{equation}
-                 s^2 \Theta = A_{21} \Theta + B_{2} \left(k_d +\frac{k_p}{s}\right) \left(\dot{\Theta}^*- \dot{\Theta}\right)
-            \end{equation}
+        Se parte de la segunda ecuación de \ref{eq:modeloPendulo-Carro} y de la ecuación que modela la dinámica del carro \ref{eq:carrosimp}.
 
-            \begin{equation}
-                s \dot{\Theta} = A_{21} \frac{\dot{\Theta}}{s} + B_{2} k_d \dot{\Theta}^* - B_{2} k_d \dot{\Theta}  + B_{2} k_p \frac{\dot{\Theta}^*}{s}  - B_{2} k_p \frac{\dot{\Theta}}{s} 
-            \end{equation}
+        \begin{equation} \label{eq:carrosimp}
+            M_{Etd} \ddot{x_{td}}(t) = - b_{Etd} \dot{x_{td}}(t) + F_{t}(t)
+        \end{equation}
 
-            \begin{equation}
-                s^2 \dot{\Theta} = A_{21} \dot{\Theta} + s B_{2} k_d \dot{\Theta}^* - s B_{2} k_d \dot{\Theta}  + B_{2} k_p \dot{\Theta}^* - B_{2} k_p \dot{\Theta}
-            \end{equation}
+        \begin{equation}
+            \frac{F_t-b_e\dot{x}_{td}}{M_{Etd}}\cos{\theta}+l \ddot{\theta}+ g \sin{\theta}=0
+        \end{equation}
 
-            \begin{equation}
-                \dot{\Theta}(s^2 - A_{21} + s B_{2} k_d + B_{2} k_p) = \dot{\Theta}^*(s B_{2} k_d + B_{2} k_p)
-            \end{equation}
+        Igualando con la primera ecuación de \ref{eq:modeloPendulo-Carro}
 
-            \begin{equation}
-                G(s)=\frac{\dot{\Theta}}{\dot{\Theta}^*}=\frac{s B_{2} k_d + B_{2} k_p}{s^2 + s B_{2} k_d + B_{2} k_p - A_{21}}
-            \end{equation}
+        \begin{equation} \label{eq:DC1}
+            (m_t+_l)\ddot{x}_{td}+m_ll\cos{\theta}\ddot{\theta}-m_l\sin{\theta}\dot{\theta}^2=\frac{-M_{Etd}l\ddot{\theta}}{\cos{\theta}}-M_{Etd}g\tan{\theta}
+        \end{equation}
 
-            \begin{equation}
-                p_r(s)=(s^2+2\zeta\omega_n s+\omega_n^2)
-            \end{equation}
+        Se linealiza la ecuación \ref{eq:DC1} con respecto al punto \(\theta=\theta_0\), \(\dot{\theta}=0\), \(\ddot{\theta}=0\) y \(\ddot{x}_{td}=0\).
 
-            \begin{equation}
-                \begin{cases}
-                    \omega_n^2 = B_{2} k_p - A_{21}\\
-                    2\zeta\omega_n = B_{2} k_d
-                \end{cases}
-            \end{equation}
+        \begin{equation} \label{eq:DC2}
+            -m_ll\sin{\theta_0}(\theta-\theta_0)+m_ll\cos{\theta_0}\ddot{\theta}+(m_t+m_l)\ddot{x}_t=\frac{-M_{Etd}g}{\cos^2{\theta_0}}(\theta-\theta_0)-\frac{-M_{Etd}l}{\cos{\theta_0}}\ddot{\theta}
+        \end{equation}
 
-            \begin{equation}
-                \begin{cases}
-                    k_p = \frac{\omega_n^2 + A_{21}}{B_{2}}\\
-                    k_d = \frac{2\zeta\omega_n}{B_{2}}
-                \end{cases}
-            \end{equation}
+        Se realizá la transformada de Laplace y se reordenan los términos según \(\Theta(s)\) y \(V_t(s)\).
+
+        \begin{equation} \label{eq:DC3}
+            \Theta\bigg[s^2\bigg( m_ll\cos{\theta_0}+\frac{M_{Etd}l}{\cos{\theta_0}}\bigg) + \bigg( -m_l-\sin{\theta_0}+\frac{M_{Etd}g}{\cos^2{\theta_0}} \bigg) \bigg]= V_t \bigg[(m_t+m_l)s\bigg]+\frac{M_{Etd}g}{\cos^2{\theta_0}}-m_ll\sin{\theta_0}\theta_0
+        \end{equation}
+
+        Se obtiene la función de transferencia \ref{eq:DC4}:
+        \begin{equation} \label{eq:DC4}
+            G_c(s)=\frac{\Theta}{V_t}=\frac{(m_t+m_l)s}{s^2\bigg( m_ll\cos{\theta_0}+\frac{M_{Etd}l}{\cos{\theta_0}}\bigg) + \bigg( -m_l-\sin{\theta_0}+\frac{M_{Etd}g}{\cos^2{\theta_0}}\bigg) }
+        \end{equation}
+
+        La función de transferencia de un controlador PD en el dominio de Laplace se expresa como:
+        \begin{equation}
+            G_{PD}(s) = K_p + K_d s
+        \end{equation}
+
+        En este sistema, el control de balanceo de carga está en serie con el controlador PD de traslación del carro y con la planta. Por lo tanto, la función de transferencia del sistema de control completo es:
+
+        \begin{equation} \label{eq:DC5}
+            G_t(s) = \frac{G_{c}(s) G_{PD}(s)}{1 + G_{c}(s) G_{PD}(s)}
+        \end{equation}
+
+        Desarrollando el donominador de la ecuación \ref{eq:DC5} se obtiene:
+
+        
+        \begin{equation} \label{eq:DC6}
+            \text{den}(G_t(s)) = s^2\bigg(-K_d(m_l+m_t)+m_ll\cos{\theta_0}+\frac{M_{Etd}l}{\cos{\theta_0}}\bigg)+s\bigg(-K_p(m_t+m_l)\bigg)+\bigg( -m_l-\sin{\theta_0}+\frac{M_{Etd}g}{\cos^2{\theta_0}}\bigg) 
+        \end{equation}
+
+        Comparando la ecuación \ref{eq:DC6} con el polinomio deseado \(s^2+2\zeta\omega+\omega^2\) se obtiene el valor de \(K_p\) y \(K_d\):
+
+        \begin{equation} \label{eq:DC7}
+            K_d=\frac{\frac{m_ll\sin{\theta_0}-\frac{M_{Etd}g}{\cos^2{\theta_0}}}{\omega^2}+\left(m_ll\cos{\theta_0}+\frac{M_{Etd}}{\cos{\theta_0}}\right)}{m_t+m_l}
+        \end{equation}
+
+        \begin{equation} \label{eq:DC8}
+            K_p=\frac{2\zeta\omega\left(K_d(m_t+m_l)+m_ll\cos{\theta_0}+\frac{M_{Etd}l}{\cos{\theta_0}}\right)}{m_t+m_l}
+        \end{equation}
+
+        El sistema se configura con un coeficiente de amortiguamiento de \(\zeta = 1\), y la frecuencia \(\omega = 2\) se determina experimentalmente mediante un proceso de prueba y error, asegurando que no anule el control de posición del carro.
+
 
         
 
@@ -750,6 +712,16 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             Estos estados gestionan de manera individual los movimientos del carro y el izaje, estableciendo la consigna de velocidad correspondiente según el estado operativo del sistema. En modo automático, el sistema sigue la trayectoria generada por el módulo de planificación de trayectorias. En modo manual, la consigna de velocidad es definida directamente por el operador.
 
             Para garantizar transiciones suaves entre consignas, se utiliza la función \texttt{vel\_prof\_gen(v0, vf, a0, v\_max, a\_max, j)}, que genera un perfil de aceleración trapezoidal. Este perfil se recalcula automáticamente cada vez que la variación en la consigna de velocidad supera el 1\%, asegurando así una operación suave.
+
+            Además, en el estado se define la velocidad máxima permitida para el eje vertical, la cual se calcula en función de la masa estimada de la carga mediante la función \texttt{get\_vh\_max()}. Esta función establece la velocidad máxima de tal manera que no se supere la velocidad máxima permitida por el sistema ni la potencia máxima permitida. Para ello, se sigue la curva de potencia constante que se observa en la figura \ref{fig:potencia_constante}.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\textwidth]{figs/curva_potencia_constante.png}
+                \caption{Curva de potencia constante.}
+                \label{fig:potencia_constante}
+            \end{figure}
+
             En la figura \ref{fig:operation_axes_stateflow} se observa la implementación de lo mencionado en \textit{Stateflow}.
 
             \begin{figure} [H]
@@ -773,10 +745,13 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
         \textbf{Estimación de masa:}
             El estado se encarga de calcular la masa del \textit{spreader} + carga. Para ello, utiliza la señal de una celda de carga que mide la tensión del cable de izaje. La masa se calcula realizando una estimación en función de la tensión medida. En la figura \ref{fig:mass_estimation_stateflow} se muestra la implementación de este estado en \textit{Stateflow}. 
+
             El algoritmo se ejecuta de forma recursiva hasta que la masa estimada converge a un valor estable. Para calcular la masa en función de la tensión del cable, se utiliza la ecuación \ref{eq:masa_estimada}:
+
             \begin{equation} \label{eq:masa_estimada}
                 M_{est} = \frac{T}{g - a_{y}}
             \end{equation}
+
             Donde \(T\) es la tensión medida en la celda de carga, \(g\) es la aceleración de la gravedad y \(a_{y}\) es la aceleración del sistema en la dirección vertical. Se tiene en cuenta la aceleración vertical porque la estimación se realiza mientras la carga está en movimiento acelerado.
 
             \begin{figure} [H]
@@ -875,7 +850,7 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             A continuación, se muestra la lógica de funcionamiento de este nivel utilizando \textit{Stateflow} para modelar el autómata de estados. El modelo se compone de dos estados que operan en paralelo. A continuación, se describen estos estados.
 
             \textbf{Seguridad:}
-            \begin{figure}
+            \begin{figure} [H]
                 \centering
                 \includegraphics[width=1\textwidth]{figs/safety_stateflow.png}
                 \caption{Estado de seguridad del autómata de estados-Nivel 0.}
@@ -883,7 +858,7 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             \end{figure}
 
             \textbf{\textit{Watchdog}}:
-            \begin{figure}
+            \begin{figure} [H]
                 \centering
                 \includegraphics[width=1\textwidth]{figs/watchdog_stateflow.png}
                 \caption{Estado de \textit{Watchdog} del autómata de estados-Nivel 0.}
@@ -894,6 +869,8 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
 
 \section{Resultados}\label{sec:results}
+
+
 
 \section{Conclusión}\label{sec:conclusion}
 
