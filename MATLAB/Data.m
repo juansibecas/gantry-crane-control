@@ -6,7 +6,7 @@ SHORE_LIMIT = x_axis(1);
 SHIP_LIMIT = x_axis(2);
 vx_max = 4;             % max speed[m/s]
 ax_max = 0.8;           % max acceleration[m/s2]
-jerkt=2;
+jerkt=0.2;
 dx=0.1;
 
 y_axis = [-20 40];      % ship bottom to trolley pulleys range[m]
@@ -120,8 +120,8 @@ Ksa_PID_hoist = MEh * nh * wh^2;
 ba_PID_hoist = MEh * nh * wh;
 
 
-wtd = 10*bEtd/MEtd;
-ntd = 2.5;
+wtd = 5*bEtd/MEtd;
+ntd = 3;
 % Ksia_PID_trolley =it * MEtd * ntd * wtd^3 / rtd;
 % Ksa_PID_trolley =it * MEtd * ntd * wtd^2 / rtd;
 % b_PID_trolley =(it * MEtd * ntd *wtd- it * bEtd)/rtd ;
