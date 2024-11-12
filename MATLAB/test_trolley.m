@@ -4,7 +4,7 @@
 
 % Initial Conditions
 dlh0 = 0;
-lh0 = 10;
+lh0 = 6;
 
 dxt0 = 0;
 xt0 = -25;

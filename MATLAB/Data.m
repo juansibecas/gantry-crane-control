@@ -86,9 +86,9 @@ minMass = 2000;
 maxMass = 50000;
 containerWidth=2.5;
 Hseg=5;
-Bseg=3;
+Bseg=5;
 
-containerLayout = [3 2 3 4 3 4 3 3 4];
+containerLayout = [3 2 2 4 3 4 2 1 4];
 containerMasses = randi([Mc_range(1), Mc_range(2)], 1, columns);
 
 bayLayout = [0 1 1];
@@ -120,8 +120,8 @@ Ksa_PID_hoist = MEh * nh * wh^2;
 ba_PID_hoist = MEh * nh * wh;
 
 
-wtd = 5*bEtd/MEtd;
-ntd = 3;
+wtd = 8.3*bEtd/MEtd;
+ntd = 2.5;
 % Ksia_PID_trolley =it * MEtd * ntd * wtd^3 / rtd;
 % Ksa_PID_trolley =it * MEtd * ntd * wtd^2 / rtd;
 % b_PID_trolley =(it * MEtd * ntd *wtd- it * bEtd)/rtd ;
@@ -130,9 +130,17 @@ ntd = 3;
 % Ksa_PID_trolley =3.8e7; 
 % b_PID_trolley =6.75e5; 
 
-Ksia_PID_trolley =MEtd*wtd^3;
-Ksa_PID_trolley =MEtd*ntd*wtd^2;
-ba_PID_trolley = MEtd*ntd*wtd;
+Ksia_PID_trolley =MEtd*wtd^3*rtd/it;
+Ksa_PID_trolley =MEtd*ntd*wtd^2*rtd/it;
+ba_PID_trolley = MEtd*ntd*wtd*rtd/it;
+
+
+
+wtd_sway = 8*bEtd/MEtd;
+z_sway = 0.8;
+
+Ksa_PID_trolley_sway =MEtd*wtd_sway^2*rtd/it;
+ba_PID_trolley_sway = MEtd*z_sway*wtd_sway*rtd/it;
 
 %% observer gains
 
@@ -159,6 +167,7 @@ AnalogH_=0;
 message=["Exit manual zone to perform automatic positioning","Positioning","Manually engage the container","Manually release the container","Manual"];
 Container1_x0=-15;
 Container1_y0=2.2;
+
 
 
 

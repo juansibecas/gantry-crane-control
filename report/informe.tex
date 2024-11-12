@@ -670,10 +670,32 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             K_p=\frac{2\zeta\omega\left(K_d(m_t+m_l)+m_ll\cos{\theta_0}+\frac{M_{Etd}l}{\cos{\theta_0}}\right)}{m_t+m_l}
         \end{equation}
 
-        El sistema se configura con un coeficiente de amortiguamiento de \(\zeta = 1\), y la frecuencia \(\omega = 2\) se determina experimentalmente mediante un proceso de prueba y error, asegurando que no anule el control de posición del carro.
+        El sistema se configura con un coeficiente de amortiguamiento de \(\zeta = 1\), y la frecuencia \(\omega = 0.7\) se determina experimentalmente mediante un proceso de prueba y error, asegurando que no anule el control de posición del carro.
 
+        En la Figura \ref{fig:sway_trolley_simulink} se muestra la implementación del controlador de balanceo en configuración en serie con el control del carro. La referencia para el control del carro está compuesta por la señal de referencia de velocidad generada por el Nivel 1 y la salida del controlador de balanceo, que se encarga de reducir las oscilaciones durante el movimiento.
 
+        \begin{figure} [H]
+            \centering
+            \includegraphics[width=1\textwidth]{figs/sway_trolley_simulink.png}
+            \caption{Topología del sistema de control combinado de carro y balanceo.}
+            \label{fig:sway_trolley_simulink}
+        \end{figure}
         
+        En la Figura \ref{fig:sway_control_simulink} se presenta la implementación del control de balanceo en Simulink. Para definir las constantes del control PD en función de sus parámetros variables, se desarrolló una función en MATLAB que permite calcularlas. Se muestra que las ecuaciones linealizadas toman como punto de trabajo la consigna del ángulo \(\theta\). Además, se muestra cómo se implementa la referencia del ángulo \(\theta_0\) del control de balanceo, definida mediante la ecuación \ref{eq:theta0}. Esta ecuación se obtiene bajo la suposición de que el carro acelera de manera uniforme.
+
+        \begin{equation}
+            \theta_0 = -\arctan\left(\frac{g}{\ddot{x}_{td}}\right)
+            \label{eq:theta0}
+        \end{equation}
+
+        \begin{figure} [H]
+            \centering
+            \includegraphics[width=1\textwidth]{figs/sway_control_simulink.png}
+            \caption{Implementación del control de balanceo en Simulink.}
+            \label{fig:sway_control_simulink}
+        \end{figure}
+
+
 
         \subsubsection{Nivel 1 - Control Supervisor}
 
@@ -877,29 +899,34 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
             \begin{figure} [H]
             \centering
-            \includegraphics[width=0.6\textwidth]{figs/result_trolley.png}
+            \includegraphics[width=0.8\textwidth]{figs/result_trolley.png}
             \caption{Seguimiento de la consigna del carro. }
             \label{fig:result_trolley}
             \end{figure}
 
             \begin{figure} [H]
             \centering
-            \includegraphics[width=0.6\textwidth]{figs/result_hoist.png}
+            \includegraphics[width=0.8\textwidth]{figs/result_hoist.png}
             \caption{Seguimiento de la consigna del izaje. }
             \label{fig:result_hoist}
             \end{figure}
 
             
             \subsection{Resultados del Balanceo de la Carga}
-            % Mostrar los resultados del control de balanceo implementado para reducir la oscilación de la carga.
+            En la Figura \ref{fig:result_sway} se muestra el seguimiento de la consigna del control de balanceo. Para esta prueba, se realizó una traslación del carro en modo manual, en la que se aceleró hasta alcanzar la velocidad máxima y luego se desaceleró hasta detenerse. Se puede observar que el control de balanceo logra amortiguar eficientemente la oscilación de la carga. Así, el ángulo de balanceo acompaña al movimiento de la carga y se obtiene un movimiento suave y controlado.
 
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/result_sway.png}
+                \caption{Seguimiento de la consigna del balanceo.}
+                \label{fig:result_sway}
+            \end{figure}
 
-            
             
             \subsection{Pruebas de Control Manual y Resultados}
             % Incluir pruebas de control manual con el operador y la transición manual-automática sin interrupciones.
             
-            \subsection{Generación de Trayectoria Óptima y Resultados}
+            \subsection{Generación de Trayectoria}
             % Presentar los resultados relacionados con la trayectoria optimizada, incluyendo la simultaneidad de movimientos.
             
             \subsection{Ciclos de Operación y Productividad}
