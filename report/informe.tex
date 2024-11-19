@@ -1076,18 +1076,9 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             En el anexo se encuentra el video desarrollado con la animación del ciclo de carga. En el video se observa que la secuencia de referenciamiento toma aproximadamente 10 segundos, mientras que la secuencia completa de carga toma 40 segundos. Este último dato sugiere que sería posible realizar movimientos de más de 30 contenedores por hora.
 
 
-
             \subsubsection{Ciclo de Descarga}
 
             El ciclo de descarga se desarrolla de manera análoga al ciclo de carga, con las diferencias propias de la operación inversa. En la Figura \ref{fig:results_unload_cycle}, se presenta la trayectoria seguida por el carro durante el movimiento de descarga. Como se puede observar, el movimiento se realiza de forma controlada, comenzando en la posición segura previamente establecida y dirigiéndose hacia el punto de descarga en el barco.
-
-            En la Figura \ref{fig:results_unload_hoist_velocity}, se muestra la velocidad del mecanismo de izaje durante el ciclo de descarga. Al igual que en el ciclo de carga, se observa un movimiento suave en la mayoría de la secuencia, con transitorios esperados durante la elevación y el descenso de la carga.
-
-            La Figura \ref{fig:results_unload_trolley_velocity} muestra la velocidad del carro durante el ciclo de descarga. Se aprecia que el carro sigue una velocidad constante en la mayor parte del recorrido, ajustándose según los requerimientos de la operación y manteniéndose dentro de los límites de seguridad.
-
-            En la Figura \ref{fig:results_unload_sway_angle}, se presenta el ángulo de balanceo de la carga a lo largo del ciclo de descarga. La trayectoria de balanceo se mantiene dentro de los límites establecidos gracias a la efectividad del control del balanceo, lo cual es fundamental para garantizar la seguridad de la operación.
-
-            Finalmente, la Figura \ref{fig:results_unload_mass_estimation} muestra la estimación de la masa de la carga durante el ciclo de descarga. Similar al ciclo de carga, la masa se estima de manera precisa una vez que la carga es levantada, manteniéndose la lectura con un error menor al uno por ciento.
 
             \begin{figure} [H]
                 \centering
@@ -1096,41 +1087,7 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \label{fig:results_unload_cycle}
             \end{figure}
 
-            \begin{figure} [H]
-                \centering
-                \includegraphics[width=0.8\textwidth]{figs/results_unload_hoist_velocity.jpeg}
-                \caption{Velocidad del mecanismo de izaje durante el ciclo de descarga.}
-                \label{fig:results_unload_hoist_velocity}
-            \end{figure}
 
-            \begin{figure} [H]
-                \centering
-                \includegraphics[width=0.8\textwidth]{figs/results_unload_trolley_velocity.jpeg}
-                \caption{Velocidad del carro durante el ciclo de descarga.}
-                \label{fig:results_unload_trolley_velocity}
-            \end{figure}
-
-            \begin{figure} [H]
-                \centering
-                \includegraphics[width=0.8\textwidth]{figs/results_unload_sway_angle.jpeg}
-                \caption{Ángulo de balanceo de la carga durante el ciclo de descarga.}
-                \label{fig:results_unload_sway_angle}
-            \end{figure}
-
-            \begin{figure} [H]
-                \centering
-                \includegraphics[width=0.8\textwidth]{figs/results_unload_mass_estimation.jpeg}
-                \caption{Estimación de la masa de la carga durante el ciclo de descarga.}
-                \label{fig:results_unload_mass_estimation}
-            \end{figure}
-
-
-
-            
-
-            
-
-            
             \subsection{Comportamiento ante Fallas y Seguridad}
             % Evaluar el rendimiento del sistema de protección en situaciones de emergencia.
 
