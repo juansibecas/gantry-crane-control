@@ -10,6 +10,9 @@
 \usepackage{textcomp}
 \usepackage{subfig}
 \usepackage{float}
+\usepackage{graphicx}   % Para incluir gráficos
+\usepackage{subcaption} % Paquete necesario para subfiguras
+
 \usepackage{empheq}
 \usepackage{mathtools}
 \usepackage[spanish]{babel}
@@ -73,8 +76,22 @@
 % ======================================================================
 \begin{abstract}\label{sec:abstract}
 
+En este informe se presenta el desarrollo e implementación de un sistema de control y protección para una grúa portuaria de tipo pórtico, como parte del Proyecto Global Integrador 317 AyCD. El proyecto integra un enfoque híbrido de control distribuido, empleando Matlab/Simulink y Codesys para diseñar, simular y validar el sistema. El control consta de tres niveles: control continuo para el manejo de las principales dinámicas de traslación e izaje, un nivel supervisor encargado de la secuencia lógica de estados, y un nivel de seguridad para la protección de los componentes y del entorno operativo.
+
+Los resultados obtenidos a partir de simulaciones y pruebas en un entorno de PLC demostraron la efectividad del control manual y automático para seguir trayectorias específicas, manteniendo la estabilidad de la carga y minimizando las oscilaciones. Además, el sistema de protección logró actuar eficazmente en situaciones de emergencia, garantizando la seguridad durante las operaciones.
+
+Este proyecto no solo ha alcanzado los objetivos planteados, sino que también ha demostrado la viabilidad de una solución de control que optimiza el rendimiento y seguridad de una grúa portuaria.
+
+
+
 \end{abstract}
 
+\newpage
+
+% Insertar la tabla de contenidos
+\tableofcontents
+
+% Iniciar las secciones del documento
 \newpage
 
 \section{Introducción} \label{sec:intro}
@@ -887,7 +904,11 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \label{fig:watchdog_stateflow}
             \end{figure}
 
+            \subsection{\textit{Human Machine Interface}}
 
+            En esta subsección se detalla la interfaz de máquina humana (\textit{Human Machine Interface} o HMI) utilizada para la operación del sistema. La HMI permite al operador monitorear y controlar las funciones críticas del proceso de manera intuitiva y segura...
+
+            \subsection{Implementación del Sistema de Control en CODESYS}
 
 
             \section{Resultados}\label{sec:results}
@@ -895,7 +916,7 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             \subsection{Resultados del Control de Carro e Izaje}
             En esta sección se presentan los resultados del control de traslación horizontal del carro y del mecanismo de izaje. Se realizaron pruebas para verificar el comportamiento de ambos sistemas y su capacidad de seguimiento de la consigna impuesta.
 
-            En ambos casos, los resultados muestran que el sistema sigue la consigna de forma precisa . Esto se evidencia en las Figuras \ref{fig:result_trolley} y \ref{fig:result_hoist}, donde la señal de referencia (en línea discontinua) y la señal medida (en línea continua) se corresponden adecuadamente.
+            En ambos casos, los resultados muestran que el sistema sigue la consigna de forma precisa. Esto se evidencia en las Figuras \ref{fig:result_trolley} y \ref{fig:result_hoist}, donde la señal de referencia (en línea discontinua) y la señal medida (en línea continua) se corresponden adecuadamente.
 
             \begin{figure} [H]
             \centering
@@ -913,32 +934,183 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
             
             \subsection{Resultados del Balanceo de la Carga}
-            En la Figura \ref{fig:result_sway} se muestra el seguimiento de la consigna del control de balanceo. Para esta prueba, se realizó una traslación del carro en modo manual, en la que se aceleró hasta alcanzar la velocidad máxima y luego se desaceleró hasta detenerse. Se puede observar que el control de balanceo logra amortiguar eficientemente la oscilación de la carga. Así, el ángulo de balanceo acompaña al movimiento de la carga y se obtiene un movimiento suave y controlado.
+
+            En esta sección se presentan los resultados experimentales obtenidos durante la prueba de balanceo de la carga. Para llevar a cabo la prueba, se realizó un movimiento de traslación del carro, el cual se muestra la trayectoria en la Figura \ref{fig:result_sway_test_trajectory}.
 
             \begin{figure} [H]
                 \centering
-                \includegraphics[width=0.8\textwidth]{figs/result_sway.png}
-                \caption{Seguimiento de la consigna del balanceo.}
-                \label{fig:result_sway}
+                \includegraphics[width=0.8\textwidth]{figs/results_sway_test_trajectory.png}
+                \caption{Trayectoria del movimiento de traslación del carro.}
+                \label{fig:result_sway_test_trajectory}
             \end{figure}
 
-            
-            \subsection{Pruebas de Control Manual y Resultados}
-            % Incluir pruebas de control manual con el operador y la transición manual-automática sin interrupciones.
-            
-            \subsection{Generación de Trayectoria}
-            % Presentar los resultados relacionados con la trayectoria optimizada, incluyendo la simultaneidad de movimientos.
-            
-            \subsection{Ciclos de Operación y Productividad}
-            % Mostrar un análisis detallado de los ciclos de operación, diferenciando entre ciclos de carga y descarga, y ciclos dobles.
-            
-            \subsection{Comportamiento ante Fallas y Seguridad}
-            % Evaluar el rendimiento del sistema de protección en situaciones de emergencia.
+            La Figura \ref{fig:result_sway_test_angle} presenta el resultado del seguimiento del ángulo de balanceo durante el movimiento del carro. Se puede observar que el sistema logra mantener el ángulo de balanceo dentro de los límites establecidos, siguiendo la consigna deseada y estabilizándose en cero de forma suave y sin oscilaciones significativas.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/result_sway_test_angle.png}
+                \caption{Resultado del seguimiento de la consigna de ángulo de balanceo durante el movimiento del carro.}
+                \label{fig:result_sway_test_angle}
+            \end{figure}
+
+            En la Figura \ref{fig:result_sway_test_trolley} se muestra el resultado del seguimiento de la consigna de velocidad del carro durante el movimiento. El perfil de velocidad muestra una respuesta coherente con la trayectoria deseada. Sin embargo, se observan algunas diferencias respecto a la referencia, similares a las observadas en el seguimiento del ángulo de balanceo. Esto se debe a la interacción de dos controladores trabajando simultáneamente, cuyas consignas no son perfectamente coherentes. Además, la consigna del ángulo de balanceo se obtiene mediante una aproximación y no responde a un modelo dinámico preciso, lo cual genera transitorios que se aprecian en la figura.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/result_sway_test_trolley.png}
+                \caption{Resultado del seguimiento de la consigna de velocidad del carro durante el movimiento.}
+                \label{fig:result_sway_test_trolley}
+            \end{figure}
+
+            A pesar de las diferencias entre la referencia y el movimiento real del carro, se considera que la prueba fue efectiva. El control logra amortiguar rápidamente las oscilaciones de la carga sin sobrepasar el torque máximo que puede entregar el actuador del carro. Esto se puede observar en las Figuras \ref{fig:result_no_sway_test_trolley} y \ref{fig:result_no_sway_test_angle}, que muestran los resultados de este movimiento con el control de balanceo deshabilitado.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/result_no_sway_test_trolley.png}
+                \caption{Resultado del seguimiento de la consigna de velocidad del carro con el control de balanceo deshabilitado.}
+                \label{fig:result_no_sway_test_trolley}
+            \end{figure}
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/result_no_sway_test_angle.png}
+                \caption{Resultado del seguimiento de la consigna de ángulo de balanceo con el control de balanceo deshabilitado.}
+                \label{fig:result_no_sway_test_angle}
+            \end{figure}
+
+            En la Figura \ref{fig:result_no_sway_test_trolley}, se puede observar que el movimiento del carro sigue la consigna con menor error. Sin embargo, en la Figura \ref{fig:result_no_sway_test_angle}, se aprecia una gran oscilación durante el movimiento y, una vez finalizado, una oscilación de aproximadamente diez grados que persiste sin mostrar signos de amortiguamiento.
+
             
 
+            
+            \subsection{Resultados del Control Manual}
+
+            El objetivo de esta sección es mostrar el funcionamiento del control manual del sistema. Para ello, se realizó la trayectoria mostrada en la Figura \ref{fig:results_manual_test_trajectory}. En dicha figura, se observa la trayectoria de referencia establecida, la cual se determinó como una consigna de velocidad mediante un control analógico en la interfaz HMI.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_manual_test_trajectory.png}
+                \caption{Trayectoria de referencia utilizada durante la prueba de control manual.}
+                \label{fig:results_manual_test_trajectory}
+            \end{figure}
+
+            A continuación, se presentan los resultados del seguimiento de la consigna y el movimiento real de las distintas partes del sistema, incluyendo el izaje, el carro y el ángulo de balanceo. Estos se muestran en las Figuras \ref{fig:results_manual_test_hoist}, \ref{fig:results_manual_test_trolley} y \ref{fig:results_manual_test_sway}, respectivamente.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_manual_test_hoist.png}
+                \caption{Resultado del seguimiento de la consigna del izaje durante la prueba de control manual.}
+                \label{fig:results_manual_test_hoist}
+            \end{figure}
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_manual_test_trolley.png}
+                \caption{Resultado del seguimiento de la consigna de velocidad del carro durante la prueba de control manual.}
+                \label{fig:results_manual_test_trolley}
+            \end{figure}
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_manual_test_sway.png}
+                \caption{Resultado del seguimiento de la consigna del ángulo de balanceo durante la prueba de control manual.}
+                \label{fig:results_manual_test_sway}
+            \end{figure}
+
+            Los resultados se consideran satisfactorios, ya que se logra controlar ambos ejes de manera efectiva e intuitiva. Además, se observan movimientos suaves en cada eje y un ángulo de balanceo que no supera los límites establecidos, amortiguándose adecuadamente.
+
+            \subsection{Ciclos de Operación y Productividad}
+            % Mostrar un análisis detallado de los ciclos de operación, diferenciando entre ciclos de carga y descarga, y ciclos dobles.
+
+            Esta sección presenta el análisis de un ciclo de carga y de descarga.
+
+            \subsubsection{Ciclo de Carga}
+
+            Antes de comenzar el ciclo, cuando el sistema se inicia, no tiene referencia de su posición absoluta. Por lo tanto, se inicia la secuencia de referenciamiento o \textit{homing}. En la Figura \ref{fig:results_load_cycle} se puede observar la posición inicial en \([-25,38]\) m, donde el sistema comienza buscando el límite de carrera del izaje mediante una trayectoria vertical, seguido de la búsqueda del final de carrera del carro con una trayectoria horizontal.
+
+            Una vez completado el referenciamiento, el sistema se encuentra en estado manual. A continuación, se inicia la secuencia automática de carga de un contenedor desde una bahía de carga específica hasta una columna determinada del barco. Estos valores se configuran a través del HMI. Al comenzar la secuencia automática, el sistema calcula la trayectoria desde su posición actual hasta el punto seguro más próximo al contenedor que se desea cargar. En la Figura \ref{fig:results_load_cycle} se muestra esta trayectoria como un movimiento compuesto y suave de ambos ejes de operación.
+
+            Una vez completado el movimiento por la trayectoria planificada, el sistema cambia automáticamente a modo manual. Mediante los controles de velocidad en el HMI, se lleva el \textit{spreader} hasta la posición correcta para tomar el contenedor. Cuando la celda de carga indica que el cable del izaje está sin tensión, se habilita el accionamiento de los \textit{twistlocks} para sujetar el contenedor. Después de esto, se procede a izar la carga manualmente hasta la zona segura, donde la secuencia automática retoma el control mediante una trayectoria que conduce al punto seguro cercano a la columna del barco seleccionada.
+
+            En el barco, la operación se realiza manualmente de forma similar a la realizada para tomar el contenedor. Una vez finalizado este proceso, se completa la secuencia de carga.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_load_cycle.jpeg}
+                \caption{Trayectoría del ciclo de carga.}
+                \label{fig:results_load_cycle}
+            \end{figure}
+
+            En las Figuras \ref{fig:results_load_hoist_velocity}, \ref{fig:results_load_trolley_velocity} y \ref{fig:results_load_sway_angle} se pueden observar las velocidades de ambos ejes de operación, así como el ángulo de balanceo. Al igual que en los resultados presentados anteriormente, se observan movimientos suaves y dentro de los límites de operación. Como excepción a lo descrito, se presentan transitorios abruptos en la velocidad del izaje (Figura \ref{fig:results_load_hoist_velocity}). Estos transitorios son causados por el despegue y posterior contacto de la carga con su apoyo. 
+            
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_load_hoist_velocity.jpeg}
+                \caption{Velocidad del izaje durante el ciclo de carga.}
+                \label{fig:results_load_hoist_velocity}
+            \end{figure}
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_load_trolley_velocity.jpeg}
+                \caption{Velocidad del carro durante el ciclo de carga.}
+                \label{fig:results_load_trolley_velocity}
+            \end{figure}
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_load_sway_angle.jpeg}
+                \caption{Ángulo de balanceo durante el ciclo de carga.}
+                \label{fig:results_load_sway_angle}
+            \end{figure}
+
+            Finalmente, la Figura \ref{fig:results_load_mass_estimation} muestra la masa real y la estimada durante toda la secuencia. Se observa que el sistema requiere un tiempo inicial para realizar la medición, tras lo cual mantiene la lectura con un error aceptable de menos del uno por ciento.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_load_mass_estimation.jpeg}
+                \caption{Estimación de la masa del contenedor durante el ciclo de carga.}
+                \label{fig:results_load_mass_estimation}
+            \end{figure}
+
+            En el anexo se encuentra el video desarrollado con la animación del ciclo de carga. En el video se observa que la secuencia de referenciamiento toma aproximadamente 10 segundos, mientras que la secuencia completa de carga toma 40 segundos. Este último dato sugiere que sería posible realizar movimientos de más de 30 contenedores por hora.
+
+
+            \subsubsection{Ciclo de Descarga}
+
+            El ciclo de descarga se desarrolla de manera análoga al ciclo de carga, con las diferencias propias de la operación inversa. En la Figura \ref{fig:results_unload_cycle}, se presenta la trayectoria seguida por el carro durante el movimiento de descarga. Como se puede observar, el movimiento se realiza de forma controlada, comenzando en la posición segura previamente establecida y dirigiéndose hacia el punto de descarga en el barco.
+
+            \begin{figure} [H]
+                \centering
+                \includegraphics[width=0.8\textwidth]{figs/results_unload_cycle.jpeg}
+                \caption{Trayectoria del ciclo de descarga del carro durante el movimiento de la grúa.}
+                \label{fig:results_unload_cycle}
+            \end{figure}
+
+
+            \subsection{Comportamiento ante Fallas y Seguridad}
+            % Evaluar el rendimiento del sistema de protección en situaciones de emergencia.
+
+  
 
 
 \section{Conclusión}\label{sec:conclusion}
+
+    En este informe se ha desarrollado e implementado un sistema híbrido de control y protección para una grúa portuaria de tipo pórtico, integrando múltiples niveles de control con el objetivo de mejorar la eficiencia y seguridad de las operaciones de carga y descarga de contenedores. Mediante el uso de herramientas como Matlab/Simulink y Codesys, se logró modelar el sistema físico de la grúa, diseñar controladores jerárquicos, y simular las operaciones tanto en entornos de simulación como en controladores programables.
+
+    El sistema de control híbrido consta de tres niveles: el nivel regulatorio de control continuo, un nivel supervisor de estados discretos y un nivel de seguridad para actuar en situaciones de emergencia. La implementación de este enfoque permitió una operación coordinada y eficiente de los dos principales movimientos de la grúa: la traslación horizontal del carro y el izaje vertical de la carga. Además, se verificó la efectividad del control de balanceo de la carga, lo cual fue clave para garantizar la estabilidad y evitar oscilaciones que podrían comprometer la seguridad de la operación.
+
+    Los resultados experimentales obtenidos durante las pruebas de simulación y la implementación en entorno PLC han sido satisfactorios. El control manual y automático ha demostrado ser capaz de ejecutar trayectorias suaves y eficientes, mientras que el sistema de protección ha respondido adecuadamente ante situaciones de emergencia simuladas. La integración de estos subsistemas ha resultado en una solución robusta que asegura el cumplimiento de las restricciones operativas establecidas, optimizando tanto el rendimiento como la seguridad de la grúa.
+
+    Finalmente, el proyecto cumplió con todos los objetivos planteados, y se evidenció que el sistema de control implementado no solo mejora el rendimiento operacional sino que también garantiza la seguridad del proceso, minimizando riesgos para el equipo y el personal involucrado. Este trabajo constituye una base sólida para futuras mejoras y posibles extensiones del sistema de control, incluyendo la integración de nuevos sensores o el desarrollo de algoritmos de control más avanzados.
+
+
+\section{Referencias}\label{sec:referencias}
+
+[1] 317 AyCD\_Proyecto Global Integrador\_2023\_Guía de TRABAJO\_Rev.0 
+
+[2] CODESYS. `` OPC Server – Standard Interface to IEC 61131-3 Process Data.'' Disponible en: https://www.codesys.com/
+
 
 
 % Estilo de citas
