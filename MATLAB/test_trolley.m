@@ -14,7 +14,7 @@ xtd0 = -25;
 
 %Load position
 xl0 = -25;
-yl0 = Yt0 - lh0;
+yl0 = Yt0 - lh0 - 1/4 * (Ms*g)/(kwu/(2*lh0+110));
 Vlx0 = 0;
 Vly0 = 0;
 
@@ -22,7 +22,10 @@ theta_hm0 = 0;
 theta_tm0 = 0;
 
 % Torque
-Tt = Ttm_max/2;
+% Equilibrium torque, m = Ms
+Teq = Ms*g*rhd /ih/2;
+
+Tt = 0;
 Th = 0;
 
 % Brakes
