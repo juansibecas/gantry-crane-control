@@ -60,7 +60,7 @@ dlh_ref_log = logs.getElement('dlh_ref').Values;
 
 dxt_ref_log = logs.getElement('dxt_ref').Values;
 
-sway_ref_log = logs.getElement('sway_ref').Values;
+%sway_ref_log = logs.getElement('sway_ref').Values;
 
 
 %% Plots
@@ -68,24 +68,30 @@ sway_ref_log = logs.getElement('sway_ref').Values;
 figure(1)
 hold on
 grid on
-title('observador carro')
+title('Posición del carro')
 plot(xt_real_log.Time, xt_real_log.Data);
 plot(xt_obs_log.Time, xt_obs_log.Data);
+xlabel('Tiempo [s]');
+ylabel('Posición [m]');
 legend('xt real', 'xt obs')
 
 figure(2)
 hold on
 grid on
-title('observador izaje')
+title('Posición del izaje')
 plot(lh_real_log.Time, lh_real_log.Data);
 plot(lh_obs_log.Time, lh_obs_log.Data);
+xlabel('Tiempo [s]');
+ylabel('Posición [m]');
 legend('lh real', 'lh obs')
 
 figure(3)
 hold on
 grid on
-title('observador balanceo')
+title('Ángulo de Balanceo')
 plot(theta_real_log.Time, theta_real_log.Data*180/pi);
+xlabel('Tiempo [s]');
+ylabel('Ángulo [°]');
 legend('theta real')%, 'theta obs')
 
 figure(4)
@@ -98,9 +104,11 @@ plot(xl_log.Data, yl_log.Data);
 figure(5)
 hold on
 grid on
-title('estimacion de masa')
+title('Estimacion de Masa')
 plot(real_mass_log.Time, real_mass_log.Data);
 plot(est_mass_log.Time, est_mass_log.Data);
+xlabel('Tiempo [s]');
+ylabel('Masa [kg]');
 legend('masa real', 'masa estimada')
 
 figure(6)
@@ -109,6 +117,8 @@ grid on
 title('Fuerzas de contacto')
 plot(fcx_log.Time, fcx_log.Data);
 plot(fcy_log.Time, fcy_log.Data);
+xlabel('Tiempo [s]');
+ylabel('Fuerza [N]');
 legend('fcx', 'fcy')
 
 figure(7)
@@ -117,6 +127,8 @@ grid on
 title('Torque en izaje')
 plot(thm_ref_log.Time, thm_ref_log.Data);
 plot(thm_real_log.Time, thm_real_log.Data);
+xlabel('Tiempo [s]');
+ylabel('Torque [Nm]');
 legend('ref', 'real')
 
 figure(8)
@@ -125,22 +137,28 @@ grid on
 title('Torque en carro')
 plot(ttm_ref_log.Time, ttm_ref_log.Data);
 plot(ttm_real_log.Time, ttm_real_log.Data);
+xlabel('Tiempo [s]');
+ylabel('Torque [Nm]');
 legend('ref', 'real')
 
 figure(9)
 hold on
 grid on
-title('velocidad de izaje')
+title('Velocidad de Izaje')
 plot(dlh_ref_log.Time, dlh_ref_log.Data);
 plot(dlh_real_log.Time, dlh_real_log.Data);
+xlabel('Tiempo [s]');
+ylabel('Velocidad [m/s]');
 legend('ref', 'real')
 
 figure(10)
 hold on
 grid on
-title('velocidad de carro')
+title('Velocidad de Carro')
 plot(dxt_ref_log.Time, dxt_ref_log.Data);
 plot(dxt_real_log.Time, dxt_real_log.Data);
-plot(sway_ref_log.Time, sway_ref_log.Data);
+xlabel('Tiempo [s]');
+ylabel('Velocidad [m/s]');
+%plot(sway_ref_log.Time, sway_ref_log.Data);
 legend('ref', 'real', 'sway ref')
 

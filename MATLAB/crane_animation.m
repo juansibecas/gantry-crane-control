@@ -22,7 +22,7 @@ numSteps = length(timeDS);      % Number of time steps
 % Create figure for animation
 fig = figure;
 hold on;
-title('Overhead Crane');
+title('STS Gantry Crane - Ship 4 to Bay 1');
 ax = gca;
 ax.YAxisLocation = 'right';
 
@@ -96,13 +96,19 @@ for i = 1:length(bayLayout)
         bayContainerHandles = [bayContainerHandles rectangle('Position', [0 0 0 0])];
         continue
     end
-    x_container = -23.25 + (i-1)*7;
-    y_container = 1;
-    container_color = colors(n_container,:);
-    bayContainerHandles = [bayContainerHandles rectangle('Position', [x_container y_container Hc Hc], 'FaceColor', container_color)];
-    n_container = n_container + 1;
-    if n_container > 6
-           n_container = 1;
+    for j = 1:bayLayout(i)
+        x_container = -23.25 + (i-1)*7;
+        y_container = 1 + Hc*(j-1);
+        container_color = colors(n_container,:);
+        if j == bayLayout(i)
+            bayContainerHandles = [bayContainerHandles rectangle('Position', [x_container y_container Hc Hc], 'FaceColor', container_color)];
+        else
+            rectangle('Position', [x_container y_container Hc Hc], 'FaceColor', container_color)
+        end
+        n_container = n_container + 1;
+        if n_container > 6
+               n_container = 1;
+        end
     end
 end
 
@@ -137,9 +143,9 @@ for i = 1:numSteps - 1
     set(textEstMass, 'String', strcat('Est Mass: ', num2str(round(est_massDS(i)))));
     set(textTLK, 'String', strcat('TLK: ', tlkMsg{tlkDS(i)+1}));
     textXPos = 0.1 + 0.8*(xlDS(i)+30)/80;
-    set(textX, 'String', strcat('xl=', num2str(round(xlDS(i), 2))), 'Position', [textXPos , 0.02, 0.05, 0.05]);
+    set(textX, 'String', strcat('xl=', num2str(round(xlDS(i), 2)), 'm'), 'Position', [textXPos , 0.02, 0.05, 0.05]);
     textYPos = 0.1 + 0.8*(ylDS(i)+20)/70;
-    set(textY, 'String', strcat('yl=', num2str(round(ylDS(i), 2))), 'Position', [0.02, textYPos, 0.05, 0.05]);
+    set(textY, 'String', strcat('yl=', num2str(round(ylDS(i), 2)), 'm'), 'Position', [0.02, textYPos, 0.05, 0.05]);
     
     %%%%%%% CONTAINER PICK UP AND DROP LOGIC TODO
     if TLK_prev == 0
@@ -162,16 +168,17 @@ for i = 1:numSteps - 1
             % drop container handle
             if xlDS(i) > 0
                 [~, idx] = min(abs(X_container - xlDS(i)));
+                set(pickedContainerHandle, 'Position', [1.5 + (idx-1)*Hc (-19 + containerLayout(idx)*Hc) Hc Hc]);
             else
                 [~, idx] = min(abs(X_bay - xlDS(i)));
+                set(pickedContainerHandle, 'Position', [-23.25 + (idx-1)*7 (1 + bayLayout(idx)*Hc) Hc Hc]);
             end
-            set(pickedContainerHandle, 'Position', [1.5 + (idx-1)*Hc (-19 + containerLayout(idx)*Hc) Hc Hc]);
             pickedContainerHandle = 0;
         end
     end
     TLK_prev = tlkDS(i);
     % Update title
-    titl = strcat('Overhead Crane, time= ', num2str(timeDS(i)), 's');
+    titl = strcat('STS Gantry Crane - Ship 4 to Bay 1, time= ', num2str(timeDS(i)), 's');
     title(titl);
     time_elapsed = timeDS(i+1) - timeDS(i);
     %pause(time_elapsed); % Adjust pause for desired animation speed
@@ -180,7 +187,6 @@ for i = 1:numSteps - 1
     frame = getframe(gcf);
     writeVideo(vid, frame);
 end
-
 
 % Close the VideoWriter object
 close(vid);
