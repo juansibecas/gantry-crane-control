@@ -107,57 +107,61 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 \section{Desarrollo} \label{sec:desarrollo}
     \subsection{Modelo del Sistema Físico} \label{sec:plantModel}
 
-        El modelo del sistema se simplifica a un control de posición de la carga en el plano. No se tendran en cuenta grados liberdad que no estan complendidos en el plano perpendicular el eje longitudinal del muelle. Se considera que la esturcuruta de la grua es rigida y que no se producen vibraciones, no así los cable que se consideran flexibles.
-        Para el desarrollo de las ecuaciones se parde desde lo desarrollado en el enunciado del trabajo practico.
+        El modelo del sistema se simplifica para controlar la posición de la carga en un plano. No se considerarán los grados de libertad fuera del plano perpendicular al eje longitudinal del muelle. Se asume que la estructura de la grúa es rígida y no presenta vibraciones, a diferencia de los cables, que se consideran flexibles.
+
+        El desarrollo de las ecuaciones se basa en lo presentado en el enunciado del trabajo práctico.
+    
         
         \subsubsection{Subsistema de Izaje}
-            Segunda ley de Newton del lado tambor:
+            La dinámica del subsistema de izaje se modela utilizando la segunda ley de Newton para el tambor y el motor:
+
+            \textbf{Segunda ley de Newton para el tambor:}
             \begin{equation} \label{eq:tamborIzaje}
                 J_{hd+hEb} \frac{d \omega_{hd}}{dt} = T_{hd}(t) + T_{hEb}(t) - b_{hd} \omega_{hd}(t) - T_{hdl}(t)
             \end{equation}
 
-            Segunda ley de Newton del lado motor:
+            \textbf{Segunda ley de Newton para el motor:}
             \begin{equation} \label{eq:motorIzaje}
                 J_{hm+hb} \frac{d \omega_{hm}}{dt} = T_{hm}(t) + T_{hb}(t) - b_{hm} \omega_{hm}(t) - T_{hml}(t)
             \end{equation}
 
-            relacion de transmision
+            \textbf{Relación de transmisión:}
             \begin{equation} \label{eq:transmisionIzaje}
                 i_h = \frac{\omega_{hm}(t)}{\omega_{hd}(t)} = \frac{T_{hd}(t)}{T_{hml}(t)}
             \end{equation}
 
-            si reemplazo \ref{eq:transmisionIzaje} en \ref{eq:motorIzaje} y despejo $T_{hd}(t)$
+            Sustituyendo la ecuación \ref{eq:transmisionIzaje} en \ref{eq:motorIzaje} y despejando $T_{hd}(t)$, se obtiene:
 
             \begin{equation} \label{eq:Thd}
                 T_{hd}(t) = J_{hm+hb} \frac{d \omega_{hd}}{dt} {i_h}^2 - b_{hm} \omega_{hd}(t) {i_h}^2 + i_h (T_{hm}(t) + T_{hb}(t))
             \end{equation}
 
-            reemplazando en \ref{eq:tamborIzaje} y operando se obtiene
+            Reemplazando en \ref{eq:tamborIzaje} y operando se obtiene:
 
             \begin{equation} \label{eq:izajeThdl}
-                (J_{hd+hEb} + J_{hm+hb} i_h^2) \frac{d \omega_{hd}}{dt} = - (b_{hd} + b_{hm}i_h^2) \omega_{hd}(t) + i_h (T_{hm}(t) + T_{hb}(t)) + T_{hEb}(t) - T_{hdl}(t)
+                (J_{hd+hEb} + J_{hm+hb} i_h^2) \frac{d \omega_{hd}}{dt} = - (b_{hd} + b_{hm} i_h^2) \omega_{hd}(t) + i_h (T_{hm}(t) + T_{hb}(t)) + T_{hEb}(t) - T_{hdl}(t)
             \end{equation}
 
-            como $T_{hdl}(t) = F_{hw}(t)*r_{hd}$, $2V_h = r_{hd}*\omega_{hd}(t)$ y $V_h = -\frac{dl_h(t)}{dt}$ y dividiendo por $r_{hd}$:
+            Considerando que $T_{hdl}(t) = F_{hw}(t) \cdot r_{hd}$, $2V_h = r_{hd} \cdot \omega_{hd}(t)$ y $V_h = -\frac{d l_h(t)}{dt}$, dividiendo por $r_{hd}$:
 
             \begin{equation} \label{eq:izajeFhw}
-                2\frac{(J_{hd+hEb} + J_{hm+hb} i_h^2)}{r_{hd}^2} \frac{d^2 l_h(t)}{dt^2} = - 2\frac{(b_{hd} + b_{hm}i_h^2)}{r_{hd}^2} \frac{d l_h(t)}{dt} - \frac{i_h}{r_{hd}} (T_{hm}(t) + T_{hb}(t)) - \frac{T_{hEb}(t)}{r_{hd}} + F_{hw}(t)
+                2\frac{(J_{hd+hEb} + J_{hm+hb} i_h^2)}{r_{hd}^2} \frac{d^2 l_h(t)}{dt^2} = - 2\frac{(b_{hd} + b_{hm} i_h^2)}{r_{hd}^2} \frac{d l_h(t)}{dt} - \frac{i_h}{r_{hd}} (T_{hm}(t) + T_{hb}(t)) - \frac{T_{hEb}(t)}{r_{hd}} + F_{hw}(t)
             \end{equation}
-            
-            Reemplazando por parametros equivalentes:
-            
+
+            Reemplazando por parámetros equivalentes:
+
             \begin{equation} \label{eq:izajeEquiv}
                 M_{Eh} \ddot{l_h}(t) = - b_{Eh} \dot{l_h}(t) - \frac{i_h}{r_{hd}} (T_{hm}(t) + T_{hb}(t)) - \frac{T_{hEb}(t)}{r_{hd}} + F_{hw}(t)
             \end{equation}
 
-            Donde
+            Donde:
 
             \begin{align} \label{eq:izajeParamsEquiv}
-                M_{Eh} = 2\frac{(J_{hd+hEb} + J_{hm+hb} i_h^2)}{r_{hd}^2}\\
-                b_{Eh} = 2\frac{(b_{hd} + b_{hm}i_h^2)}{r_{hd}^2}\\
+                M_{Eh} &= 2\frac{(J_{hd+hEb} + J_{hm+hb} i_h^2)}{r_{hd}^2} \\
+                b_{Eh} &= 2\frac{(b_{hd} + b_{hm} i_h^2)}{r_{hd}^2}
             \end{align}
 
-            En la figura \ref{fig:hoisting_drive_simulink} se presenta el modelo de Simulink del subsistema de izaje. En este modelo, se implementa la ecuación \ref{eq:izajeEquiv} junto con sus correspondientes parámetros equivalentes. Además, se incluye el modelo del sistema de freno y del freno de emergencia. 
+            En la Figura \ref{fig:hoisting_drive_simulink} se presenta el modelo de Simulink del subsistema de izaje. En este modelo se implementa la ecuación \ref{eq:izajeEquiv} junto con los correspondientes parámetros equivalentes. Además, se incluye el modelo del sistema de freno y del freno de emergencia.
 
             \begin{figure} [H]
                 \centering
@@ -168,7 +172,7 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
 
             \textbf{Modelo del cable de izaje}
 
-            El modelo del cable de izaje se obtiene a partir de la ecuación 2/2.a. Se considera que el cable solo soporta cargas de tracción; por lo tanto, si el resultado de la tensión obtenido de dicha ecuación es negativo, se toma como cero. En la figura \ref{fig:hoisting_cable_mode_simulink} se presenta el modelo implementado en Simulink del cable de izaje.
+            El modelo del cable de izaje se obtiene a partir de la ecuación 2/2.a. Se considera que el cable solo soporta cargas de tracción, por lo que si el resultado de la tensión obtenido de dicha ecuación es negativo, se toma como cero. En la Figura \ref{fig:hoisting_cable_mode_simulink} se presenta el modelo implementado en Simulink del cable de izaje.
 
             \begin{figure} [H]
                 \centering
@@ -178,92 +182,96 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             \end{figure}
 
 
-        \subsubsection{Subsistema Carro}
 
-            La conducción de carro se modela como tres subsistemas, el de accionamiento del motor, el del tambor y el del cable. En la figura \ref{fig:trolley_drive_simulink} se muestra el modelo de Simulink de estos subsistemas. 
+            \subsubsection{Subsistema Carro}
 
+            El subsistema del carro se modela considerando tres subcomponentes principales: el motor, el tambor y el cable. En la Figura \ref{fig:trolley_drive_simulink} se muestra el modelo de Simulink que representa estos subsistemas.
+            
             \begin{figure} [H]
                 \centering
                 \includegraphics[width=1\textwidth]{figs/trolley_drive_simulink.png}
-                \caption{Modelo de Simulink del subsistema carro}
+                \caption{Modelo de Simulink del subsistema del carro}
                 \label{fig:trolley_drive_simulink}
             \end{figure}
-
+            
             \textbf{Motor del carro}
-
-            El modelo se obtiene a partir de la ecuación 4 del enunciado. En la figura \ref{fig:trolley_drive_simulink} se muestra el modelo implementado en Simulink.
-
+            
+            El modelo del motor se obtiene a partir de la ecuación 4 del enunciado. En la Figura \ref{fig:trolley_subsystem_simulink} se presenta el modelo implementado en Simulink.
+            
             \begin{figure} [H]
                 \centering
                 \includegraphics[width=1\textwidth]{figs/trolley_subsystem_simulink.png}
-                \caption{Modelo de Simulink del subsistema carro}
+                \caption{Modelo de Simulink del motor del subsistema carro}
                 \label{fig:trolley_subsystem_simulink}
             \end{figure}
-
+            
             \textbf{Tambor del carro}
-
-            Segunda ley de Newton del lado tambor:
+            
+            La dinámica del tambor del carro se describe usando la segunda ley de Newton:
+            
+            \textbf{Ecuación para el tambor:}
             \begin{equation} \label{eq:tamborCarro}
                 J_{td} \frac{d \omega_{td}(t)}{dt} = T_{td}(t) - b_{td} \omega_{td}(t) - T_{tdl}(t)
             \end{equation}
-
-            Segunda ley de Newton del lado motor:
+            
+            \textbf{Ecuación para el motor:}
             \begin{equation} \label{eq:motorCarro}
                 J_{tm+tb} \frac{d \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t) - b_{tm} \omega_{tm}(t) - T_{tml}(t)
             \end{equation}
-
-            relacion de transmision
+            
+            \textbf{Relación de transmisión:}
             \begin{equation} \label{eq:transmisionCarro}
                 i_t = \frac{\omega_{tm}(t)}{\omega_{td}(t)} = \frac{T_{td}(t)}{T_{tml}(t)}
             \end{equation}
-
-            si reemplazo \ref{eq:transmisionCarro} en \ref{eq:motorCarro} y despejo $T_{td}(t)$
-
+            
+            Reemplazando la ecuación \ref{eq:transmisionCarro} en \ref{eq:motorCarro} y despejando $T_{td}(t)$, se tiene:
+            
             \begin{equation} \label{eq:Ttd}
                 T_{td}(t) = J_{tm+tb} \frac{d \omega_{td}(t)}{dt} {i_t}^2 - b_{tm} \omega_{td}(t) {i_t}^2 + i_t (T_{tm}(t) + T_{tb}(t))
             \end{equation}
-
-            Reemplazo \ref{eq:Ttd} en \ref{eq:tamborCarro} y reordeno:
-
+            
+            Sustituyendo \ref{eq:Ttd} en \ref{eq:tamborCarro} y reorganizando:
+            
             \begin{equation} \label{eq:carroTtdl}
-                (J_{td} + J_{tm+tb}*i_t^2) \frac{d \omega_{td}(t)}{dt} = i_t (T_{tm}(t) + T_{tb}(t)) - (b_{td} + b_{tm}{i_t}^2) \omega_{td}(t) - T_{tdl}(t)
+                (J_{td} + J_{tm+tb} i_t^2) \frac{d \omega_{td}(t)}{dt} = i_t (T_{tm}(t) + T_{tb}(t)) - (b_{td} + b_{tm} i_t^2) \omega_{td}(t) - T_{tdl}(t)
             \end{equation}
-        
-            Como $\omega_{td}(t) r_{td} = V_{td}(t)$, $F_{tw}(t)r_{td} = T_{tdl}(t)$ y $V_{td}(t) = \frac{d x_{td}}{dt}$ y dividiendo por $r_{td}$:
+            
+            Considerando que $\omega_{td}(t) \cdot r_{td} = V_{td}(t)$, $F_{tw}(t) \cdot r_{td} = T_{tdl}(t)$ y $V_{td}(t) = \frac{d x_{td}}{dt}$, dividiendo por $r_{td}$:
             
             \begin{equation} \label{eq:carroFtw}
-                \frac{(J_{td} + J_{tm+tb}*i_t^2)}{r_{td}^2} \frac{d^2 x_{td}(t)}{dt^2} = - \frac{(b_{td} + b_{tm}{i_t}^2)}{r_{td}^2} \frac{d x_{td}(t)}{dt} + \frac{i_t}{r_{td}} (T_{tm}(t) + T_{tb}(t)) - F_{tw}(t)
+                \frac{(J_{td} + J_{tm+tb} i_t^2)}{r_{td}^2} \frac{d^2 x_{td}(t)}{dt^2} = - \frac{(b_{td} + b_{tm} i_t^2)}{r_{td}^2} \frac{d x_{td}(t)}{dt} + \frac{i_t}{r_{td}} (T_{tm}(t) + T_{tb}(t)) - F_{tw}(t)
             \end{equation}
-
-            Reemplazando por parametros equivalentes se obtiene la ecuacion del tambor del subsistema carro:
-
+            
+            Reemplazando por parámetros equivalentes, se obtiene la ecuación del tambor del subsistema carro:
+            
             \begin{equation} \label{eq:TamborCarro}
                 M_{Etd} \ddot{x_{td}}(t) = - b_{Etd} \dot{x_{td}}(t) + \frac{i_t}{r_{td}} (T_{tm}(t) + T_{tb}(t)) - F_{tw}(t)
             \end{equation}
-
-            La ecuacion de movimiento del carro es:
-
+            
+            \textbf{Ecuación de movimiento del carro:}
+            
             \begin{equation} \label{eq:Carro}
-                M_t \ddot{x_{t}}(t) = - b_t \dot{x_{t}}(t) + F_{tw}(t) + 2F_{hw}(t)\sin{\theta_l(t)}
+                M_t \ddot{x_{t}}(t) = - b_t \dot{x_{t}}(t) + F_{tw}(t) + 2 F_{hw}(t) \sin{\theta_l(t)}
             \end{equation}
-
-            Y la fuerza transmitida por el cable del subsistema carro es:
-
+            
+            \textbf{Fuerza transmitida por el cable del carro:}
+            
             \begin{equation} \label{eq:fuerzaCableCarro}
                 F_{tw}(t) = K_{tw}(x_{td}(t) - x_t(t)) + b_{tw}(\dot{x_{td}}(t) - \dot{x_t}(t))
             \end{equation}
-
-            En la figura \ref{fig:trolley_drum_mode_simulink} se muestra el modelo de Simulink que responde a la ecuación \ref{eq:Carro} con sus respectivos parametros equivalentes. Además, se introduce el modelo del freno del tambor.
+            
+            En la Figura \ref{fig:trolley_drum_mode_simulink} se muestra el modelo de Simulink que corresponde a la ecuación \ref{eq:Carro} con los parámetros equivalentes correspondientes. Además, se incluye el modelo del freno del tambor.
+            
             \begin{figure} [H]
                 \centering
                 \includegraphics[width=1\textwidth]{figs/trolley_drum_subsystem_simulink.png}
                 \caption{Modelo de Simulink del tambor del subsistema carro}
                 \label{fig:trolley_drum_mode_simulink}
             \end{figure}
-
+            
             \textbf{Modelo del cable del carro}
-
-            La figura \ref{fig:trolley_cable_mode_simulink} muestra el modelo de Simulink del cable del subsistema carro. Se observa que se implementa la ecuación 4.a del encunciado para su modelado.
+            
+            La Figura \ref{fig:trolley_cable_mode_simulink} muestra el modelo de Simulink del cable del subsistema carro, en el que se implementa la ecuación 4.a del enunciado.
             
             \begin{figure} [H]
                 \centering
@@ -271,6 +279,7 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
                 \caption{Modelo de Simulink del cable del subsistema carro}
                 \label{fig:trolley_cable_mode_simulink}
             \end{figure}
+            
 
 
 
@@ -278,79 +287,79 @@ El desarrollo del informe incluye el modelado del sistema físico, obteniendo la
             
 
 
-        \subsubsection{Perfil de obstáculos}
-        El perfil de obstaculos se modela como uma matriz de Nx2 donde la primera columna representa la posicion en x y la segunda la altura del obstáculos perfil del obstáculo. El perfil esta discgretizado en x segun un dx determinado. 
-        AL iniciar la simulacion se inizializa esta matriz con el perfil de los obstáculos inmoviles. Luego se actualiza la matiz teneniendo en cuenta la cantidad de containes en cada comunma del barco o en la bahía de carga inicialmente.
-        Cuando durante la simulación se recoje o se deja un contenedor se actualiza la matriz de obstáculos mediante el modelo en stateflow que se muestra en la figura \ref{fig:container_profile_stateflow}.
-        \begin{figure} [H]
-            \centering
-            \includegraphics[width=1\textwidth]{figs/container_profile_stateflow.png}
-            \caption{Modelo en stateflow de la actualización del perfil de obstáculos}
-            \label{fig:container_profile_stateflow}
-        \end{figure}
-
-        \subsubsection{Modelo de la carga}
-            
-            La carga se modela teniando en cuenta la tensión del cable de izaje, así como muestran las ecuaciones 1.a y 1.b del enunciado. En la figura \ref{fig:load_simulink} se muestra el modelo de Simulink de la carga.
-
+            \subsubsection{Perfil de obstáculos}
+            El perfil de obstaculos se modela como uma matriz de Nx2 donde la primera columna representa la posicion en x y la segunda la altura del obstáculos perfil del obstáculo. El perfil esta discgretizado en x segun un dx determinado. 
+            AL iniciar la simulacion se inizializa esta matriz con el perfil de los obstáculos inmoviles. Luego se actualiza la matiz teneniendo en cuenta la cantidad de containes en cada comunma del barco o en la bahía de carga inicialmente.
+            Cuando durante la simulación se recoje o se deja un contenedor se actualiza la matriz de obstáculos mediante el modelo en stateflow que se muestra en la figura \ref{fig:container_profile_stateflow}.
             \begin{figure} [H]
                 \centering
-                \includegraphics[width=1\textwidth]{figs/load_simulink.png}
-                \caption{Modelo de Simulink de la carga}
-                \label{fig:load_simulink}
+                \includegraphics[width=1\textwidth]{figs/container_profile_stateflow.png}
+                \caption{Modelo en stateflow de la actualización del perfil de obstáculos}
+                \label{fig:container_profile_stateflow}
             \end{figure}
-
-            El ángulo del cable de izaje respecto de la vertical se obtiene a partir de la posicion de la carga y el carro, así como indica la ecuación 0.d del enunciado. En la figura \ref{fig:load_sway_simulink} se muestra el modelo de Simulink del balanceo de la carga.
-
-            \begin{figure} [H]
-                \centering
-                \includegraphics[width=0.5\textwidth]{figs/load_sway_simulink.png}
-                \caption{Modelo de Simulink del balanceo de la carga}
-                \label{fig:load_sway_simulink}
-            \end{figure}
-
-            Al igual que el ángulo del cable de izaje, el largo del mismo se obtiene a partir de la posición de la carga y el carro, así como indica la ecuación 0.c del enunciado. La velocidad de cambio de esta longitud se calcula de forma analítica utilizando la ecuación 1.c'. En la figura \ref{fig:wirerope_length_simulink} se muestra el modelo de Simulink lo anteriormente mencionado.
-
-            \begin{figure} [H]
-                \centering
-                \includegraphics[width=0.5\textwidth]{figs/wirerope_length_simulink.png}
-                \caption{Modelo de Simulink del largo del cable de izaje}
-                \label{fig:wirerope_length_simulink}
-            \end{figure}
-
-            \textbf{Modelo de la fuerza de contacto}
-
-            El modelo de la fuerza de contacto se refiere al análisis de las interacciones entre la carga suspendida (spreader o contenedor) y la superficie de apoyo durante las maniobras de izaje o descenso en una grúa portuaria. Este modelo tiene en cuenta los estados del cable de izaje (tenso o flojo) y los modos de contacto (carga suspendida o apoyada). Se consideran las fuerzas de fricción horizontal y las reacciones elásticas verticales que ocurren cuando la carga toca la superficie de apoyo, así como el comportamiento dinámico del sistema para evitar tirones bruscos en el cable.
-
-            El modelo se implementa en Simulink, como se muestra en la Figura \ref{fig:contact_mode_simulink}, y utiliza parámetros como la rigidez de compresión ($K_{cy}$) y la fricción ($b_{cx}, b_{cy}$) para simular las fuerzas de contacto bajo diferentes condiciones operativas. 
-
-            Las ecuaciones que definen el comportamiento de la fuerza de contacto son las siguientes:
-
-            \begin{equation}
-            F_{cx}(t) = -b_{cx} \cdot v_{lx}(t)
-            \end{equation}
-
-            \begin{equation}
-            F_{cy}(t) = K_{cy} \cdot (y_{c0}(x_l, t) - (y_l(t) - h_c(TLK))) - b_{cy} \cdot v_{ly}(t)
-            \end{equation}
-
-            Donde:
-            \begin{itemize}
-                \item $F_{cx}$ es la fuerza de fricción horizontal.
-                \item $F_{cy}$ es la fuerza de reacción elástica vertical.
-                \item $b_{cx}$ y $b_{cy}$ son los coeficientes de fricción horizontal y vertical, respectivamente.
-                \item $K_{cy}$ es la rigidez de compresión vertical.
-                \item $v_{lx}$ y $v_{ly}$ son las velocidades horizontales y verticales de la carga.
-                \item $y_{c0}(x_l, t)$ representa el perfil de obstáculos o la altura de apoyo vertical.
-                \item $h_c(TLK)$ indica la altura inferior de la carga, dependiendo del estado de los twistlocks (abiertos o cerrados).
-            \end{itemize}
-
-            \begin{figure}
-                \centering
-                \includegraphics[width=0.5\textwidth]{figs/contact_mode_simulink.png}
-                \caption{Modelo de Simulink de la fuerza de contacto}
-                \label{fig:contact_mode_simulink}
-            \end{figure}
+    
+            \subsubsection{Modelo de la carga}
+                
+                La carga se modela teniando en cuenta la tensión del cable de izaje, así como muestran las ecuaciones 1.a y 1.b del enunciado. En la figura \ref{fig:load_simulink} se muestra el modelo de Simulink de la carga.
+    
+                \begin{figure} [H]
+                    \centering
+                    \includegraphics[width=1\textwidth]{figs/load_simulink.png}
+                    \caption{Modelo de Simulink de la carga}
+                    \label{fig:load_simulink}
+                \end{figure}
+    
+                El ángulo del cable de izaje respecto de la vertical se obtiene a partir de la posicion de la carga y el carro, así como indica la ecuación 0.d del enunciado. En la figura \ref{fig:load_sway_simulink} se muestra el modelo de Simulink del balanceo de la carga.
+    
+                \begin{figure} [H]
+                    \centering
+                    \includegraphics[width=0.5\textwidth]{figs/load_sway_simulink.png}
+                    \caption{Modelo de Simulink del balanceo de la carga}
+                    \label{fig:load_sway_simulink}
+                \end{figure}
+    
+                Al igual que el ángulo del cable de izaje, el largo del mismo se obtiene a partir de la posición de la carga y el carro, así como indica la ecuación 0.c del enunciado. La velocidad de cambio de esta longitud se calcula de forma analítica utilizando la ecuación 1.c'. En la figura \ref{fig:wirerope_length_simulink} se muestra el modelo de Simulink lo anteriormente mencionado.
+    
+                \begin{figure} [H]
+                    \centering
+                    \includegraphics[width=0.5\textwidth]{figs/wirerope_length_simulink.png}
+                    \caption{Modelo de Simulink del largo del cable de izaje}
+                    \label{fig:wirerope_length_simulink}
+                \end{figure}
+    
+                \textbf{Modelo de la fuerza de contacto}
+    
+                El modelo de la fuerza de contacto se refiere al análisis de las interacciones entre la carga suspendida (spreader o contenedor) y la superficie de apoyo durante las maniobras de izaje o descenso en una grúa portuaria. Este modelo tiene en cuenta los estados del cable de izaje (tenso o flojo) y los modos de contacto (carga suspendida o apoyada). Se consideran las fuerzas de fricción horizontal y las reacciones elásticas verticales que ocurren cuando la carga toca la superficie de apoyo, así como el comportamiento dinámico del sistema para evitar tirones bruscos en el cable.
+    
+                El modelo se implementa en Simulink, como se muestra en la Figura \ref{fig:contact_mode_simulink}, y utiliza parámetros como la rigidez de compresión ($K_{cy}$) y la fricción ($b_{cx}, b_{cy}$) para simular las fuerzas de contacto bajo diferentes condiciones operativas. 
+    
+                Las ecuaciones que definen el comportamiento de la fuerza de contacto son las siguientes:
+    
+                \begin{equation}
+                F_{cx}(t) = -b_{cx} \cdot v_{lx}(t)
+                \end{equation}
+    
+                \begin{equation}
+                F_{cy}(t) = K_{cy} \cdot (y_{c0}(x_l, t) - (y_l(t) - h_c(TLK))) - b_{cy} \cdot v_{ly}(t)
+                \end{equation}
+    
+                Donde:
+                \begin{itemize}
+                    \item $F_{cx}$ es la fuerza de fricción horizontal.
+                    \item $F_{cy}$ es la fuerza de reacción elástica vertical.
+                    \item $b_{cx}$ y $b_{cy}$ son los coeficientes de fricción horizontal y vertical, respectivamente.
+                    \item $K_{cy}$ es la rigidez de compresión vertical.
+                    \item $v_{lx}$ y $v_{ly}$ son las velocidades horizontales y verticales de la carga.
+                    \item $y_{c0}(x_l, t)$ representa el perfil de obstáculos o la altura de apoyo vertical.
+                    \item $h_c(TLK)$ indica la altura inferior de la carga, dependiendo del estado de los twistlocks (abiertos o cerrados).
+                \end{itemize}
+    
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.5\textwidth]{figs/contact_mode_simulink.png}
+                    \caption{Modelo de Simulink de la fuerza de contacto}
+                    \label{fig:contact_mode_simulink}
+                \end{figure}
                 
         \subsection{Diseño del controlador}
 
